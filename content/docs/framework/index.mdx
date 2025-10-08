@@ -1,7 +1,15 @@
 ---
-title: Hello World
-description: Your first document
+title: Overview
+description: IdeaSearch 文档概览
 ---
 
-Welcome to the docs! You can start writing documents in `/content/docs`.
+import { getPageTreePeers } from "fumadocs-core/server";
+import { source } from "@/lib/source";
 
+<Cards>
+  {getPageTreePeers(source.pageTree, "/docs/framework").map((peer) => (
+    <Card key={peer.url} title={peer.name} href={peer.url}>
+      {peer.description}
+    </Card>
+  ))}
+</Cards>
