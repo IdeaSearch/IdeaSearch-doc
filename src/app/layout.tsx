@@ -16,11 +16,17 @@ export const metadata: Metadata = {
   ),
   title: "IdeaSearch",
   description: "IdeaSearch 文档",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logo.png" type="image/png" sizes="256x256" />
+      </head>
       <body className="flex flex-col min-h-screen">
         <RootProvider>{children}</RootProvider>
       </body>

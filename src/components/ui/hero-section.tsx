@@ -27,7 +27,7 @@ interface HeroSectionProps {
 
 export function HeroSection({
   title = "优化创新 突破边界",
-  highlightText = "IdeaSearch Framework",
+  highlightText = "IdeaSearch",
   description = "基于大语言模型的多岛并行搜索系统，通过进化算法和智能评估机制，帮助科研和教育领域发现突破创新",
   buttonText = "开始探索",
   onButtonClick,
@@ -121,7 +121,7 @@ export function HeroSection({
             style={{ fontFamily, fontWeight }}
           >
             {title}{" "}
-            <span className=" text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-purple-600 dark:from-orange-300 dark:to-pink-500">
+            <span className="block mt-2 scale-110 text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-purple-600 dark:from-orange-300 dark:to-pink-500">
               {highlightText}
             </span>
           </h1>
