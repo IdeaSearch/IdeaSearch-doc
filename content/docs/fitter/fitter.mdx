@@ -126,7 +126,7 @@ All configurations for an `IdeaSearchFitter` instance are set in its `__init__` 
     - Specifies the numerical optimization algorithm for fitting ansatz parameters. `L-BFGS-B` is an efficient local optimizer suitable for smoother objective functions. `differential-evolution` is a global optimizer that may be more robust for complex problems with multiple local minima.
   - **`optimization_trial_num`**: `int` (Default: `100`)
     - The number of trials for the numerical optimizer. For `differential-evolution`, this corresponds to the population size. For non-convex or complex problems, increasing this value can improve the probability of finding the global optimum at the cost of increased computation time.
-- **Evolutionary Operators**
+- **Evolutionary Operators (Still work in progress)**
   - **`enable_mutation`**: `bool` (Default: `False`)
     - Enables the built-in expression **mutation** functionality.
   - **`enable_crossover`**: `bool` (Default: `False`)
