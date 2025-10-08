@@ -3,163 +3,240 @@ title: README
 description: README of IdeaSearch-fit
 ---
 
-# IdeaSearch-fit
+# About IdeaSearch-fit
 
-## 安装
+## Project Overview
 
-您可以通过以下命令安装 `IdeaSearch-fit`：
+`IdeaSearch-fit` is a **scientific formula discovery tool focused on symbolic regression, built upon the `IdeaSearch` framework**. It provides the `IdeaSearchFitter` class, which is designed as a highly integrated "Helper" object that seamlessly interfaces with `IdeaSearch` via the `bind_helper` method. `IdeaSearch-fit` integrates the dual capabilities of evolutionary computation and large language models to automatically discover underlying mathematical expressions from experimental or simulation data.
 
-```bash
-pip install IdeaSearch-fit
-```
+The core task of `IdeaSearch-fit` is to solve the symbolic regression problem: given a set of input data $(X)$ and a corresponding output $(y)$, the system performs an evolutionary search to find a mathematical formula $f(X)$ that is both accurate in describing the relationship and parsimonious in its complexity. Therefore, it is more than just a data fitting tool; its ultimate goal is to be an exploratory framework capable of uncovering the physical laws or mathematical patterns behind the data.
 
-也可以将仓库 https://github.com/IdeaSearch/IdeaSearch-fit 克隆至本地：
+## Core Methodology: Combining Heuristic Search and Numerical Optimization
 
-```bash
-git clone https://github.com/IdeaSearch/IdeaSearch-fit.git
-```
+The core of `IdeaSearch-fit` lies in its hybrid workflow, which combines the macroscopic structural exploration of Large Language Models (LLMs) with the microscopic parameter optimization of traditional numerical methods:
 
-然后在项目根目录下运行
+1.  **Phase 1: Ansatz Search via Large Language Models**
+    This phase leverages the **instruction-following and pattern-recognition capabilities of LLMs to conduct a heuristic search for candidate formulas** within a space composed of mathematical symbols, physical concepts, and natural language. Guided by user-provided data features, physical units, and optional theoretical context, the LLM generates a series of structurally sound candidate mathematical expressions (i.e., "ansatze"). This is a macroscopic, exploratory process of structure generation.
 
-```bash
-pip install .
-```
+2.  **Phase 2: Parameter Fitting via Numerical Optimization**
+    Once a promising ansatz is generated (e.g., `param1 * sin(param2 * x)`), the `IdeaSearchFitter` instance immediately employs **user-specified traditional numerical optimization algorithms (e.g., `L-BFGS-B` or `differential-evolution`)** to precisely solve for the optimal values of the undetermined parameters (`param1`, `param2`, etc.). This is a deterministic, microscopic process of parameter fitting, designed to accurately evaluate the fitting capability of each candidate structure.
 
-## 功能
+This workflow, where the "LLM explores structures and numerical optimization solves for parameters," integrates the structural generation capabilities of modern AI with the precise computational power of classical algorithms, forming the foundation of `IdeaSearch-fit`.
 
-为 IdeaSearch 提供拟合物理实验数据的专门化拓展。使用例请见 demo/run.py
+## Core Input and Output
 
-运行
+From a user's perspective, the workflow of `IdeaSearch-fit` is designed to be exceptionally direct:
 
-```bash
-python -m scripts.test_unit_validator.run
-```
+> **Core Input:**
+>
+> - **`X`**: Input data (independent variables, multi-dimensional support).
+> - **`y`**: Target data (dependent variable, one-dimensional).
+> - **`error`** (Optional): The measurement error for each data point in `y`. Providing errors is fundamental for rigorous scientific data fitting, as it enables the use of more robust metrics like the reduced chi-squared statistic.
+>
+> **Core Output:**
+>
+> - **A Pareto Frontier**. The system's output is not a single "best" formula but a set of solutions. Each formula in this set represents the optimal accuracy for its respective level of complexity, allowing the user to make a trade-off between the model's **simplicity** and **precision** that best suits their domain requirements.
 
-可对 rule-based 的单位检查器 unit_validator 做单元测试。
+## Key Features
 
-欢迎大家在 scripts/test_unit_validator/testcases.py 中补充测试用例！
+- **Evolutionary Symbolic Regression**: Leverages the multi-island parallel evolution framework of `IdeaSearch` as its core engine to efficiently search the vast space of mathematical expressions for optimal fitting formulas.
 
-## 贡献
+- **Pareto-Optimal Frontier**: `IdeaSearch-fit` does not seek a single best fit but simultaneously optimizes two competing objectives: **accuracy (Metric) and simplicity (Complexity)**. It generates a **Pareto Frontier** report, providing a suite of optimal solutions at various complexity-accuracy trade-offs for in-depth analysis.
 
-欢迎贡献您的代码或建议！请在 GitHub 提交问题或拉取请求。
+- **Rigorous Dimensional Analysis**: Includes a built-in unit validation module (`unit_validator`) that performs strict physical unit checks during the formula evolution process. This feature is crucial for scientific and engineering domains, ensuring that the generated formulas are valid not only numerically but also physically.
 
-## 国际化
+- **Dual-Mode Formula Generation**:
 
-### 基本情况
+  - **Precise Generation**: Directly generates and evolves mathematical expressions that strictly adhere to a specific computational syntax.
+  - **Fuzzy Generation**: First, an LLM acts as a scientist to propose a **natural language theory** about the underlying patterns in the data. Then, another LLM agent translates this theory into a strict mathematical expression. This innovative two-stage approach allows for the infusion of richer prior knowledge and creative insights.
 
-- 使用标准库 `gettext` 实现多语言支持。
-- 项目在 `IdeaSearch-fit/i18n.py` 中定义了三个接口：
+- **Automated Semantic Polishing**: Users need only provide basic variable names and units, and the system can invoke an LLM to automatically infer and complete descriptions of the physical meaning of all inputs and outputs. This information is then used to construct more semantically rich prompts, guiding `IdeaSearch` toward a more intelligent exploration.
 
-  - `translate`: 翻译函数，模块内可用 `from IdeaSearch-fit.i18n import translate` 导入（推荐使用相对路径）；
-  - `set_language(language)`: 手动切换语言；
-  - `init_language()`: 从系统环境变量自动初始化语言（已在模块加载时默认执行）。
+- **Seamless Integration and Automation**: As a highly integrated module for `IdeaSearch`, the `IdeaSearchFitter` class only needs to be initialized once. It then automatically configures all the necessary core components for `IdeaSearch`, including the evaluation function (`evaluate_func`), prompts (`prologue_section`, `epilogue_section`), and mutation/crossover operators (`mutation_func`, `crossover_func`).
 
-- 示例用法：
+## Core API
+
+The primary interface for the `IdeaSearch-fit` package is the `IdeaSearchFitter` class, which consists of its constructor and several result-retrieval methods.
+
+- `IdeaSearchFitter(__init__)`: ⭐️ **Important**
+
+  - **Function**: Initializes an `IdeaSearchFitter` instance. This is the unified entry point for all configurations, including data loading, problem definition, expression construction, and search strategy settings.
+  - **Importance**: The first step in using `IdeaSearch-fit`, defining the entire framework for the symbolic regression task.
+
+- `get_best_fit()`:
+
+  - **Function**: Returns the numerical expression string, fitted with its optimal parameters, that achieved the lowest metric value (e.g., mean squared error) among all evaluated formulas.
+  - **Importance**: Retrieves the single best fitting result based on accuracy alone.
+
+- `get_pareto_frontier()`:
+
+  - **Function**: Returns a dictionary containing all formulas on the current Pareto frontier, along with their detailed information (complexity, metric value, fitted parameters, etc.).
+  - **Importance**: Retrieves a set of optimal solutions that balance accuracy and complexity.
+
+## Configuration Parameters
+
+All configurations for an `IdeaSearchFitter` instance are set in its `__init__` constructor. The parameters are logically grouped by function to facilitate understanding and setup.
+
+### 1\. Task Input & Output
+
+- **`data`**: `Optional[Dict[str, ndarray]]`
+  - Data passed directly as a dictionary in memory. Must contain keys `"x"` (input, 2D array) and `"y"` (output, 1D array). Can optionally include `"error"` (errors for y, 1D array).
+- **`data_path`**: `Optional[str]`
+  - Path to a local `.npz` file from which to load data. Use either `data` or `data_path`. The file should contain arrays with the same keys.
+- **`result_path`**: `str`
+  - Path to an **existing directory** where fitting results, such as the Pareto frontier report (`pareto_report.txt`) and data (`pareto_data.json`), will be stored.
+
+### 2\. Problem Definition & Units
+
+- **`variable_names`**: `Optional[List[str]]`
+  - A list of names for the input variables (e.g., `["mass", "velocity"]`). Defaults to `["x1", "x2", ...]` if not provided.
+- **`output_name`**: `Optional[str]`
+  - The name of the output variable (e.g., `"energy"`).
+- **`perform_unit_validation`**: `bool` (Default: `False`)
+  - **[Master Switch]** Whether to enable strict physical dimensional analysis.
+- **`variable_units`**: `Optional[List[str]]`
+  - A list of units corresponding to `variable_names` (e.g., `["kg", "m s^-1"]`). Required when `perform_unit_validation` is `True`.
+- **`output_unit`**: `Optional[str]`
+  - The unit of the output variable (e.g., `"J"` or `"kg m^2 s^-2"`). Required when `perform_unit_validation` is `True`.
+- **`auto_polish`**: `bool` (Default: `True`)
+  - Whether to automatically invoke an LLM to infer and generate descriptions for the physical meaning of variables to enrich prompts.
+- **`auto_polisher`**: `Optional[str]`
+  - The name of the LLM model to use for the `auto_polish` task. If `None`, an available model is selected automatically.
+- **`input_description`**, **`variable_descriptions`**, **`output_description`**: `Optional[str]`
+  - Manually specify text descriptions for the system, input variables, and output variable. If provided, the `auto_polish` step will be skipped.
+
+### 3\. Expression Building Blocks
+
+- **`functions`**: `List[str]` (Default: Includes common functions like `sin`, `cos`, `log`, `exp`)
+  - A list of mathematical functions allowed in expressions. All functions must be supported by the `numexpr` library.
+- **`constant_whitelist`**: `List[str]` (Default: `[]`)
+  - A list of named constants (as strings) allowed in expressions.
+- **`constant_map`**: `Dict[str, float]` (Default: `{"pi": np.pi}`)
+  - A dictionary mapping named constants to their float values.
+
+### 4\. Search & Evolution Strategy
+
+- **LLM Generation Strategy**
+  - **`generate_fuzzy`**: `bool` (Default: `True`)
+    - **[Master Switch]** Enables "fuzzy generation" mode. If `False`, the LLM will generate strict mathematical expressions directly.
+  - **`fuzzy_translator`**: `Optional[str]`
+    - In fuzzy mode, the name of the LLM model used to translate natural language theories into mathematical expressions.
+- **Numerical Optimization Strategy**
+  - **`optimization_method`**: `Literal["L-BFGS-B", "differential-evolution"]` (Default: `"L-BFGS-B"`)
+    - Specifies the numerical optimization algorithm for fitting ansatz parameters. `L-BFGS-B` is an efficient local optimizer suitable for smoother objective functions. `differential-evolution` is a global optimizer that may be more robust for complex problems with multiple local minima.
+  - **`optimization_trial_num`**: `int` (Default: `100`)
+    - The number of trials for the numerical optimizer. For `differential-evolution`, this corresponds to the population size. For non-convex or complex problems, increasing this value can improve the probability of finding the global optimum at the cost of increased computation time.
+- **Evolutionary Operators**
+  - **`enable_mutation`**: `bool` (Default: `False`)
+    - Enables the built-in expression **mutation** functionality.
+  - **`enable_crossover`**: `bool` (Default: `False`)
+    - Enables the built-in expression **crossover** functionality.
+
+### 5\. Score Mapping
+
+- **`baseline_metric_value`**: `Optional[float]`
+  - Defines a "baseline" metric value (e.g., MSE) that will be mapped to an `IdeaSearch` score of `20.0`. If `None`, the result of a naive linear fit is used as the baseline.
+- **`good_metric_value`**: `Optional[float]`
+  - Defines a "good" metric value that will be mapped to an `IdeaSearch` score of `80.0`.
+- **`metric_mapping`**: `Literal["linear", "logarithm"]` (Default: `"linear"`)
+  - The mapping function from metric value to score. Logarithmic mapping is more suitable when metric values can span several orders of magnitude.
+
+### 6\. Miscellaneous
+
+- **`seed`**: `Optional[int]`
+  - A random seed to ensure the reproducibility of results.
+
+## Workflow
+
+The following is a complete workflow example demonstrating how to use `IdeaSearch-fit` and `IdeaSearch` to solve a symbolic regression problem.
 
 ```python
-# IdeaSearch-fit/miscellaneous/hello.py
-from ..i18n import translate
+import numpy as np
+from IdeaSearch import IdeaSearcher
+from IdeaSearch_fit import IdeaSearchFitter
 
-def print_helloworld(
-)-> None:
-    print(translate("Hello, World!"))
+def main():
+    # 1. Prepare Data
+    # Let's assume we want to discover the formula f(t) = 1.23 * sin(4.56 * t) + 7.89
+    np.random.seed(42)
+    t_data = np.linspace(-10, 10, 100).reshape(-1, 1)
+    y_true = 1.23 * np.sin(4.56 * t_data.flatten()) + 7.89
+    y_error = np.random.normal(0.1, 0.01, y_true.shape) # Simulate measurement errors
+    y_data = y_true + np.random.normal(0, y_error) # Generate noisy data based on errors
+
+    # Core input: x, y, error
+    data_dict = {"x": t_data, "y": y_data, "error": y_error}
+
+    # 2. Initialize IdeaSearchFitter
+    # This fitter object will act as the "brain" for IdeaSearch, providing all necessary configurations.
+    fitter = IdeaSearchFitter(
+        # -- Task Input & Output --
+        data=data_dict,
+        result_path="./fit_results", # Ensure this directory exists
+
+        # -- Problem Definition & Units --
+        perform_unit_validation=True,
+        variable_names=["t"],
+        variable_units=["s"],      # Assume t is time in seconds
+        output_name="position",
+        output_unit="m",          # Assume y is position in meters
+
+        # -- Search & Evolution Strategy --
+        optimization_method="differential-evolution", # Use a global optimization algorithm
+        optimization_trial_num=200,                   # Increase optimization trials
+        enable_mutation=True,
+        enable_crossover=True,
+    )
+
+    # 3. Initialize IdeaSearcher
+    ideasearcher = IdeaSearcher()
+
+    # 4. Basic Configuration
+    ideasearcher.set_language("en")
+    ideasearcher.set_api_keys_path("api_keys.json")
+    ideasearcher.set_program_name("PhysicsFormulaDiscovery")
+    ideasearcher.set_database_path("./database")
+
+    # 5. Bind the Fitter! (The most crucial step)
+    ideasearcher.bind_helper(fitter)
+
+    # 6. Configure Models and Run Parameters
+    ideasearcher.set_models(["Deepseek_V3"])
+    ideasearcher.set_model_temperatures([1.0])
+
+    # 7. Define and Execute the Evolutionary Loop
+    island_num = 2
+    cycle_num = 3
+    unit_interaction_num = 10
+
+    for _ in range(island_num):
+        ideasearcher.add_island()
+
+    for cycle in range(cycle_num):
+        print(f"---[ Cycle {cycle + 1}/{cycle_num} ]---")
+        if cycle != 0:
+            ideasearcher.repopulate_islands()
+        ideasearcher.run(unit_interaction_num)
+
+    # 8. Retrieve and Display Results
+    print("\n---[ Search Complete ]---")
+
+    # Get the single best fit by accuracy
+    best_fit_formula = fitter.get_best_fit()
+    print(f"Best Fit Formula (by accuracy): {best_fit_formula}")
+
+    # Get the Pareto frontier (the core output)
+    pareto_frontier = fitter.get_pareto_frontier()
+    print("\nOptimal Solutions on the Pareto Frontier:")
+    # Sort and print by complexity
+    for complexity, info in sorted(pareto_frontier.items()):
+        # Metric is reduced chi-squared if errors are provided, otherwise MSE
+        metric_key = "reduced chi squared" if "reduced chi squared" in info else "mean square error"
+        metric_value = info[metric_key]
+        print(f"  - Complexity: {complexity}, Error: {metric_value:.4g}, Formula: {info['ansatz']}")
+
+if __name__ == "__main__":
+    # Before running, ensure './fit_results' and './database' directories exist
+    # and that 'api_keys.json' is configured correctly.
+    main()
 ```
-
-- `translate()` 默认会根据环境变量（如 `LANG`, `LC_ALL`）自动选择语言。也可通过调用 `set_language('zh')` 来手动切换语言。
-
-### 生成国际化目标文件（.mo）的基本步骤
-
-1. **提取`IdeaSearch-fit`中所有 `.py` 文件中的翻译字符串，为目标语言准备 `.po` 文件（如尚未存在）并明确编码方式为 UTF-8**：
-
-```bash
-xgettext -L Python --keyword=translate -o IdeaSearch_fit/locales/messages.pot $(find . -name "*.py")
-
-for lang in zh_CN en_US; do
-  mkdir -p IdeaSearch_fit/locales/$lang/LC_MESSAGES
-  [ -f IdeaSearch_fit/locales/$lang/LC_MESSAGES/messages.po ] || cp IdeaSearch_fit/locales/messages.pot IdeaSearch_fit/locales/$lang/LC_MESSAGES/messages.po
-done
-
-for lang in zh_CN en_US; do
-  sed -i 's/charset=CHARSET/charset=UTF-8/' IdeaSearch_fit/locales/$lang/LC_MESSAGES/messages.po
-done
-```
-
-> 💡 参数 `--keyword=translate` 告诉 `xgettext` 将 `translate("...")` 作为翻译目标。
-
-2. **翻译 `.po` 文件中的内容**
-
-使用文本编辑器（如 VS Code）、翻译软件（如 Poedit）或命令行工具编辑每个 `.po` 文件，填入对应语言的翻译：
-
-```po
-msgid "Hello, %s!"
-msgstr "你好，%s！"
-```
-
-3. **批量编译 `.po` 为 `.mo` 文件**：
-
-```bash
-for lang in zh_CN en_US; do
-  msgfmt IdeaSearch_fit/locales/$lang/LC_MESSAGES/messages.po -o IdeaSearch_fit/locales/$lang/LC_MESSAGES/messages.mo
-done
-```
-
-### 注意事项
-
-- 所有待翻译内容需用 `translate("...")` 包裹，确保能被 `xgettext` 提取。
-- `.po` 和 `.mo` 文件需为 UTF-8 编码。
-- 国际化模块仅初始化一次语言环境，其它模块通过导入 `translate` 使用即可。
-- 推荐使用 C 风格占位符（如 `%s`, `%d`），以便 `.po` 文件中的翻译更自然、格式更稳定：
-
-```python
-translate("Hello, %s!") % (name)
-```
-
-## 发布至 PyPI
-
-### 构建包
-
-确保修改 `setup.py` 中的版本号后，在项目根目录下运行：
-
-```bash
-rm -rf build/ dist/ *.egg-info && python setup.py sdist bdist_wheel
-```
-
-### 登录 PyPI
-
-尚未注册账号可访问 [PyPI](https://pypi.org/account/register/) 创建账户。
-
-安装 Twine（如尚未安装）：
-
-```bash
-pip install twine
-```
-
-建议使用 API token 登录，更安全。推荐在 `~/.pypirc` 中配置：
-
-```ini
-[pypi]
-username = __token__
-password = pypi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-首次上传时会提示输入用户名和密码，配置后可免交互。
-
-### 上传分发包
-
-执行上传命令：
-
-```bash
-twine upload dist/*
-```
-
-Windows 系统下，可以：
-
-```bash
-twine upload --config-file "$env:APPDATA\pypi\pypi.ini" dist/*
-```
-
-### 注意事项
-
-- 使用 API token 代替密码，安全且方便自动化。
-- PyPI 不允许覆盖已发布的同版本文件，上传前务必更新版本号。
-- PyPI 删除 release 时仅隐藏，不会物理删除版本号；已用版本号永久保留，无法重复上传。
