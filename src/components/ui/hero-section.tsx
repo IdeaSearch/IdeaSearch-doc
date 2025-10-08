@@ -121,7 +121,7 @@ export function HeroSection({
             style={{ fontFamily, fontWeight }}
           >
             {title}{" "}
-            <span className="text-primary dark:text-blue-400">
+            <span className=" text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-purple-600 dark:from-orange-300 dark:to-pink-500">
               {highlightText}
             </span>
           </h1>
