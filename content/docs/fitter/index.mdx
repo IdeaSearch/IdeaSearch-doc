@@ -1,6 +1,15 @@
 ---
-title: IdeaSearch Fitter
-description: IdeaSearch Fitter 使用文档
+title: Overview
+description: IdeaSearch Fitter 文档概览
 ---
 
-# IdeaSearch Fitter
+import { getPageTreePeers } from 'fumadocs-core/server';
+import { source } from '@/lib/source';
+
+<Cards>
+  {getPageTreePeers(source.pageTree, '/docs/fitter').map((peer) => (
+    <Card key={peer.url} title={peer.name} href={peer.url}>
+      {peer.description}
+    </Card>
+  ))}
+</Cards>
