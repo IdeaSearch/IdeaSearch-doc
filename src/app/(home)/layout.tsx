@@ -1,5 +1,4 @@
 import { HomeLayout } from "fumadocs-ui/layouts/home";
-import { NavbarLink } from "fumadocs-ui/layouts/home/navbar";
 import { baseOptions } from "@/lib/layout.shared";
 
 
