@@ -27,15 +27,15 @@ This workflow, where the "LLM explores structures and numerical optimization sol
 
 From a user's perspective, the workflow of `IdeaSearch-fit` is designed to be exceptionally direct:
 
-> **Core Input:**
->
-> - **`X`**: Input data (independent variables, multi-dimensional support).
-> - **`y`**: Target data (dependent variable, one-dimensional).
-> - **`error`** (Optional): The measurement error for each data point in `y`. Providing errors is fundamental for rigorous scientific data fitting, as it enables the use of more robust metrics like the reduced chi-squared statistic.
->
-> **Core Output:**
->
-> - **A Pareto Frontier**. The system's output is not a single "best" formula but a set of solutions. Each formula in this set represents the optimal accuracy for its respective level of complexity, allowing the user to make a trade-off between the model's **simplicity** and **precision** that best suits their domain requirements.
+**Core Input:**
+
+- **`X`**: Input data (independent variables, multi-dimensional support).
+- **`y`**: Target data (dependent variable, one-dimensional).
+- **`error`** (Optional): The measurement error for each data point in `y`. Providing errors is fundamental for rigorous scientific data fitting, as it enables the use of more robust metrics like the reduced chi-squared statistic.
+
+**Core Output:**
+
+- **A Pareto Frontier**. The system's output is not a single "best" formula but a set of solutions. Each formula in this set represents the optimal accuracy for its respective level of complexity, allowing the user to make a trade-off between the model's **simplicity** and **precision** that best suits their domain requirements.
 
 ## Key Features
 
