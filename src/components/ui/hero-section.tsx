@@ -147,7 +147,7 @@ export function HeroSection({
       <div className={`relative z-10 ${maxWidth} mx-auto px-6 w-full`}>
         <div className="text-center">
           <h1
-            className={`font-bold text-foreground text-balance text-2xl sm:text-4xl md:text-5xl xl:text-6xl leading-tight sm:leading-tight md:leading-tight lg:leading-tight xl:leading-[1.1] mb-6 ${titleClassName}`}
+            className={`font-bold text-foreground text-balance text-3xl sm:text-4xl md:text-5xl xl:text-6xl leading-tight sm:leading-tight md:leading-tight lg:leading-tight xl:leading-[1.1] mb-6 ${titleClassName}`}
             style={{ fontFamily, fontWeight }}
           >
             {displayTitle}{" "}
@@ -156,7 +156,7 @@ export function HeroSection({
             </span>
           </h1>
           <p
-            className={`text-lg sm:text-xl text-foreground/80 dark:text-white/90 text-pretty max-w-3xl mx-auto leading-relaxed mb-10 px-4 ${descriptionClassName}`}
+            className={`text-base md:text-xl text-foreground/80 dark:text-white/90 text-pretty max-w-3xl mx-auto leading-relaxed mb-10 px-4 ${descriptionClassName}`}
           >
             {displayDescription}
           </p>
@@ -170,7 +170,7 @@ export function HeroSection({
             </button>
             <a
               href="/"
-              className="px-6 py-2 sm:px-10 sm:py-3 rounded-full border-2 border-foreground/20 dark:border-white/30 text-foreground dark:text-white hover:border-foreground/40 dark:hover:border-white/50 font-semibold text-base sm:text-lg transition-all duration-300 backdrop-blur-sm"
+              className="px-6 py-2 sm:px-10 sm:py-3 rounded-full border-2 border-foreground/20 dark:border-white/30 text-foreground dark:text-white hover:border-foreground/40 dark:hover:border-white/50 font-semibold text-base md:text-lg transition-all duration-300 backdrop-blur-sm"
             >
               {displayReadMoreText}
             </a>
