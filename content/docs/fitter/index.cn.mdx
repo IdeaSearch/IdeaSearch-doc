@@ -1,6 +1,6 @@
 ---
 title: Overview
-description: IdeaSearch Fitter Documentation Overview
+description: IdeaSearch Fitter 文档概览
 ---
 
 import { Cards, Card } from 'fumadocs-ui/components/card';
@@ -8,7 +8,7 @@ import { getPageTreePeers } from 'fumadocs-core/page-tree';
 import { source } from '@/lib/source';
 
 <Cards>
-  {getPageTreePeers(source.pageTree, '/en/docs/fitter').map((peer) => (
+  {getPageTreePeers(source.pageTree, '/cn/docs/fitter').map((peer) => (
     <Card key={peer.url} title={peer.name} href={peer.url}>
       {peer.description}
     </Card>

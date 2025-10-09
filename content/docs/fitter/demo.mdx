@@ -1,13 +1,13 @@
 ---
 title: IdeaSearch Fitter Demo
-description: IdeaSearch Fitter Demo使用示例 - 基于StreamLit的智能符号回归Web应用
+description: IdeaSearch Fitter Demo usage examples - StreamLit-based intelligent symbolic regression web application
 ---
 
 import { GithubInfo } from 'fumadocs-ui/components/github-info';
 import { File, Folder, Files } from 'fumadocs-ui/components/files';
 import { TypeTable } from 'fumadocs-ui/components/type-table';
 
-## 🎬 演示视频
+## 🎬 Demo Video
 
 <video 
   controls 
@@ -16,7 +16,7 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
   preload="metadata"
 >
   <source src="/api/proxy/video?url=http://img.wjsphy.top/demo.mp4" type="video/mp4" />
-  您的浏览器不支持视频播放。
+  Your browser does not support video playback.
 </video>
 
 <GithubInfo
@@ -24,36 +24,36 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
   repo="ideasearch-fit-demo"
 />
 
-# 🚀 IdeaSearch Fitter Demo 使用教程
+# 🚀 IdeaSearch Fitter Demo Usage Tutorial
 
-## 📖 概述
+## 📖 Overview
 
-IdeaSearch Fitter Demo 是一个基于 IdeaSearch 框架的智能符号回归 Web 应用，使用大语言模型自动发现数学表达式。用户只需绘制曲线或上传数据，AI 即可为您找到最佳拟合公式。
+IdeaSearch Fitter Demo is an intelligent symbolic regression web application based on the IdeaSearch framework, using large language models to automatically discover mathematical expressions. Users can simply draw curves or upload data, and AI will find the best-fit formulas for you.
 
-### ✨ 主要特性
+### ✨ Key Features
 
-- 🎨 **交互式绘图画布** - 直观绘制目标曲线，支持多种绘制模式
-- 📁 **文件上传支持** - 支持 NPZ 数据文件上传和多维特征拟合
-- 🤖 **多模型支持** - 集成 GPT、Gemini、Qwen、DeepSeek 等主流 LLM
-- 🧠 **Fuzzy 模式** - 使用自然语言理论描述辅助拟合
-- 📊 **实时可视化** - 动态展示拟合进度和结果对比
-- 🏝️ **岛屿进化算法** - 并行探索多个解空间，提高拟合质量
-- 📈 **Pareto 前沿分析** - 平衡表达式复杂度与拟合精度
-- ⚙️ **物理单位验证** - 确保生成的表达式量纲正确
+- 🎨 **Interactive Drawing Canvas** - Intuitively draw target curves with support for multiple drawing modes
+- 📁 **File Upload Support** - Support NPZ data file upload and multi-dimensional feature fitting
+- 🤖 **Multi-Model Support** - Integrated with mainstream LLMs like GPT, Gemini, Qwen, DeepSeek
+- 🧠 **Fuzzy Mode** - Use natural language theory descriptions to assist fitting
+- 📊 **Real-time Visualization** - Dynamically display fitting progress and result comparisons
+- 🏝️ **Island Evolution Algorithm** - Parallel exploration of multiple solution spaces to improve fitting quality
+- 📈 **Pareto Front Analysis** - Balance expression complexity and fitting accuracy
+- ⚙️ **Physical Unit Validation** - Ensure generated expressions have correct dimensions
 
-## 🛠️ 环境准备
+## 🛠️ Environment Setup
 
-### 1. 克隆代码仓库
+### 1. Clone the Repository
 
 ```bash
-# 克隆仓库
+# Clone repository
 git clone https://github.com/IdeaSearch/ideasearch-fit-demo
 cd ideasearch-fit-demo
 ```
 
-### 2. 安装 uv 包管理器
+### 2. Install uv Package Manager
 
-uv 是一个快速且可靠的 Python 包管理器，推荐使用：
+uv is a fast and reliable Python package manager, recommended for use:
 
 ```bash
 # macOS/Linux
@@ -62,30 +62,30 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # Windows
 powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-# 或使用 pip 安装
+# Or install via pip
 pip install uv
 ```
 
-### 3. 配置环境和依赖
+### 3. Configure Environment and Dependencies
 
 ```bash
-# 同步依赖环境
+# Sync dependency environment
 uv sync
 ```
 
-### 4. 配置 API 密钥
+### 4. Configure API Keys
 
-复制示例配置文件并编辑：
+Copy the example configuration file and edit:
 
 ```bash
-# 复制示例配置
+# Copy example configuration
 cp api_keys.json.example api_keys.json
 
-# 编辑配置文件
-nano api_keys.json  # 或使用其他编辑器
+# Edit configuration file
+nano api_keys.json  # or use other editors
 ```
 
-API 密钥配置格式：
+API key configuration format:
 
 ```json
 {
@@ -107,457 +107,477 @@ API 密钥配置格式：
 }
 ```
 
-**支持的模型名称**（请严格按照以下名称配置）：
-- **Gemini 系列**: `Gemini_2.5_Flash`, `Gemini_2.5_Pro`, `Gemini_Pro`
-- **OpenAI 系列**: `GPT_4o`, `GPT_4o_Mini`, `GPT_4_Turbo`
-- **国产模型**: `Qwen_Plus`, `Qwen_Max`, `Qwen3`, `Doubao`
-- **开源模型**: `Deepseek_V3`, `Grok_4`
+**Supported Model Names** (Please configure strictly according to the following names):
+- **Gemini Series**: `Gemini_2.5_Flash`, `Gemini_2.5_Pro`, `Gemini_Pro`
+- **OpenAI Series**: `GPT_4o`, `GPT_4o_Mini`, `GPT_4_Turbo`
+- **Domestic Models**: `Qwen_Plus`, `Qwen_Max`, `Qwen3`, `Doubao`
+- **Open Source Models**: `Deepseek_V3`, `Grok_4`
 
-## 🚀 启动应用
+## 🚀 Launch Application
 
-配置完成后，启动应用：
+After configuration, start the application:
 
 ```bash
-# 使用启动脚本（推荐）
+# Use launch script (recommended)
 ./run.sh
 
-# 或手动启动
+# Or start manually
 uv run streamlit run app.py --server.port 8501
 ```
 
-应用将自动在浏览器中打开：`http://localhost:8501`
+The application will automatically open in browser: `http://localhost:8501`
 
-## 📖 使用指南
+## 📖 Usage Guide
 
-应用提供两个主要标签页，对应不同的使用场景：
+The application provides two main tabs for different usage scenarios:
 
-### 🎨 标签页1：绘制曲线拟合
+### 🎨 Tab 1: Draw Curve Fitting
 
-这是最直观的使用方式，适合快速探索和教学演示。
+This is the most intuitive way to use, suitable for quick exploration and teaching demonstrations.
 
-#### 操作步骤
+#### Operation Steps
 
-1. **绘制曲线**
-   - 在左侧画布上绘制目标曲线
-   - 支持三种绘制模式：
-     - **自由绘制**: 手绘任意形状的曲线
-     - **直线**: 绘制直线段
-     - **点**: 逐点标记数据点
-   - 可调整线条宽度（1-10像素）
-   - 可开启**📷 传递图片**选项，将画布图像传递给支持视觉的模型（如 Gemini）
+1. **Draw Curves**
+   - Draw target curves on the left canvas
+   - Supports three drawing modes:
+     - **Free Drawing**: Hand-draw curves of any shape
+     - **Straight Line**: Draw line segments
+     - **Points**: Mark data points one by one
+   - Adjustable line width (1-10 pixels)
+   - Can enable **📷 Pass Image** option to pass canvas images to vision-capable models (like Gemini)
 
-2. **配置参数**（右侧边栏）
-   - **模型选择**: 推荐使用 `Gemini_2.5_Flash`（速度与质量平衡最佳）
-   - **函数配置**: 选择可用的数学函数
+2. **Configure Parameters** (Right sidebar)
+   - **Model Selection**: Recommend using `Gemini_2.5_Flash` (best balance of speed and quality)
+   - **Function Configuration**: Select available mathematical functions
      ```
-     基础函数: sin, cos, tan, exp, log, sqrt, abs
-     高级函数: sinh, cosh, tanh, asin, acos, atan
+     Basic functions: sin, cos, tan, exp, log, sqrt, abs
+     Advanced functions: sinh, cosh, tanh, asin, acos, atan
      ```
-   - **拟合参数调优**:
-     - **岛屿数量**: 3-8（推荐：5）- 并行搜索种群数
-     - **循环次数**: 3-10（推荐：5）- 进化代数
-     - **单元交互数**: 5-10（推荐：8）- 每代的 LLM 调用次数
-     - **目标分数**: 80.0（推荐）- 达到后提前停止
-   - **Fuzzy 模式**: 勾选启用自然语言理论描述辅助
+   - **Fitting Parameter Tuning**:
+     - **Number of Islands**: 3-8 (Recommended: 5) - Number of parallel search populations
+     - **Number of Cycles**: 3-10 (Recommended: 5) - Number of evolution generations
+     - **Unit Interactions**: 5-10 (Recommended: 8) - LLM calls per generation
+     - **Target Score**: 80.0 (Recommended) - Early stop when reached
+   - **Fuzzy Mode**: Check to enable natural language theory description assistance
 
-3. **数据预览**
-   - 右侧会显示提取的数据点信息
-   - 显示 X、Y 范围和数据点散布图
-   - 确认数据质量后再开始拟合
+3. **Data Preview**
+   - The right side displays extracted data point information
+   - Shows X, Y ranges and data point scatter plots
+   - Confirm data quality before starting fitting
 
-4. **执行拟合**
-   - 点击 **▶️ 开始拟合** 按钮
-   - 观察实时进度和日志输出
-   - 可在拟合过程中看到：
-     - 当前最佳分数和表达式
-     - 实时拟合曲线对比图
-     - API调用次数和运行时间
+4. **Execute Fitting**
+   - Click **▶️ Start Fitting** button
+   - Observe real-time progress and log output
+   - Can see during fitting process:
+     - Current best score and expression
+     - Real-time fitting curve comparison plots
+     - API call counts and runtime
 
-#### 拟合结果解析
+#### Fitting Results Interpretation
 
-拟合完成后，应用会显示：
+After fitting completion, the application displays:
 
-- **📊 拟合对比图**: 原始曲线 vs AI发现的拟合曲线
-- **📈 分数历史**: 显示拟合质量随迭代的改进过程
-- **📊 Pareto 前沿**: 分析表达式复杂度与精度的权衡
-- **📞 API 调用日志**: 详细的模型调用记录和性能统计
+- **📊 Fitting Comparison Plot**: Original curve vs AI-discovered fitting curve
+- **📈 Score History**: Shows fitting quality improvement over iterations
+- **📊 Pareto Front**: Analyzes trade-off between expression complexity and accuracy
+- **📞 API Call Log**: Detailed model call records and performance statistics
 
-### 📁 标签页2：上传文件拟合
+### 📁 Tab 2: File Upload Fitting
 
-这是专业用户的首选方式，支持复杂多维数据和物理单位验证。
+This is the preferred method for professional users, supporting complex multi-dimensional data and physical unit validation.
 
-#### 数据准备
+#### Data Preparation
 
-准备包含以下键的 NPZ 文件：
-- `'x'`: 输入特征，形状为 `(n_samples, n_features)`
-- `'y'`: 输出目标，形状为 `(n_samples,)`
-- `'error'`: 可选的误差数据，形状为 `(n_samples,)`
+Prepare NPZ files containing the following keys:
+- `'x'`: Input features, shape `(n_samples, n_features)`
+- `'y'`: Output targets, shape `(n_samples,)`
+- `'error'`: Optional error data, shape `(n_samples,)`
 
-Python 示例代码：
+Python example code:
 ```python
 import numpy as np
 
-# 生成示例数据：F = m * a (牛顿第二定律)
-m = np.random.uniform(1, 10, 100)  # 质量 kg
-a = np.random.uniform(0.5, 20, 100)  # 加速度 m/s^2
-F = m * a  # 力 N
-error = np.random.normal(0, 0.1, 100)  # 测量误差
+# Generate example data: F = m * a (Newton's second law)
+m = np.random.uniform(1, 10, 100)  # mass kg
+a = np.random.uniform(0.5, 20, 100)  # acceleration m/s^2
+F = m * a  # force N
+error = np.random.normal(0, 0.1, 100)  # measurement error
 
-# 保存为 NPZ 文件
-x = np.column_stack([m, a])  # 输入特征矩阵
-y = F  # 输出目标
+# Save as NPZ file
+x = np.column_stack([m, a])  # input feature matrix
+y = F  # output target
 np.savez('physics_data.npz', x=x, y=y, error=error)
 ```
 
-#### 操作步骤
+#### Operation Steps
 
-1. **上传数据文件**
-   - 点击 **选择 NPZ 文件** 上传数据
-   - 系统会自动验证数据格式
-   - 显示数据基本信息：样本数、特征数、是否包含误差
+1. **Upload Data File**
+   - Click **Choose NPZ File** to upload data
+   - System will automatically validate data format
+   - Display basic data information: number of samples, features, whether errors are included
 
-2. **变量配置**（关键步骤）
+2. **Variable Configuration** (Key step)
    
-   在 **⚙️ 变量配置** 区域设置：
+   Set in **⚙️ Variable Configuration** area:
    
-   **基本描述**:
-   - **输入描述**: 描述输入数据的物理意义
+   **Basic Description**:
+   - **Input Description**: Describe the physical meaning of input data
      ```
-     示例: "使用物体的质量和加速度来推导作用在物体上的力"
+     Example: "Use object's mass and acceleration to derive force acting on the object"
      ```
    
-   **输出变量**:
-   - **输出变量名称**: `F`
-   - **输出变量描述**: `力`  
-   - **输出变量单位**: `kg*m/s^2`
+   **Output Variables**:
+   - **Output Variable Name**: `F`
+   - **Output Variable Description**: `force`  
+   - **Output Variable Unit**: `kg*m/s^2`
    
-   **输入变量配置**:
-   针对每个输入特征配置：
-   - **变量名**: `m`, `a` (对应质量、加速度)
-   - **单位**: `kg`, `m/s^2`
-   - **描述**: `质量`, `加速度`
+   **Input Variable Configuration**:
+   Configure for each input feature:
+   - **Variable Name**: `m`, `a` (corresponding to mass, acceleration)
+   - **Unit**: `kg`, `m/s^2`
+   - **Description**: `mass`, `acceleration`
 
-3. **高级选项**
-   - **启用单位验证**: 勾选后进行量纲分析，确保生成的表达式在物理上正确
-   - 未勾选则跳过单位检查，适合纯数学拟合
+3. **Advanced Options**
+   - **Enable Unit Validation**: When checked, performs dimensional analysis to ensure generated expressions are physically correct
+   - Uncheck to skip unit checking, suitable for pure mathematical fitting
 
-4. **参数调优**
-   - 侧边栏参数与绘制模式相同
-   - 针对复杂数据，建议：
-     - 岛屿数量：6-8
-     - 循环次数：8-10  
-     - 启用 Fuzzy 模式
+4. **Parameter Tuning**
+   - Sidebar parameters same as drawing mode
+   - For complex data, recommend:
+     - Number of Islands: 6-8
+     - Number of Cycles: 8-10  
+     - Enable Fuzzy mode
 
-5. **执行和结果**
-   - 点击 **▶️ 开始拟合**
-   - 对于多维数据，结果显示为**预测vs实际**散点图
-   - 理想情况下点应分布在 y=x 直线附近
+5. **Execution and Results**
+   - Click **▶️ Start Fitting**
+   - For multi-dimensional data, results shown as **predicted vs actual** scatter plots
+   - Ideally, points should be distributed near the y=x line
 
-## ⚙️ 配置参数详解
+## ⚙️ Configuration Parameter Details
 
-### IdeaSearch 核心参数
+### IdeaSearch Core Parameters
 
 <TypeTable
   type={{
     island_num: {
-      description: '并行进化的岛屿数量，每个岛屿独立探索解空间',
+      description: 'Number of parallel evolution islands, each independently exploring solution space',
       type: 'number',
       default: 4,
     },
     cycle_num: {
-      description: '总循环次数，每个循环包含多个epoch的进化过程',
+      description: 'Total number of cycles, each cycle contains multiple epochs of evolution',
       type: 'number', 
       default: 4,
     },
     unit_interaction_num: {
-      description: '每个循环中的单元交互数，即每个循环调用LLM的次数',
+      description: 'Number of unit interactions per cycle, i.e., LLM calls per cycle',
       type: 'number',
       default: 6,
     },
     samplers_num: {
-      description: '采样器数量，用于生成新的表达式候选',
+      description: 'Number of samplers for generating new expression candidates',
       type: 'number',
       default: 3,
     },
     evaluators_num: {
-      description: '评估器数量，用于评估生成表达式的质量',
+      description: 'Number of evaluators for assessing quality of generated expressions',
       type: 'number', 
       default: 3,
     },
     sample_temperature: {
-      description: '采样温度，控制生成表达式的随机性和创造性',
+      description: 'Sampling temperature controlling randomness and creativity of generated expressions',
       type: 'number',
       default: 20.0,
     },
     shutdown_score: {
-      description: '目标分数阈值，达到此分数后自动停止拟合',
+      description: 'Target score threshold, automatically stops fitting when reached',
       type: 'number',
       default: 80.0,
     },
     hand_over_threshold: {
-      description: '岛屿间交换个体的阈值，用于种群多样性维护',
+      description: 'Threshold for exchanging individuals between islands, for maintaining population diversity',
       type: 'number',
       default: -0.1,
     },
   }}
 />
 
-### 画布配置参数
+### Canvas Configuration Parameters
 
 <TypeTable
   type={{
     width: {
-      description: '画布宽度（像素）',
+      description: 'Canvas width (pixels)',
       type: 'number',
       default: 600,
     },
     height: {
-      description: '画布高度（像素）',
+      description: 'Canvas height (pixels)',
       type: 'number',
       default: 400,
     },
     stroke_width: {
-      description: '默认线条宽度（像素）',
+      description: 'Default line width (pixels)',
       type: 'number',
       default: 3,
     },
     stroke_color: {
-      description: '线条颜色（十六进制）',
+      description: 'Line color (hexadecimal)',
       type: 'string',
       default: '#1f77b4',
     },
     background_color: {
-      description: '画布背景色（十六进制）',
+      description: 'Canvas background color (hexadecimal)',
       type: 'string',
       default: '#ffffff',
     },
   }}
 />
 
-### 数据处理参数
+### Data Processing Parameters
 
 <TypeTable
   type={{
     num_points: {
-      description: '插值后的数据点数量',
+      description: 'Number of data points after interpolation',
       type: 'number',
       default: 100,
     },
     x_min: {
-      description: '数据 X 轴最小值',
+      description: 'Minimum value of data X-axis',
       type: 'number',
       default: -10.0,
     },
     x_max: {
-      description: '数据 X 轴最大值',
+      description: 'Maximum value of data X-axis',
       type: 'number',
       default: 10.0,
     },
     smooth_data: {
-      description: '是否对画布数据进行平滑处理',
+      description: 'Whether to smooth canvas data',
       type: 'boolean',
       default: false,
     },
     interpolate_data: {
-      description: '是否对数据进行插值处理',
+      description: 'Whether to interpolate data',
       type: 'boolean',
       default: true,
     },
   }}
 />
 
-### Fitter 配置参数
+### Fitter Configuration Parameters
 
 <TypeTable
   type={{
     generate_fuzzy: {
-      description: '是否启用 Fuzzy 模式，先生成自然语言理论再转换为数学表达式',
+      description: 'Whether to enable Fuzzy mode, first generate natural language theory then convert to mathematical expressions',
       type: 'boolean', 
       default: true,
     },
     perform_unit_validation: {
-      description: '是否启用物理单位验证，确保表达式量纲正确',
+      description: 'Whether to enable physical unit validation, ensuring expressions have correct dimensions',
       type: 'boolean',
       default: false,
     },
     auto_polish: {
-      description: '是否启用自动润色功能，优化变量描述和表达式可读性',
+      description: 'Whether to enable automatic polishing, optimizing variable descriptions and expression readability',
       type: 'boolean',
       default: true,
     },
+    enable_mutation: {
+      description: 'Whether to enable expression mutation operations, increasing search diversity',
+      type: 'boolean',
+      default: false,
+    },
+    enable_crossover: {
+      description: 'Whether to enable expression crossover operations, combining different expression features',
+      type: 'boolean',
+      default: false,
+    },
+    optimization_method: {
+      description: 'Parameter optimization algorithm selection, L-BFGS-B suitable for smooth functions, differential-evolution for complex functions',
+      type: 'string',
+      default: 'L-BFGS-B',
+    },
+    optimization_trial_num: {
+      description: 'Number of parameter optimization trials per expression, reducing can significantly improve fitting speed (recommended: 5)',
+      type: 'number',
+      default: 5,
+    },
     metric_mapping: {
-      description: '评估度量映射方式，用于转换拟合误差为分数',
+      description: 'Evaluation metric mapping method, for converting fitting errors to scores',
       type: 'string',
       default: 'logarithm',
     },
     constant_whitelist: {
-      description: '允许使用的数学常量列表',
+      description: 'List of allowed mathematical constants',
       type: 'array',
       default: ['pi'],
     },
   }}
 />
 
-## 🎯 参数调优指南
+## 🎯 Parameter Tuning Guide
 
-### 关键参数说明
+### Key Parameter Explanations
 
-| 参数 | 推荐值 | 说明 | 调优建议 |
-|------|--------|------|----------|
-| **岛屿数量** | 3-8 | 并行进化种群数 | 增加提高多样性，但消耗更多 API |
-| **循环次数** | 3-10 | 进化代数 | 更多循环通常得到更好结果 |
-| **单元交互数** | 5-10 | 每循环的 LLM 调用次数 | 平衡探索深度与成本 |
-| **目标分数** | 80.0 | 自动停止阈值 | 根据精度要求调整（0-100） |
-| **采样温度** | 10-30 | 生成随机性控制 | 高温度增加创造性，低温度更稳定 |
+| Parameter | Recommended Value | Description | Tuning Suggestions |
+|-----------|------------------|-------------|-------------------|
+| **Number of Islands** | 3-8 | Number of parallel evolution populations | Increase improves diversity but consumes more API |
+| **Number of Cycles** | 3-10 | Number of evolution generations | More cycles usually yield better results |
+| **Unit Interactions** | 5-10 | LLM calls per cycle | Balance exploration depth and cost |
+| **Target Score** | 80.0 | Automatic stop threshold | Adjust based on accuracy requirements (0-100) |
+| **Sample Temperature** | 10-30 | Generation randomness control | High temperature increases creativity, low temperature more stable |
 
-## 🔧 故障排查
+## 🔧 Troubleshooting
 
-### 常见问题解决
+### Common Problem Solutions
 
-**Q: 应用启动失败？**
+**Q: Application fails to start?**
 ```bash
-# 检查Python版本（需要3.10+）
+# Check Python version (requires 3.10+)
 python --version
 
-# 重新安装依赖
+# Reinstall dependencies
 uv sync
 ```
 
-**Q: API调用失败？**
-1. 检查 `api_keys.json` 格式是否正确
-2. 确认 API 密钥有效且有余额
-3. 验证网络连接
-4. 检查模型名称是否与配置文件键名完全匹配
+**Q: API calls failing?**
+1. Check if `api_keys.json` format is correct
+2. Confirm API keys are valid and have balance
+3. Verify network connection
+4. Check if model names exactly match configuration file key names
 
-**Q: 拟合结果不理想？**
-1. **增加搜索强度**: 提高岛屿数量和循环次数
-2. **启用 Fuzzy 模式**: 使用自然语言理论描述
-3. **尝试不同模型**: GPT-4o 通常比 Mini 版本效果更好
-4. **优化数据质量**: 确保画布曲线清晰、数据分布均匀
-5. **调整函数库**: 根据预期函数类型选择合适的基础函数
+**Q: Fitting results unsatisfactory?**
+1. **Increase search intensity**: Raise number of islands and cycles
+2. **Enable Fuzzy mode**: Use natural language theory descriptions
+3. **Try different models**: GPT-4o usually performs better than Mini versions
+4. **Optimize data quality**: Ensure canvas curves are clear and data is evenly distributed
+5. **Adjust function library**: Choose appropriate basic functions based on expected function types
 
-**Q: 内存或性能问题？**
-1. 降低岛屿数量和循环次数
-2. 使用更轻量级的模型
-3. 减少数据点数量
-4. 关闭一些不必要的可视化
+**Q: Memory or performance issues?**
+1. Lower number of islands and cycles
+2. Use more lightweight models
+3. Reduce number of data points
+4. Turn off some unnecessary visualizations
 
-### 日志查看
+### Log Viewing
 
-应用会在 `logs/` 目录下自动保存详细日志：
+The application automatically saves detailed logs in the `logs/` directory:
 ```
 logs/
-├── fit_20231208_143022/    # 拟合过程日志
-├── db_20231208_143022/     # IdeaSearcher 数据库文件
+├── fit_20231208_143022/    # Fitting process logs
+├── db_20231208_143022/     # IdeaSearcher database files
 └── ...
 ```
 
-每次拟合都会创建带时间戳的独立目录，包含：
-- 完整的拟合过程记录
-- API 调用详情
-- 错误信息和调试输出
-- 最佳表达式和 Pareto 前沿数据
+Each fitting creates an independent timestamped directory containing:
+- Complete fitting process records
+- API call details
+- Error messages and debug output
+- Best expressions and Pareto front data
 
-## 📚 技术架构
+## 📚 Technical Architecture
 
-### 核心组件
+### Core Components
 
-- **Streamlit**: Web 应用框架
-- **IdeaSearch-framework**: 核心优化引擎  
-- **IdeaSearch-fit**: 符号回归适配器
-- **streamlit-drawable-canvas**: 绘图画布组件
+- **Streamlit**: Web application framework
+- **IdeaSearch-framework**: Core optimization engine  
+- **IdeaSearch-fit**: Symbolic regression adapter
+- **streamlit-drawable-canvas**: Drawing canvas component
 
-### 数据流
+### Data Flow
 
 ```
-用户输入(画布/文件) → 数据预处理 → IdeaSearchFitter → IdeaSearcher → LLM调用 → 表达式生成 → 评估筛选 → 结果展示
+User Input (Canvas/File) → Data Preprocessing → IdeaSearchFitter → IdeaSearcher → LLM Calls → Expression Generation → Evaluation and Selection → Result Display
 ```
 
-### 文件结构
+### File Structure
 
 <Files>
-  <File name="app.py">主应用入口，包含两个标签页的完整界面</File>
+  <File name="app.py">Main application entry, contains complete interface for both tabs</File>
   <Folder name="src" defaultOpen>
     <Folder name="components">
-      <File name="canvas.py">交互式绘图画布组件，支持数据提取和处理</File>
-      <File name="config.py">侧边栏配置界面组件，管理所有参数设置</File>
-      <File name="results.py">结果可视化和日志展示组件</File>
+      <File name="canvas.py">Interactive drawing canvas component, supports data extraction and processing</File>
+      <File name="config.py">Sidebar configuration interface component, manages all parameter settings</File>
+      <File name="results.py">Result visualization and log display component</File>
     </Folder>
     <Folder name="core">
-      <File name="fitting.py">FittingEngine 拟合引擎核心逻辑</File>
+      <File name="fitting.py">FittingEngine fitting engine core logic</File>
     </Folder>
     <Folder name="config">
-      <File name="default.yaml">默认参数配置文件</File>
+      <File name="default.yaml">Default parameter configuration file</File>
     </Folder>
   </Folder>
   <Folder name="logs">
-    <File name="fit_YYYYMMDD_HHMMSS/">每次拟合的详细日志目录</File>
-    <File name="db_YYYYMMDD_HHMMSS/">IdeaSearcher 数据库文件目录</File>
+    <File name="fit_YYYYMMDD_HHMMSS/">Detailed log directory for each fitting</File>
+    <File name="db_YYYYMMDD_HHMMSS/">IdeaSearcher database file directory</File>
   </Folder>
-  <File name="api_keys.json">API 密钥配置文件（需手动创建）</File>
-  <File name="api_keys.json.example">API 密钥配置示例文件</File>
-  <File name="pyproject.toml">uv 项目依赖配置</File>
-  <File name="run.sh">启动脚本</File>
-  <File name="README.md">项目说明文档</File>
-  <File name="ARCHITECTURE.md">项目架构文档</File>
+  <File name="api_keys.json">API key configuration file (needs manual creation)</File>
+  <File name="api_keys.json.example">API key configuration example file</File>
+  <File name="pyproject.toml">uv project dependency configuration</File>
+  <File name="run.sh">Launch script</File>
+  <File name="README.md">Project documentation</File>
+  <File name="ARCHITECTURE.md">Project architecture documentation</File>
 </Files>
 
-## 🚀 高级特性
+## 🚀 Advanced Features
 
-### Fuzzy 模式
+### Fuzzy Mode
 
-Fuzzy 模式是 IdeaSearch 的独特功能，它首先让 LLM 生成自然语言的理论描述，然后将其转换为数学表达式：
+Fuzzy mode is a unique feature of IdeaSearch that first lets LLM generate natural language theory descriptions, then converts them to mathematical expressions:
 
-1. **理论生成**: LLM 分析数据特征，生成物理或数学理论假设
-2. **表达式转换**: 将自然语言理论转换为具体的数学公式
-3. **迭代优化**: 基于拟合结果继续完善理论和表达式
+1. **Theory Generation**: LLM analyzes data characteristics and generates physical or mathematical theory hypotheses
+2. **Expression Conversion**: Convert natural language theories to specific mathematical formulas
+3. **Iterative Optimization**: Continue refining theories and expressions based on fitting results
 
-适用场景：
-- 物理定律发现
-- 复杂非线性关系建模  
-- 需要可解释性的符号回归
+Applicable scenarios:
+- Physical law discovery
+- Complex nonlinear relationship modeling  
+- Symbolic regression requiring interpretability
 
-### 物理单位验证
+### Physical Unit Validation
 
-启用单位验证后，系统会：
+When unit validation is enabled, the system will:
 
-1. **量纲分析**: 检查表达式的量纲一致性
-2. **单位推导**: 验证输出单位是否与预期一致
-3. **建议修正**: 对不符合单位的表达式提供修正建议
+1. **Dimensional Analysis**: Check dimensional consistency of expressions
+2. **Unit Derivation**: Verify if output units match expectations
+3. **Correction Suggestions**: Provide correction suggestions for expressions that don't conform to units
 
-这确保了生成的表达式在物理上是有意义的。
+This ensures generated expressions are physically meaningful.
 
-### 岛屿进化算法
+### Island Evolution Algorithm
 
-- **并行搜索**: 多个"岛屿"同时进化不同的表达式族群
-- **种群交换**: 岛屿间定期交换优秀个体
-- **多样性保持**: 避免过早收敛到局部最优解
+- **Parallel Search**: Multiple "islands" simultaneously evolve different expression populations
+- **Population Exchange**: Islands periodically exchange excellent individuals
+- **Diversity Maintenance**: Avoid premature convergence to local optima
 
-### Pareto 前沿优化
+### Pareto Front Optimization
 
-平衡两个目标：
-- **拟合精度**: 表达式与数据的匹配程度
-- **表达式复杂度**: 公式的简洁性
+Balances two objectives:
+- **Fitting Accuracy**: Degree of expression matching with data
+- **Expression Complexity**: Simplicity of formulas
 
-帮助用户在精度和可解释性之间找到最佳平衡点。
+Helps users find optimal balance between accuracy and interpretability.
 
-## 📈 性能优化建议
+## 📈 Performance Optimization Suggestions
 
-1. **模型选择**: Gemini 2.5 Flash 提供最佳性价比
-2. **批处理**: 使用较大的单元交互数减少网络开销
-3. **缓存**: 系统自动缓存中间结果
-4. **并行**: 岛屿算法天然支持并行计算
-5. **早停**: 设置合理的目标分数避免过度拟合
+1. **Model Selection**: Gemini 2.5 Flash provides best cost-effectiveness
+2. **Batch Processing**: Use larger unit interaction numbers to reduce network overhead
+3. **Caching**: System automatically caches intermediate results
+4. **Parallelization**: Island algorithm naturally supports parallel computing
+5. **Early Stopping**: Set reasonable target scores to avoid overfitting
 
-## 🤝 贡献与反馈
+## 🤝 Contribution and Feedback
 
-遇到问题或有改进建议？
-- 📋 查看 [GitHub Issues](https://github.com/IdeaSearch/ideasearch-fit-demo/issues)
-- 🆕 [创建新 Issue](https://github.com/IdeaSearch/ideasearch-fit-demo/issues/new)
-- 📧 联系开发团队
+Encountering problems or have improvement suggestions?
+- 📋 Check [GitHub Issues](https://github.com/IdeaSearch/ideasearch-fit-demo/issues)
+- 🆕 [Create New Issue](https://github.com/IdeaSearch/ideasearch-fit-demo/issues/new)
+- 📧 Contact development team
 
 ---
 
-**🎯 开始探索 AI 驱动的符号回归吧！**
+**🎯 Start exploring AI-driven symbolic regression!**
 
-*让大语言模型驱动研究，促进科学发现*
+*Let large language models drive research and promote scientific discovery*

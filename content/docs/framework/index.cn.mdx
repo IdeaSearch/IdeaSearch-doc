@@ -1,0 +1,75 @@
+---
+title: IdeaSearch 文档
+description: IdeaSearch 框架和工具的完整文档首页
+---
+
+import { Cards, Card } from 'fumadocs-ui/components/card';
+import { DynamicLink } from 'fumadocs-core/dynamic-link';
+import { FileCode2Icon, BrainCircuitIcon, PlayCircleIcon } from 'lucide-react';
+
+# 🌟 欢迎使用 IdeaSearch
+
+IdeaSearch 是一个基于大语言模型的智能搜索和优化框架，专为科学计算和数据发现而设计。通过结合先进的人工智能技术与传统优化算法，IdeaSearch 能够自动发现数据中的模式、规律和数学表达式。
+
+## 📖 项目概述
+
+IdeaSearch 项目的计划是打造一个成熟的生态系统，目前共有两部分：
+
+- **IdeaSearch Framework**: 核心框架，提供基于LLM的智能搜索引擎
+- **IdeaSearch Fitter**: 专业的符号回归工具，用于自动发现数学公式
+
+无论您是科研工作者、数据科学家，还是教育工作者，IdeaSearch 都能帮助您从数据中挖掘深层次的洞察和知识。
+
+## 🚀 快速开始
+
+选择您感兴趣的内容开始探索：
+
+<Cards>
+  <Card 
+    icon={<BrainCircuitIcon className="text-blue-500" />} 
+    title="Framework 概览"
+  >
+    了解 IdeaSearch 核心框架的架构设计、工作原理和核心概念
+    <DynamicLink href="/[lang]/docs/framework/framework">开始使用</DynamicLink>
+  </Card>
+  
+  <Card 
+    icon={<FileCode2Icon className="text-green-500" />} 
+    title="Fitter 概览"
+  >
+    探索智能符号回归工具，学习如何使用AI自动发现数学表达式
+    <DynamicLink href="/[lang]/docs/fitter/fitter">了解更多</DynamicLink>
+  </Card>
+  
+  <Card 
+    icon={<PlayCircleIcon className="text-purple-500" />} 
+    title="实时演示"
+  >
+    完整的演示示例，快速了解如何使用 IdeaSearch Fitter 进行符号回归
+    <DynamicLink href="/[lang]/docs/fitter/demo">试用演示</DynamicLink>
+  </Card>
+</Cards>
+
+## ✨ 主要特性
+
+- 🤖 **AI驱动**: 能够接入GPT、Gemini等先进大语言模型
+- 🔬 **科学计算**: 专为科研和数据分析场景优化
+- 🎯 **自动发现**: 智能识别数据中的数学规律和物理定律
+- 🌍 **开源**: 完全开源，支持社区贡献
+- 📊 **可视化**: 丰富的图表和实时反馈
+- 🔧 **易于集成**: 简洁的API设计，易于集成到现有项目
+
+## 📚 IdeaSearch 文档
+
+import { getPageTreePeers } from "fumadocs-core/page-tree";
+import { source } from "@/lib/source";
+
+
+<Cards>
+  {getPageTreePeers(source.pageTree, "/cn/docs/framework").map((peer) => (
+    <Card key={peer.url} title={peer.name} href={peer.url}>
+      {peer.description}
+      
+    </Card>
+  ))}
+</Cards>

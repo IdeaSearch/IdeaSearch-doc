@@ -1,5 +1,6 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
+import { i18n } from "@/lib/i18n";
 
 /**
  * Shared layout configurations
@@ -8,8 +9,9 @@ import Image from "next/image";
  * Home Layout: app/(home)/layout.tsx
  * Docs Layout: app/docs/layout.tsx
  */
-export function baseOptions(): BaseLayoutProps {
+export function baseOptions(locale: string): BaseLayoutProps {
   return {
+    i18n,
     nav: {
       title: (
         <>
@@ -19,9 +21,10 @@ export function baseOptions(): BaseLayoutProps {
             width={24}
             height={24}
           />
-          IdeaSearch
+          IdeaSearch {locale}
         </>
       ),
+      url: locale === "cn" ? "/cn" : "/en",
     },
     // see https://fumadocs.dev/docs/ui/navigation/links
     links: [],

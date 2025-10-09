@@ -1,15 +1,75 @@
 ---
-title: Overview
-description: IdeaSearch 文档概览
+title: IdeaSearch Documentation
+description: Complete documentation homepage for IdeaSearch framework and tools
 ---
 
-import { getPageTreePeers } from "fumadocs-core/server";
-import { source } from "@/lib/source";
+import { Cards, Card } from 'fumadocs-ui/components/card';
+import { DynamicLink } from 'fumadocs-core/dynamic-link';
+import { FileCode2Icon, BrainCircuitIcon, PlayCircleIcon } from 'lucide-react';
+
+# 🌟 Welcome to IdeaSearch
+
+IdeaSearch is an intelligent search and optimization framework based on large language models, designed specifically for scientific computing and data discovery. By combining advanced artificial intelligence technology with traditional optimization algorithms, IdeaSearch can automatically discover patterns, rules, and mathematical expressions in data.
+
+## 📖 Project Overview
+
+The IdeaSearch project aims to build a mature ecosystem and currently consists of two parts:
+
+- **IdeaSearch Framework**: The core framework providing LLM-based intelligent search engine
+- **IdeaSearch Fitter**: A professional symbolic regression tool for automatically discovering mathematical formulas
+
+Whether you are a researcher, data scientist, or educator, IdeaSearch can help you extract deep insights and knowledge from data.
+
+## 🚀 Quick Start
+
+Choose the content you're interested in to start exploring:
 
 <Cards>
-  {getPageTreePeers(source.pageTree, "/docs/framework").map((peer) => (
+  <Card 
+    icon={<BrainCircuitIcon className="text-blue-500" />} 
+    title="Framework Overview"
+  >
+    Learn about the architecture design, working principles, and core concepts of the IdeaSearch framework
+    <DynamicLink href="/[lang]/docs/framework/framework">Get Started</DynamicLink>
+  </Card>
+  
+  <Card 
+    icon={<FileCode2Icon className="text-green-500" />} 
+    title="Fitter Overview"
+  >
+    Explore the intelligent symbolic regression tool and learn how to use AI to automatically discover mathematical expressions
+    <DynamicLink href="/[lang]/docs/fitter/fitter">Learn More</DynamicLink>
+  </Card>
+  
+  <Card 
+    icon={<PlayCircleIcon className="text-purple-500" />} 
+    title="Live Demo"
+  >
+    Complete demonstration examples to quickly understand how to use IdeaSearch Fitter for symbolic regression
+    <DynamicLink href="/[lang]/docs/fitter/demo">Try Demo</DynamicLink>
+  </Card>
+</Cards>
+
+## ✨ Key Features
+
+- 🤖 **AI-Driven**: Can integrate with advanced large language models like GPT, Gemini, etc.
+- 🔬 **Scientific Computing**: Optimized specifically for research and data analysis scenarios
+- 🎯 **Auto Discovery**: Intelligently identifies mathematical patterns and physical laws in data
+- 🌍 **Open Source**: Completely open source with community contribution support
+- 📊 **Visualization**: Rich charts and real-time feedback
+- 🔧 **Easy Integration**: Clean API design, easy to integrate into existing projects
+
+## 📚 Documentation of IdeaSearch
+
+import { getPageTreePeers } from "fumadocs-core/page-tree";
+import { source } from "@/lib/source";
+
+
+<Cards>
+  {getPageTreePeers(source.pageTree, "/en/docs/framework").map((peer) => (
     <Card key={peer.url} title={peer.name} href={peer.url}>
       {peer.description}
+      
     </Card>
   ))}
 </Cards>
