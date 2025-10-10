@@ -21,7 +21,7 @@ export function baseOptions(locale: string): BaseLayoutProps {
             width={24}
             height={24}
           />
-          IdeaSearch {locale}
+          IdeaSearch
         </>
       ),
       url: locale === "cn" ? "/cn" : "/en",

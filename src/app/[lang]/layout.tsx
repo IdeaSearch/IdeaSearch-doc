@@ -16,7 +16,7 @@ const { provider } = defineI18nUI(i18n, {
       displayName: 'English',
     },
     cn: {
-      displayName: 'Chinese',
+      displayName: '简体中文',
       search: '搜索文档',
       searchNoResult: "没有找到相关文档",
       toc: "目录",

@@ -1,6 +1,7 @@
 "use client";
 
 import { MeshGradient } from "@paper-design/shaders-react";
+import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
@@ -65,7 +66,7 @@ export function HeroSection({
     cn: {
       title: "优化创新 突破边界",
       highlightText: "IdeaSearch",
-      description: "基于大语言模型的多岛并行搜索系统，通过进化算法和智能评估机制，帮助科研和教育领域发现突破创新",
+      description: "基于大语言模型的多岛并行搜索系统，通过进化算法和智能评估机制，帮助科研和教育领域实现创新",
       buttonText: "开始探索",
       readMoreText: "阅读文章"
     }
@@ -168,12 +169,14 @@ export function HeroSection({
             >
               {displayButtonText}
             </button>
-            <a
-              href="/"
+            <Link
+              href="https://arxiv.org/abs/2510.08317"
               className="px-6 py-2 sm:px-10 sm:py-3 rounded-full border-2 border-foreground/20 dark:border-white/30 text-foreground dark:text-white hover:border-foreground/40 dark:hover:border-white/50 font-semibold text-base md:text-lg transition-all duration-300 backdrop-blur-sm"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               {displayReadMoreText}
-            </a>
+            </Link>
           </div>
         </div>
       </div>
