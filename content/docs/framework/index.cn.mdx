@@ -5,7 +5,7 @@ description: IdeaSearch 框架和工具的完整文档首页
 
 import { Cards, Card } from 'fumadocs-ui/components/card';
 import { DynamicLink } from 'fumadocs-core/dynamic-link';
-import { FileCode2Icon, BrainCircuitIcon, PlayCircleIcon } from 'lucide-react';
+import { FileCode2Icon, BrainCircuitIcon, PlayCircleIcon, GithubIcon, CodeIcon } from 'lucide-react';
 
 # 🌟 欢迎使用 IdeaSearch
 
@@ -47,6 +47,22 @@ IdeaSearch 项目的计划是打造一个成熟的生态系统，目前共有两
   >
     完整的演示示例，快速了解如何使用 IdeaSearch Fitter 进行符号回归
     <DynamicLink href="/[lang]/docs/fitter/demo">试用演示</DynamicLink>
+  </Card>
+
+  <Card 
+    icon={<GithubIcon className="text-gray-700" />} 
+    title="IdeaSearch 框架"
+  >
+    访问 GitHub 上的主要框架仓库，探索源代码、参与贡献并获取最新版本
+    <DynamicLink href="https://github.com/IdeaSearch/IdeaSearch-framework">查看 GitHub</DynamicLink>
+  </Card>
+
+  <Card 
+    icon={<CodeIcon className="text-orange-500" />} 
+    title="IdeaSearch 拟合工具"
+  >
+    访问符号回归拟合工具仓库，用于高级数学表达式发现
+    <DynamicLink href="https://github.com/IdeaSearch/IdeaSearch-fit">查看 GitHub</DynamicLink>
   </Card>
 </Cards>
 

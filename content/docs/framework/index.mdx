@@ -5,7 +5,7 @@ description: Complete documentation homepage for IdeaSearch framework and tools
 
 import { Cards, Card } from 'fumadocs-ui/components/card';
 import { DynamicLink } from 'fumadocs-core/dynamic-link';
-import { FileCode2Icon, BrainCircuitIcon, PlayCircleIcon } from 'lucide-react';
+import { FileCode2Icon, BrainCircuitIcon, PlayCircleIcon, GithubIcon, CodeIcon } from 'lucide-react';
 
 # 🌟 Welcome to IdeaSearch
 
@@ -47,6 +47,22 @@ Choose the content you're interested in to start exploring:
   >
     Complete demonstration examples to quickly understand how to use IdeaSearch Fitter for symbolic regression
     <DynamicLink href="/[lang]/docs/fitter/demo">Try Demo</DynamicLink>
+  </Card>
+
+  <Card 
+    icon={<GithubIcon className="text-gray-700" />} 
+    title="IdeaSearch Framework"
+  >
+    Visit the main framework repository on GitHub to explore source code, contribute, and access the latest releases
+    <DynamicLink href="https://github.com/IdeaSearch/IdeaSearch-framework">View on GitHub</DynamicLink>
+  </Card>
+
+  <Card 
+    icon={<CodeIcon className="text-orange-500" />} 
+    title="IdeaSearch Fit"
+  >
+    Access the symbolic regression fitting tool repository for advanced mathematical expression discovery
+    <DynamicLink href="https://github.com/IdeaSearch/IdeaSearch-fit">View on GitHub</DynamicLink>
   </Card>
 </Cards>
 
