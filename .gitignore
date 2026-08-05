@@ -10,9 +10,6 @@
 /AGENTS.md
 /CLAUDE.md
 
-# local handoff packages, not part of the site
-/handoff
-
 # test & build
 /coverage
 /.next/
