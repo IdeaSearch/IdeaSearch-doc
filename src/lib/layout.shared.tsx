@@ -1,6 +1,6 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
-import { i18n } from "@/lib/i18n";
+import { repoUrl } from "@/lib/repo";
 
 /**
  * Shared layout configurations
@@ -11,7 +11,6 @@ import { i18n } from "@/lib/i18n";
  */
 export function baseOptions(locale: string): BaseLayoutProps {
   return {
-    i18n,
     nav: {
       title: (
         <>
@@ -28,6 +27,6 @@ export function baseOptions(locale: string): BaseLayoutProps {
     },
     // see https://fumadocs.dev/docs/ui/navigation/links
     links: [],
-    githubUrl: "https://github.com/IdeaSearch/IdeaSearch-doc",
+    githubUrl: repoUrl,
   };
 }

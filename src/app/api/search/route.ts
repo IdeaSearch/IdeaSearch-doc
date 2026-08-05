@@ -1,7 +1,6 @@
 import { createFromSource } from "fumadocs-core/search/server";
 import { source } from "@/lib/source";
 
-export const { GET } = createFromSource(source, {
-  // https://docs.orama.com/docs/orama-js/supported-languages
-  language: "english",
-});
+// defaults to the `multilingual` tokenizer, which handles both `en` and `cn`
+// content with no extra config
+export const { GET } = createFromSource(source);

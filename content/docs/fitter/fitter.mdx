@@ -7,7 +7,7 @@ import { GithubInfo } from "fumadocs-ui/components/github-info";
 
 <GithubInfo owner="IdeaSearch" repo="IdeaSearch-fit" />
 
-# About IdeaSearch-fit
+# IdeaSearch-fit
 
 ## Quick Start
 
@@ -19,50 +19,61 @@ pip install IdeaSearch-fit
 
 ## Project Overview
 
-`IdeaSearch-fit` is a **scientific formula discovery tool focused on symbolic regression, built upon the `IdeaSearch` framework**. It provides the `IdeaSearchFitter` class, which is designed as a highly integrated "Helper" object that seamlessly interfaces with `IdeaSearch` via the `bind_helper` method. `IdeaSearch-fit` integrates the dual capabilities of evolutionary computation and large language models to automatically discover underlying mathematical expressions from experimental or simulation data.
+`IdeaSearch-fit` is a symbolic-regression application for the [`IdeaSearch`](https://github.com/IdeaSearch/IdeaSearch-framework) framework. It provides `IdeaSearchFitter`, a Helper object that configures formula generation, numerical parameter fitting, evaluation, and result reporting before being attached to an `IdeaSearcher` with `bind_helper()`.
 
-The core task of `IdeaSearch-fit` is to solve the symbolic regression problem: given a set of input data $(X)$ and a corresponding output $(y)$, the system performs an evolutionary search to find a mathematical formula $f(X)$ that is both accurate in describing the relationship and parsimonious in its complexity. Therefore, it is more than just a data fitting tool; its ultimate goal is to be an exploratory framework capable of uncovering the physical laws or mathematical patterns behind the data.
+## Scope
 
-## Core Methodology: Combining Heuristic Search and Numerical Optimization
+Use this package to generate and compare candidate expressions for data `X` and targets `y`, including experiments on how semantic context or `IdeaSearch` search settings affect the result. The package reports numerical fit quality and expression complexity; it does not establish physical interpretation, causal validity, robustness, or extrapolation. Validate selected expressions with held-out data and domain-specific checks.
 
-The core of `IdeaSearch-fit` lies in its hybrid workflow, which combines the macroscopic structural exploration of Large Language Models (LLMs) with the microscopic parameter optimization of traditional numerical methods:
+## Configuration Model
 
-1.  **Phase 1: Ansatz Search via Large Language Models**
-    This phase leverages the **instruction-following and pattern-recognition capabilities of LLMs to conduct a heuristic search for candidate formulas** within a space composed of mathematical symbols, physical concepts, and natural language. Guided by user-provided data features, physical units, and optional theoretical context, the LLM generates a series of structurally sound candidate mathematical expressions (i.e., "ansatze"). This is a macroscopic, exploratory process of structure generation.
+| Stage | Main configuration or interface | Result |
+| --- | --- | --- |
+| Data | `data`, `data_path`, `result_path` | Input arrays and output directory |
+| Semantic context | `variable_names`, `output_name`, units, descriptions, `auto_polish` | Prompt context for candidate generation |
+| Expression grammar | `functions`, `constant_whitelist`, `constant_map` | Allowed symbols in executable expressions |
+| Generation mode | `generate_fuzzy`, `fuzzy_translator` | Direct expressions or hypothesis-to-expression translation |
+| Numerical evaluation | `optimization_method`, `optimization_trial_num`, metric-mapping settings | Fitted parameters and candidate scores |
+| Agent loop | `IdeaSearcher.bind_helper()`, model, memory, island, migration, and budget settings | Iterative candidate generation and evaluation |
+| Result access | `get_best_fit()`, `get_pareto_frontier()` | Best numerical fit and accuracy–complexity trade-off |
 
-2.  **Phase 2: Parameter Fitting via Numerical Optimization**
-    Once a promising ansatz is generated (e.g., `param1 * sin(param2 * x)`), the `IdeaSearchFitter` instance immediately employs **user-specified traditional numerical optimization algorithms (e.g., `L-BFGS-B` or `differential-evolution`)** to precisely solve for the optimal values of the undetermined parameters (`param1`, `param2`, etc.). This is a deterministic, microscopic process of parameter fitting, designed to accurately evaluate the fitting capability of each candidate structure.
+To compare search configurations, keep the data, expression grammar, metric, numerical optimizer, model version, and random settings fixed unless they are the variables being tested.
 
-This workflow, where the "LLM explores structures and numerical optimization solves for parameters," integrates the structural generation capabilities of modern AI with the precise computational power of classical algorithms, forming the foundation of `IdeaSearch-fit`.
+## Processing Pipeline
+
+`IdeaSearch-fit` evaluates a candidate in two stages:
+
+1. **Candidate structure generation**: the LLM receives the configured data summary, variable metadata, optional domain descriptions, and expression grammar. It returns an expression directly, or a natural-language hypothesis followed by an expression when `generate_fuzzy=True`.
+2. **Parameter fitting and scoring**: the expression is parsed, its free parameters are fitted with `L-BFGS-B` or `differential-evolution`, and the configured metric is mapped to an `IdeaSearch` score.
+
+Only expressions that pass parsing and enabled validation checks enter the reported results.
 
 ## Core Input and Output
-
-From a user's perspective, the workflow of `IdeaSearch-fit` is designed to be exceptionally direct:
 
 **Core Input:**
 
 - **`X`**: Input data (independent variables, multi-dimensional support).
 - **`y`**: Target data (dependent variable, one-dimensional).
-- **`error`** (Optional): The measurement error for each data point in `y`. Providing errors is fundamental for rigorous scientific data fitting, as it enables the use of more robust metrics like the reduced chi-squared statistic.
+- **`error`** (Optional): Measurement uncertainty for each value in `y`. When supplied, it is used by the uncertainty-weighted fit metric; otherwise the fitter uses mean squared error.
 
 **Core Output:**
 
-- **A Pareto Frontier**. The system's output is not a single "best" formula but a set of solutions. Each formula in this set represents the optimal accuracy for its respective level of complexity, allowing the user to make a trade-off between the model's **simplicity** and **precision** that best suits their domain requirements.
+- A Pareto frontier containing the retained accuracy–complexity trade-off, together with access to the current best numerical fit.
 
 ## Key Features
 
-- **Evolutionary Symbolic Regression**: Leverages the multi-island parallel evolution framework of `IdeaSearch` as its core engine to efficiently search the vast space of mathematical expressions for optimal fitting formulas.
+- **Evolutionary Symbolic Regression**: Uses the multi-island evolution framework of `IdeaSearch` to explore candidate mathematical expressions.
 
-- **Pareto-Optimal Frontier**: `IdeaSearch-fit` does not seek a single best fit but simultaneously optimizes two competing objectives: **accuracy (Metric) and simplicity (Complexity)**. It generates a **Pareto Frontier** report, providing a suite of optimal solutions at various complexity-accuracy trade-offs for in-depth analysis.
+- **Pareto Frontier**: Reports retained candidates across the configured accuracy–complexity trade-off.
 
-- **Rigorous Dimensional Analysis**: Includes a built-in unit validation module (`unit_validator`) that performs strict physical unit checks during the formula evolution process. This feature is crucial for scientific and engineering domains, ensuring that the generated formulas are valid not only numerically but also physically.
+- **Dimensional Consistency Checks**: Checks physical dimensions when unit validation is enabled. Dimensional consistency is a constraint, not proof of physical correctness.
 
 - **Dual-Mode Formula Generation**:
 
   - **Precise Generation**: Directly generates and evolves mathematical expressions that strictly adhere to a specific computational syntax.
-  - **Fuzzy Generation**: First, an LLM acts as a scientist to propose a **natural language theory** about the underlying patterns in the data. Then, another LLM agent translates this theory into a strict mathematical expression. This innovative two-stage approach allows for the infusion of richer prior knowledge and creative insights.
+  - **Fuzzy Generation**: First, an LLM proposes a natural-language hypothesis about patterns in the data. Another LLM agent then translates the hypothesis into a strict mathematical expression.
 
-- **Automated Semantic Polishing**: Users need only provide basic variable names and units, and the system can invoke an LLM to automatically infer and complete descriptions of the physical meaning of all inputs and outputs. This information is then used to construct more semantically rich prompts, guiding `IdeaSearch` toward a more intelligent exploration.
+- **Automated Semantic Polishing**: The system can invoke an LLM to propose descriptions of the inputs and outputs for the search prompt.
 
 - **Seamless Integration and Automation**: As a highly integrated module for `IdeaSearch`, the `IdeaSearchFitter` class only needs to be initialized once. It then automatically configures all the necessary core components for `IdeaSearch`, including the evaluation function (`evaluate_func`), prompts (`prologue_section`, `epilogue_section`), and mutation/crossover operators (`mutation_func`, `crossover_func`).
 
@@ -105,13 +116,13 @@ All configurations for an `IdeaSearchFitter` instance are set in its `__init__` 
 - **`output_name`**: `Optional[str]`
   - The name of the output variable (e.g., `"energy"`).
 - **`perform_unit_validation`**: `bool` (Default: `False`)
-  - **[Master Switch]** Whether to enable strict physical dimensional analysis.
+  - Whether to enable dimensional consistency checks.
 - **`variable_units`**: `Optional[List[str]]`
   - A list of units corresponding to `variable_names` (e.g., `["kg", "m s^-1"]`). Required when `perform_unit_validation` is `True`.
 - **`output_unit`**: `Optional[str]`
   - The unit of the output variable (e.g., `"J"` or `"kg m^2 s^-2"`). Required when `perform_unit_validation` is `True`.
 - **`auto_polish`**: `bool` (Default: `True`)
-  - Whether to automatically invoke an LLM to infer and generate descriptions for the physical meaning of variables to enrich prompts.
+  - Whether to invoke an LLM to propose variable and output descriptions for the search prompt.
 - **`auto_polisher`**: `Optional[str]`
   - The name of the LLM model to use for the `auto_polish` task. If `None`, an available model is selected automatically.
 - **`input_description`**, **`variable_descriptions`**, **`output_description`**: `Optional[str]`
@@ -156,7 +167,7 @@ All configurations for an `IdeaSearchFitter` instance are set in its `__init__` 
 ### 6\. Miscellaneous
 
 - **`seed`**: `Optional[int]`
-  - A random seed to ensure the reproducibility of results.
+  - Seed for the fitter's local random-number generator. Repeating a complete run also requires fixed model versions, API settings, and `IdeaSearch` configuration.
 
 ## Workflow
 

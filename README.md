@@ -1,45 +1,65 @@
-# ideasearch-doc
+# IdeaSearch Documentation
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+This repository contains the Next.js/Fumadocs source for [ideasearch.cn](https://www.ideasearch.cn/), the bilingual documentation site for the [IdeaSearch framework](https://github.com/IdeaSearch/IdeaSearch-framework) and [IdeaSearch-fit](https://github.com/IdeaSearch/IdeaSearch-fit).
 
-Run development server:
+## Documentation Scope
+
+- `content/docs/framework/` documents the `IdeaSearcher` generation–evaluation loop, configuration, persistence, and multi-island execution.
+- `content/docs/fitter/` documents symbolic-regression setup, formula evaluation, and result retrieval through `IdeaSearchFitter`.
+- English pages use `.mdx`; Simplified Chinese pages use `.cn.mdx`.
+
+IdeaSearch is documented as a configurable platform for iterative-agent experiments and practical search. Generated Ideas and formulas are evaluated candidates, not independently validated scientific findings. Technical pages should state the relevant inputs, controls, recorded artifacts, and validation boundary.
+
+For one-off tasks already handled by a general-purpose model or agent, a direct call may be simpler than running the framework.
+
+## Repository Structure
+
+| Path | Purpose |
+| --- | --- |
+| `content/docs/framework/` | English and Chinese IdeaSearch framework documentation |
+| `content/docs/fitter/` | English and Chinese IdeaSearch-fit documentation and demo |
+| `content/blog/` | Project posts |
+| `src/app/[lang]/` | Localized Next.js routes and layouts |
+| `src/components/ui/hero-section.tsx` | Homepage hero content and calls to action |
+| `src/lib/` | Internationalization, content loading, and shared layout configuration |
+| `public/` | Static assets |
+
+The site is built with Next.js and Fumadocs.
+
+## Editing Documentation
+
+1. Edit the English and Chinese page pair under `content/docs/`.
+2. Update the corresponding `meta.json` and `meta.cn.json` files when navigation changes.
+3. Keep API names, defaults, examples, limitations, and links consistent with the source repositories.
+4. Preview both `/en/` and `/cn/` routes before submitting the change.
+
+Homepage text is defined separately in `src/components/ui/hero-section.tsx`. Avoid duplicating time-sensitive positioning statements across the homepage and several MDX pages.
+
+## Local Development
+
+Install dependencies and start the development server:
 
 ```bash
-npm run dev
-# or
-pnpm dev
-# or
-yarn dev
+bun install
+bun run dev
 ```
 
-Open http://localhost:3000 with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). The proxy (`src/proxy.ts`) redirects to the appropriate language route.
 
-## Explore
+The equivalent npm workflow is:
 
-In the project, you can see:
+```bash
+npm install
+npm run dev
+```
 
-- `lib/source.ts`: Code for content source adapter, [`loader()`](https://fumadocs.dev/docs/headless/source-api) provides the interface to access your content.
-- `lib/layout.shared.tsx`: Shared options for layouts, optional but preferred to keep.
+## Checks
 
-| Route                     | Description                                            |
-| ------------------------- | ------------------------------------------------------ |
-| `app/(home)`              | The route group for your landing page and other pages. |
-| `app/docs`                | The documentation layout and pages.                    |
-| `app/api/search/route.ts` | The Route Handler for search.                          |
+Before submitting documentation changes, run:
 
-### Fumadocs MDX
+```bash
+bun run lint
+bun run build
+```
 
-A `source.config.ts` config file has been included, you can customise different options like frontmatter schema.
-
-Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
-
-## Learn More
-
-To learn more about Next.js and Fumadocs, take a look at the following
-resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Fumadocs](https://fumadocs.dev) - learn about Fumadocs
+The production build uses `next/font` to retrieve Inter and therefore requires network access to the Google Fonts endpoints. For bilingual pages, verify that facts, qualifiers, API names, links, and examples agree across the `.mdx` and `.cn.mdx` files.

@@ -1,91 +1,84 @@
 ---
 title: IdeaSearch Documentation
-description: Complete documentation homepage for IdeaSearch framework and tools
+description: Technical documentation for the IdeaSearch framework and IdeaSearch-fit
 ---
 
 import { Cards, Card } from 'fumadocs-ui/components/card';
 import { DynamicLink } from 'fumadocs-core/dynamic-link';
-import { FileCode2Icon, BrainCircuitIcon, PlayCircleIcon, GithubIcon, CodeIcon } from 'lucide-react';
+import { FileCode2Icon, BrainCircuitIcon, PlayCircleIcon, FolderGit2Icon, CodeIcon } from 'lucide-react';
 
-# 🌟 Welcome to IdeaSearch
+# IdeaSearch Documentation
 
-IdeaSearch is an intelligent search and optimization framework based on large language models, designed specifically for scientific computing and data discovery. By combining advanced artificial intelligence technology with traditional optimization algorithms, IdeaSearch can automatically discover patterns, rules, and mathematical expressions in data.
+IdeaSearch is an open-source Python framework for constructing iterative LLM-agent workflows with user-defined evaluation, persistent candidate memory, and multi-island search. It is intended for tasks where the generation–evaluation loop itself must be configured, recorded, or compared.
 
-## 📖 Project Overview
+The framework produces evaluated candidates. Domain interpretation and validation remain separate steps and should use task-appropriate evidence, held-out data, or independent checks.
 
-The IdeaSearch project aims to build a mature ecosystem and currently consists of two parts:
+## Project Components
 
-- **IdeaSearch Framework**: The core framework providing LLM-based intelligent search engine
-- **IdeaSearch Fitter**: A professional symbolic regression tool for automatically discovering mathematical formulas
+- **IdeaSearch Framework**: Configures candidate generation, evaluation, memory, parallel islands, migration, budgets, and run artifacts.
+- **IdeaSearch-fit**: Applies the framework to symbolic regression by combining candidate-expression generation with numerical parameter fitting.
 
-Whether you are a researcher, data scientist, or educator, IdeaSearch can help you extract deep insights and knowledge from data.
-
-## 🚀 Quick Start
-
-Choose the content you're interested in to start exploring:
+## Start Here
 
 <Cards>
-  <Card 
-    icon={<BrainCircuitIcon className="text-blue-500" />} 
-    title="Framework Overview"
+  <Card
+    icon={<BrainCircuitIcon className="text-blue-500" />}
+    title="Framework Manual"
   >
-    Learn about the architecture design, working principles, and core concepts of the IdeaSearch framework
-    <DynamicLink href="/[lang]/docs/framework/framework">Get Started</DynamicLink>
-  </Card>
-  
-  <Card 
-    icon={<FileCode2Icon className="text-green-500" />} 
-    title="Fitter Overview"
-  >
-    Explore the intelligent symbolic regression tool and learn how to use AI to automatically discover mathematical expressions
-    <DynamicLink href="/[lang]/docs/fitter/fitter">Learn More</DynamicLink>
-  </Card>
-  
-  <Card 
-    icon={<PlayCircleIcon className="text-purple-500" />} 
-    title="Live Demo"
-  >
-    Complete demonstration examples to quickly understand how to use IdeaSearch Fitter for symbolic regression
-    <DynamicLink href="/[lang]/docs/fitter/demo">Try Demo</DynamicLink>
+    Configure and run an iterative IdeaSearch workflow.
+    <DynamicLink href="/[lang]/docs/framework/framework">Open Manual</DynamicLink>
   </Card>
 
-  <Card 
-    icon={<GithubIcon className="text-gray-700" />} 
+  <Card
+    icon={<FileCode2Icon className="text-green-500" />}
+    title="Fitter Manual"
+  >
+    Configure data, expression grammar, numerical fitting, and result access.
+    <DynamicLink href="/[lang]/docs/fitter/fitter">Open Manual</DynamicLink>
+  </Card>
+
+  <Card
+    icon={<PlayCircleIcon className="text-purple-500" />}
+    title="Fitter Demo"
+  >
+    Follow a complete symbolic-regression example.
+    <DynamicLink href="/[lang]/docs/fitter/demo">Open Demo</DynamicLink>
+  </Card>
+
+  <Card
+    icon={<FolderGit2Icon className="text-gray-700" />}
     title="IdeaSearch Framework"
   >
-    Visit the main framework repository on GitHub to explore source code, contribute, and access the latest releases
+    Browse framework source code, releases, and issue tracking.
     <DynamicLink href="https://github.com/IdeaSearch/IdeaSearch-framework">View on GitHub</DynamicLink>
   </Card>
 
-  <Card 
-    icon={<CodeIcon className="text-orange-500" />} 
-    title="IdeaSearch Fit"
+  <Card
+    icon={<CodeIcon className="text-orange-500" />}
+    title="IdeaSearch-fit"
   >
-    Access the symbolic regression fitting tool repository for advanced mathematical expression discovery
+    Browse fitter source code, releases, and issue tracking.
     <DynamicLink href="https://github.com/IdeaSearch/IdeaSearch-fit">View on GitHub</DynamicLink>
   </Card>
 </Cards>
 
-## ✨ Key Features
+## Framework Controls
 
-- 🤖 **AI-Driven**: Can integrate with advanced large language models like GPT, Gemini, etc.
-- 🔬 **Scientific Computing**: Optimized specifically for research and data analysis scenarios
-- 🎯 **Auto Discovery**: Intelligently identifies mathematical patterns and physical laws in data
-- 🌍 **Open Source**: Completely open source with community contribution support
-- 📊 **Visualization**: Rich charts and real-time feedback
-- 🔧 **Easy Integration**: Clean API design, easy to integrate into existing projects
+- **Task and measurement**: User-defined candidate evaluation and optional database-level assessment.
+- **Initial conditions and memory**: Starting candidates, prompts, historical examples, and evaluator feedback.
+- **Exploration and topology**: Model sampling, mutation, crossover, parallel islands, and migration.
+- **Budget and records**: Explicit interaction budgets, candidate databases, scores, logs, and backups.
+- **Result access**: Retrieval of the current highest-scoring candidate and its evaluator score.
 
-## 📚 Documentation of IdeaSearch
+## Documentation Pages
 
 import { getPageTreePeers } from "fumadocs-core/page-tree";
 import { source } from "@/lib/source";
-
 
 <Cards>
   {getPageTreePeers(source.pageTree, "/en/docs/framework").map((peer) => (
     <Card key={peer.url} title={peer.name} href={peer.url}>
       {peer.description}
-      
     </Card>
   ))}
 </Cards>

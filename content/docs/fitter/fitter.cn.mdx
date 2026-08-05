@@ -7,7 +7,7 @@ import { GithubInfo } from "fumadocs-ui/components/github-info";
 
 <GithubInfo owner="IdeaSearch" repo="IdeaSearch-fit" />
 
-# 关于 IdeaSearch-fit
+# IdeaSearch-fit
 
 ## 快速开始
 
@@ -19,50 +19,61 @@ pip install IdeaSearch-fit
 
 ## 项目概述
 
-`IdeaSearch-fit` 是一款**基于 `IdeaSearch` 框架、专注于符号回归的科学公式发现工具**。它提供了 `IdeaSearchFitter` 类，该类被设计为一个高度集成的“助手 (Helper)”对象，通过 `IdeaSearch` 的 `bind_helper` 方法无缝对接。`IdeaSearch-fit` 融合了进化计算与大型语言模型的双重能力，旨在从实验或模拟数据中自动发现潜在的数学表达式。
+`IdeaSearch-fit` 是 [`IdeaSearch`](https://github.com/IdeaSearch/IdeaSearch-framework) 框架的符号回归应用。它提供 Helper 对象 `IdeaSearchFitter`，用于配置公式生成、数值参数拟合、评价和结果报告，再通过 `bind_helper()` 绑定到 `IdeaSearcher`。
 
-`IdeaSearch-fit` 的核心任务是解决符号回归问题：给定一组输入数据 `X` 及其对应的输出 `y`，系统会通过进化搜索，寻找一个能够精确描述它们关系，同时自身又足够简洁的数学公式 `f(X)`。因此，它不仅是一个数据拟合工具，其最终目标是成为一个能够揭示数据背后物理规律或数学模式的探索性框架。
+## 适用范围
 
-## 核心方法论：启发式搜索与数值优化的结合
+使用本软件可以针对数据 `X` 和目标 `y` 生成并比较候选表达式，也可以研究语义背景或 `IdeaSearch` 搜索设置如何影响结果。软件报告数值拟合质量和表达式复杂度，但不建立物理解释、因果有效性、稳健性或外推能力。应使用留出数据和领域检验验证选定表达式。
 
-`IdeaSearch-fit` 的核心在于其混合式工作流程，该流程将大型语言模型（LLM）的宏观结构探索与传统数值方法的微观参数优化相结合：
+## 配置模型
 
-1.  **第一阶段：基于大型语言模型的拟设 (Ansatz) 搜索**
-    此阶段利用 **LLM 的指令遵循能力和模式识别能力，在由数学符号、物理概念和自然语言构成的空间中，进行启发式的候选公式搜索**。LLM 根据用户提供的数据特征、物理单位及可选的理论背景描述，生成一系列结构合理的候选数学表达式（即“拟设”）。这是一个宏观的、探索性的结构生成过程。
+| 阶段 | 主要配置或接口 | 结果 |
+| --- | --- | --- |
+| 数据 | `data`、`data_path`、`result_path` | 输入数组与输出目录 |
+| 语义背景 | `variable_names`、`output_name`、单位、描述、`auto_polish` | 候选生成使用的提示词背景 |
+| 表达式语法 | `functions`、`constant_whitelist`、`constant_map` | 可执行表达式允许使用的符号 |
+| 生成模式 | `generate_fuzzy`、`fuzzy_translator` | 直接表达式或“假说—表达式”翻译 |
+| 数值评价 | `optimization_method`、`optimization_trial_num`、度量映射设置 | 拟合参数与候选分数 |
+| 智能体循环 | `IdeaSearcher.bind_helper()`、模型、记忆、岛屿、迁徙和预算设置 | 迭代式候选生成与评价 |
+| 结果访问 | `get_best_fit()`、`get_pareto_frontier()` | 最佳数值拟合与精度—复杂度权衡 |
 
-2.  **第二阶段：基于数值优化的拟设参数求解**
-    在获得一个候选拟设后（例如 `param1 * sin(param2 * x)`），`IdeaSearchFitter` 实例会立即利用**用户指定的传统数值优化算法（如 `L-BFGS-B` 或 `differential-evolution`）**，来精确求解该拟设中的待定参数（`param1`, `param2` 等）的最优值。这是一个确定性的、微观的参数寻优过程，旨在精确评估每个候选结构的拟合能力。
+比较不同搜索配置时，除非某项设置正是待研究变量，否则应固定数据、表达式语法、度量、数值优化器、模型版本和随机设置。
 
-这种“LLM 探索结构，数值优化求解参数”的工作流，整合了前沿人工智能的结构生成能力与经典算法的精确计算能力，构成了 `IdeaSearch-fit` 的基础。
+## 处理流程
+
+`IdeaSearch-fit` 分两个阶段评价候选：
+
+1. **候选结构生成**：大语言模型接收已配置的数据摘要、变量元数据、可选领域描述和表达式语法。模型直接返回表达式；当 `generate_fuzzy=True` 时，则先返回自然语言假说，再生成表达式。
+2. **参数拟合与评分**：系统解析表达式，使用 `L-BFGS-B` 或 `differential-evolution` 拟合自由参数，并将配置的度量映射为 `IdeaSearch` 分数。
+
+只有通过解析和已启用校验的表达式才会进入报告结果。
 
 ## 核心输入与输出
-
-从用户角度，`IdeaSearch-fit` 的工作流被设计得非常直接：
 
 > **核心输入:**
 >
 > - **`X`**: 输入数据（自变量，支持多维）。
 > - **`y`**: 目标数据（因变量，一维）。
-> - **`error`** (可选): `y` 中每个数据点的测量误差。在科学数据拟合中，提供误差是进行严谨性评估（如使用约化卡方检验）的基础。
+> - **`error`** (可选): `y` 中每个数据点的测量不确定度。提供时用于带不确定度权重的拟合度量；未提供时使用均方误差。
 >
 > **核心输出:**
 >
-> - 一个**帕累托前沿 (Pareto Frontier)**。系统产出的不是单一的最优公式，而是一个解的集合。此集合中的每个公式都在其各自的复杂度水平上达到了最优的拟合精度，从而允许用户在模型的**简洁性**与**精确性**之间做出符合领域需求的权衡。
+> - 一个**帕累托前沿 (Pareto Frontier)**，记录保留的精度—复杂度权衡；同时可以访问当前最佳数值拟合。
 
 ## 关键特性
 
-- **进化式符号回归**: 依托 `IdeaSearch` 的多岛屿并行进化框架为核心引擎，在广阔的数学表达式空间中进行高效搜索，以发现最优的拟合公式。
+- **进化式符号回归**：依托 `IdeaSearch` 的多岛屿进化框架探索候选数学表达式。
 
-- **帕累托最优前沿**: `IdeaSearch-fit` 不会止步于寻找单一的最佳拟合，而是同时优化**精度（Metric）与简洁度（Complexity）这两个相互制约的目标。它最终会生成一份帕累托前沿 (Pareto Frontier)** 报告，提供了一系列在不同复杂度与精度组合下的最优解，供用户深入分析和权衡。
+- **帕累托前沿**：报告配置的精度—复杂度权衡下保留的候选表达式。
 
-- **严格的量纲分析**: 内置量纲验证模块 (`unit_validator`)，能够在公式的进化过程中进行严格的物理单位检查。此特性对于物理、工程等科学领域至关重要，它确保了最终生成的公式不仅在数值上成立，在物理意义上也同样正确。
+- **量纲一致性检查**：启用量纲验证时检查表达式的物理量纲。量纲一致性是一项约束，不能单独证明物理正确性。
 
 - **双模态公式生成**:
 
   - **精确生成 (Precise Generation)**: 直接生成和进化严格遵循特定计算语法的数学表达式。
-  - **模糊生成 (Fuzzy Generation)**: 首先，利用大型语言模型（LLM）像科学家一样，提出关于数据潜在规律的**自然语言理论**；然后，由另一个 LLM 代理将该理论**翻译**为严格的数学表达式。这种创新的两阶段方法能够融入更丰富的先验知识并激发创造性思路。
+  - **模糊生成 (Fuzzy Generation)**：首先由大语言模型提出关于数据模式的自然语言假说，再由另一个 LLM 智能体将假说翻译为严格的数学表达式。
 
-- **自动化智能润色**: 用户仅需提供基础的变量名和单位，系统即可调用 LLM 自动推断并补全对输入、输出及各变量物理含义的详细描述。这些信息将用于构建更具语义的提示词，引导 `IdeaSearch` 进行更深层次的智能探索。
+- **自动语义补全**：系统可以调用 LLM 为搜索提示词提议输入、输出和变量描述。
 
 - **高度集成与自动化**: 作为 `IdeaSearch` 的一个高度集成的模块，用户只需初始化 `IdeaSearchFitter` 类，它就能自动配置好 `IdeaSearch` 所需的评估函数 (`evaluate_func`)、提示词 (`prologue_section`, `epilogue_section`)、变异/交叉算子 (`mutation_func`, `crossover_func`) 等全部核心组件。
 
@@ -105,13 +116,13 @@ pip install IdeaSearch-fit
 - **`output_name`**: `Optional[str]`
   - 输出变量的名称 (如 `"energy"`)。
 - **`perform_unit_validation`**: `bool` (默认: `False`)
-  - **[核心开关]** 是否开启严格的物理量纲验证。
+  - 是否启用量纲一致性检查。
 - **`variable_units`**: `Optional[List[str]]`
   - 与 `variable_names` 对应的单位列表 (如 `["kg", "m s^-1"]`)。当 `perform_unit_validation` 为 `True` 时必需。
 - **`output_unit`**: `Optional[str]`
   - 输出变量的单位 (如 `"J"` 或 `"kg m^2 s^-2"`)。当 `perform_unit_validation` 为 `True` 时必需。
 - **`auto_polish`**: `bool` (默认: `True`)
-  - 是否自动调用 LLM 来推断并生成变量的物理含义描述，以构建语义更丰富的提示词。
+  - 是否调用 LLM 为搜索提示词提议变量和输出描述。
 - **`auto_polisher`**: `Optional[str]`
   - 用于执行 `auto_polish` 任务的 LLM 模型名称。若为 `None`，将自动选择可用模型。
 - **`input_description`**, **`variable_descriptions`**, **`output_description`**: `Optional[str]`
@@ -156,7 +167,7 @@ pip install IdeaSearch-fit
 ### 6\. 杂项
 
 - **`seed`**: `Optional[int]`
-  - 随机数种子，用于确保结果的可复现性。
+  - 拟合器本地随机数生成器的种子。重复完整运行还需要固定模型版本、API 设置和 `IdeaSearch` 配置。
 
 ## 工作流程
 
