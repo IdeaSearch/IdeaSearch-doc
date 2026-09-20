@@ -145,10 +145,14 @@ const palette = { blue: '#4f96cc', deep: '#173b62', gold: '#efb83e', muted: '#9d
 const line = (ctx, a, b, color, width = 1, dash = []) => { ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.setLineDash(dash); ctx.beginPath(); ctx.moveTo(a.px ?? a.x, a.py ?? a.y); ctx.lineTo(b.px ?? b.x, b.py ?? b.y); ctx.stroke(); ctx.restore(); };
 
 // The theory and experiment visuals are generated from the real IdeaSearchFitter database.
-let graphData = null;
-let crossTaskData = null;
-let gptWordData = null;
-let graphPromise = null;
+// These state holders are declared with `var` because the initial locale pass
+// runs before the data/animation declarations below.  `var` keeps the guards
+// in applyLocale/updateDynamicLabels safe during first-page startup; the
+// values themselves are still assigned exactly once during initialization.
+var graphData = null;
+var crossTaskData = null;
+var gptWordData = null;
+var graphPromise = null;
 function loadGraphData(){
   if(graphData)return Promise.resolve(graphData);
   if(graphPromise)return graphPromise;
@@ -264,7 +268,7 @@ function drawTheoryMatrix(){
 }
 
 const matrixState={ordered:true};
-const actionState={running:false,pending:false,requestId:0,iteration:0,plotPosition:0,rawOverride:null,playbackElapsed:0,playbackDuration:0,steps:99,view:'sort',timer:null,stepMs:120};
+var actionState={running:false,pending:false,requestId:0,iteration:0,plotPosition:0,rawOverride:null,playbackElapsed:0,playbackDuration:0,steps:99,view:'sort',timer:null,stepMs:120};
 function organizeExperimentWorkspace(){
   const stage=$('#experimentStage'),detail=$('.experiment-detail-grid');
   if(!stage||!detail||stage.dataset.organized)return;
@@ -649,7 +653,7 @@ function betaFromControl(control){
   const u=Math.max(0,Math.min(1,Number(control)/BIAS_CONTROL_MAX));
   return u>=1 ? Infinity : Math.tan(Math.PI*u/2);
 }
-const biasState={value:0,trajectory:[],running:false,timer:null};
+var biasState={value:0,trajectory:[],running:false,timer:null};
 const BIAS_SEED=1731;
 let biasAdjacency=null;
 function targetScore(node){const d=graphData.nodes;const xs=d.map(n=>n.logMSE),lo=Math.min(...xs),hi=Math.max(...xs);return 1-(node.logMSE-lo)/(hi-lo||1);}

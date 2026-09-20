@@ -7,7 +7,7 @@
   <meta name="description" content="从 token 微观轨迹到 LLM agent 状态转移：真实 IdeaSearchFitter 数据上的细致平衡与最小作用量。">
   <title>Detailed Balance / Agent Dynamics</title><link rel="icon" href="data:,">
   <link rel="stylesheet" href="https://fonts.loli.net/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="styles.css?v=20260920-relaxation-layout">
+<link rel="stylesheet" href="styles.css?v=20260921-cycle-label">
 </head>
 <body>
 <header class="site-nav" id="site-nav">
@@ -19,7 +19,6 @@
 <small>PHYSICS OF AI</small>
 </span>
 </a>
-<button class="language-toggle" id="languageToggle" type="button" aria-label="切换到英文">EN</button>
 <button class="menu-toggle" aria-label="打开目录" aria-expanded="false">☰</button>
 <nav class="nav-links" aria-label="页面目录">
 <a href="#motivation">动机</a>
@@ -28,6 +27,7 @@
 <a href="#application">应用</a>
 <a href="#discussion">讨论</a>
 </nav>
+<button class="language-toggle" id="languageToggle" type="button" aria-label="切换到英文">EN</button>
 </div>
 </header>
 <main id="top">
@@ -478,8 +478,9 @@ Chinese wording below is this page's translation, not a cited published translat
 <g fill="#eaf4ff" stroke="#2f77ad" stroke-width="2.5"><circle cx="48" cy="138" r="27"/><circle cx="195" cy="44" r="27"/><circle cx="195" cy="230" r="27"/></g>
 <circle cx="340" cy="138" r="27" fill="#fff3c9" stroke="#b78c22" stroke-width="2.5"/>
 <g fill="#173b62" font-size="26" text-anchor="middle" dominant-baseline="central"><text x="48" y="138">f</text><text x="195" y="44">h₁</text><text x="195" y="230">h₂</text><text x="340" y="138">g</text></g>
-<text x="195" y="136" text-anchor="middle" fill="#173b62" font-size="21">双向闭环</text>
-<text x="195" y="165" text-anchor="middle" fill="#68809a" font-size="18">比较正逆权重之积</text>
+<text class="discussion-cycle-label discussion-cycle-label-title" x="195" y="134" text-anchor="middle" fill="#173b62" font-size="21">双向闭环</text>
+<text class="discussion-cycle-label discussion-cycle-label-subtitle cycle-subtitle-zh" x="195" y="161" text-anchor="middle" fill="#68809a" font-size="18">比较正逆权重之积</text>
+<text class="discussion-cycle-label discussion-cycle-label-subtitle cycle-subtitle-en" x="195" y="155" text-anchor="middle" fill="#68809a" font-size="18"><tspan x="195" dy="0">Compare the products of</tspan><tspan x="195" dy="15">forward and reverse weights</tspan></text>
 </svg>
 <div class="discussion-legend"><span><i class="discussion-line-blue"></i>主导转移</span><span><i class="discussion-line-gold"></i>弱返回</span></div>
 <figcaption>现实的多路径结构会构成双向闭环，为细致平衡的描述能力画出边界。</figcaption>
@@ -552,7 +553,7 @@ Chinese wording below is this page's translation, not a cited published translat
 <footer class="data-provenance section-shell">
 <b>DETAILED BALANCE</b> · Song et al. <a href="https://arxiv.org/abs/2512.10047">arXiv:2512.10047 (PRX Intelligence Accepted)</a> · 数据与方法可由论文、公开数据集及分析代码追溯；实验图来自真实记录，网页动画为基于真实状态的演示。
 </footer>
-<script src="script.js?v=20260920-relaxation-layout">
+<script src="script.js?v=20260921-canvas-init">
 </script>
 </body>
 </html>

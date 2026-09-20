@@ -1,7 +1,6 @@
 "use client";
 
 import { MeshGradient } from "@paper-design/shaders-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -92,13 +91,10 @@ export function PhysicsDirectory({
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <article className="overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/10">
             <div className="relative aspect-square bg-slate-100 dark:bg-slate-900">
-              <Image
+              <img
                 src="/detailed-balance/assets/figs/unit-sketch-square.png"
                 alt={text.imageAlt}
-                fill
-                sizes="(max-width: 768px) 100vw, 45vw"
-                className="object-cover"
-                priority
+                className="h-full w-full object-cover"
               />
             </div>
             <div className="flex flex-col p-6 sm:p-7">
