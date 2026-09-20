@@ -11,6 +11,6 @@ export const config = {
   // (`llms.mdx` carries the locale further down its own path), so without
   // excluding them the locale redirect sends them to `/<lang>/...`, which 404s.
   matcher: [
-    "/((?!api|og|llms\\.txt|llms-full\\.txt|llms\\.mdx|_next/static|_next/image|favicon.ico|logo.png).*)",
+    "/((?!api|og|llms\\.txt|llms-full\\.txt|llms\\.mdx|detailed-balance(?:/|$)|_next/static|_next/image|favicon.ico|logo.png).*)",
   ],
 };

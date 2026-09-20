@@ -1,36 +1,25 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { HeroSection } from "@/components/ui/hero-section";
+import { headers } from "next/headers";
+import { IdeaHome } from "@/components/ui/idea-home";
+import { PhysicsDirectory } from "@/components/ui/physics-directory";
 
 interface HomePageProps {
   params: Promise<{ lang: string }>;
+  searchParams: Promise<{ site?: string }>;
 }
 
-export default function HomePage({ params }: HomePageProps) {
-  const router = useRouter();
-  
-  const [lang, setLang] = useState<string>("en");
-  
-  useEffect(() => {
-    params.then(({ lang }) => {
-      setLang(lang);
-    });
-  }, [params]);
+export default async function HomePage({
+  params,
+  searchParams,
+}: HomePageProps) {
+  const { lang } = await params;
+  const query = await searchParams;
+  const host = (await headers()).get("host") ?? "";
+  const physicsHost = host.split(":")[0] === "physics.ideasearch.cn";
+  const preview = query.site === "physics";
 
-  const handleButtonClick = () => {
-    router.push(`/${lang}/docs/framework`);
-  };
+  if (physicsHost || preview) {
+    return <PhysicsDirectory lang={lang} preview={preview} />;
+  }
 
-  return (
-    <main className="min-h-screen">
-      <HeroSection
-        lang={lang}
-        distortion={1.2}
-        speed={0.8}
-        onButtonClick={handleButtonClick}
-      />
-    </main>
-  );
+  return <IdeaHome lang={lang} />;
 }

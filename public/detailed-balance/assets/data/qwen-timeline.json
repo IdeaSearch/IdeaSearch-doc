@@ -1,0 +1,923 @@
+{
+  "method": "For each task, Pearson r compares log forward/reverse transition-probability ratios with fitted potential differences on all qualified bidirectional pairs. The model timeline then uses a pair-count-weighted mean of task-level r across identifiable tasks; the pair count is the weight, not the log-ratio value. Exact structural limits are not assigned r=1.",
+  "sampling": "Uniform sample, seed 42, at most 64 points per Qwen task; r is computed on all qualified pairs.",
+  "timeline_snapshot": {
+    "model_id": "qwen3.8-max",
+    "collection_start_utc": "2026-08-13T17:14:36.599+00:00",
+    "collection_end_utc": "2026-08-14T01:38:07.011+00:00",
+    "frozen_at": "2026-08-14T09:38:12+08:00",
+    "public_note": "Qwen3.8-Max 末点使用 2026-08-13 17:14–2026-08-14 01:38 UTC 的采样切片；快照于 2026-08-14 09:38（北京时间）冻结。提供方未在记录中暴露更细的 revision ID。"
+  },
+  "timeline": [
+    {
+      "model": "Qwen3-Max-2025-09-23",
+      "model_id": "qwen3-max-2025-09-23",
+      "release": "2025-09",
+      "r": 0.7945617404074572,
+      "defined_tasks": 3,
+      "exact_tasks": 3,
+      "common_median": 0.7945617404074572,
+      "common_mean": 0.7994616230840575,
+      "defined_mean": 0.7994616230840575,
+      "pair_weighted_mean": 0.7561616645014109,
+      "tasks": [
+        {
+          "task": "sum100",
+          "r": null,
+          "pairs": 1,
+          "structure": "exact_one_pair"
+        },
+        {
+          "task": "five_letter_s",
+          "r": 0.6805525742362538,
+          "pairs": 46,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "digit_sum_15",
+          "r": 0.9232705546084613,
+          "pairs": 13,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "sum_div10",
+          "r": null,
+          "pairs": 0,
+          "structure": "exact_one_way"
+        },
+        {
+          "task": "seven_letter_words",
+          "r": 0.7945617404074572,
+          "pairs": 34,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "four_digit_div7",
+          "r": null,
+          "pairs": 1,
+          "structure": "exact_one_pair"
+        }
+      ]
+    },
+    {
+      "model": "Qwen3-Max-2026-01-23",
+      "model_id": "qwen3-max-2026-01-23",
+      "release": "2026-01",
+      "r": 0.7312106303600275,
+      "defined_tasks": 3,
+      "exact_tasks": 3,
+      "common_median": 0.7312106303600275,
+      "common_mean": 0.7331624496781249,
+      "defined_mean": 0.7331624496781249,
+      "pair_weighted_mean": 0.6961105744788363,
+      "tasks": [
+        {
+          "task": "sum100",
+          "r": null,
+          "pairs": 2,
+          "structure": "exact_degenerate"
+        },
+        {
+          "task": "five_letter_s",
+          "r": 0.6454355934400947,
+          "pairs": 91,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "digit_sum_15",
+          "r": 0.8228411252342525,
+          "pairs": 17,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "sum_div10",
+          "r": null,
+          "pairs": 1,
+          "structure": "exact_one_pair"
+        },
+        {
+          "task": "seven_letter_words",
+          "r": 0.7312106303600275,
+          "pairs": 70,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "four_digit_div7",
+          "r": null,
+          "pairs": 1,
+          "structure": "exact_one_pair"
+        }
+      ]
+    },
+    {
+      "model": "Qwen3.7-Max-2026-05-20",
+      "model_id": "qwen3.7-max-2026-05-20",
+      "release": "2026-05",
+      "r": 0.8037396835687484,
+      "defined_tasks": 5,
+      "exact_tasks": 1,
+      "common_median": 0.8037396835687484,
+      "common_mean": 0.8240221718766804,
+      "defined_mean": 0.6903301822095596,
+      "pair_weighted_mean": 0.812459818758667,
+      "tasks": [
+        {
+          "task": "sum100",
+          "r": 0.04917843632310372,
+          "pairs": 6,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "five_letter_s",
+          "r": 0.8866764624407806,
+          "pairs": 11,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "digit_sum_15",
+          "r": 0.7816503696205123,
+          "pairs": 14,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "sum_div10",
+          "r": null,
+          "pairs": 1,
+          "structure": "exact_one_pair"
+        },
+        {
+          "task": "seven_letter_words",
+          "r": 0.8037396835687484,
+          "pairs": 60,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "four_digit_div7",
+          "r": 0.9304059590946526,
+          "pairs": 40,
+          "structure": "sample_pearson"
+        }
+      ]
+    },
+    {
+      "model": "Qwen3.7-Max-2026-06-08",
+      "model_id": "qwen3.7-max-2026-06-08",
+      "release": "2026-06",
+      "r": 0.7862223911482605,
+      "defined_tasks": 5,
+      "exact_tasks": 1,
+      "common_median": 0.7862223911482605,
+      "common_mean": 0.7848768114354155,
+      "defined_mean": 0.6777543417975129,
+      "pair_weighted_mean": 0.8270650781120151,
+      "tasks": [
+        {
+          "task": "sum100",
+          "r": 0.06538699495290985,
+          "pairs": 6,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "five_letter_s",
+          "r": 0.8570056918463995,
+          "pairs": 10,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "digit_sum_15",
+          "r": 0.7114023513115869,
+          "pairs": 14,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "sum_div10",
+          "r": null,
+          "pairs": 1,
+          "structure": "exact_one_pair"
+        },
+        {
+          "task": "seven_letter_words",
+          "r": 0.7862223911482605,
+          "pairs": 57,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "four_digit_div7",
+          "r": 0.9687542797284081,
+          "pairs": 58,
+          "structure": "sample_pearson"
+        }
+      ]
+    },
+    {
+      "model": "Qwen3.8-Max",
+      "model_id": "qwen3.8-max",
+      "release": "current",
+      "r": 0.8791669114277192,
+      "defined_tasks": 6,
+      "exact_tasks": 0,
+      "common_median": 0.8333753004212874,
+      "common_mean": 0.8456389011916864,
+      "defined_mean": 0.8375108662492116,
+      "pair_weighted_mean": 0.8406162674829453,
+      "tasks": [
+        {
+          "task": "sum100",
+          "r": 0.5179898808338792,
+          "pairs": 5,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "five_letter_s",
+          "r": 0.8333753004212874,
+          "pairs": 17,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "digit_sum_15",
+          "r": 0.9249585224341511,
+          "pairs": 17,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "sum_div10",
+          "r": 1.0,
+          "pairs": 2,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "seven_letter_words",
+          "r": 0.7785828807196209,
+          "pairs": 65,
+          "structure": "sample_pearson"
+        },
+        {
+          "task": "four_digit_div7",
+          "r": 0.970158613086332,
+          "pairs": 31,
+          "structure": "sample_pearson"
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "sum100",
+      "label": "Sum=100",
+      "problem": "给定一个单词，生成另一个字母和为 100 的英文单词（A=1，…，Z=26）。",
+      "model": "Qwen3.8 Max",
+      "r": 0.5179898808338792,
+      "pairs": 5,
+      "shown": 5,
+      "ci": [
+        -1.0,
+        1.0
+      ],
+      "fit_converged": true,
+      "fit_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "points": [
+        {
+          "x": 1.444672,
+          "y": 0.435075
+        },
+        {
+          "x": -0.628197,
+          "y": -0.764763
+        },
+        {
+          "x": 0.015524,
+          "y": -6.95013
+        },
+        {
+          "x": 0.825282,
+          "y": 1.11698
+        },
+        {
+          "x": 1.376999,
+          "y": 0.739708
+        }
+      ]
+    },
+    {
+      "id": "five_letter_s",
+      "label": "5-Letter-S",
+      "problem": "给定一个示例，生成另一个以 S 开头的五字母英文单词。",
+      "model": "Qwen3.8 Max",
+      "r": 0.8333753004212874,
+      "pairs": 17,
+      "shown": 17,
+      "ci": [
+        0.7764326632258722,
+        0.9779889818432284
+      ],
+      "fit_converged": true,
+      "fit_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "points": [
+        {
+          "x": 0.020477,
+          "y": 0.014309
+        },
+        {
+          "x": 4.443122,
+          "y": 3.817952
+        },
+        {
+          "x": 7.900973,
+          "y": 7.390382
+        },
+        {
+          "x": 0.228746,
+          "y": 0.706708
+        },
+        {
+          "x": 0.357858,
+          "y": -0.087805
+        },
+        {
+          "x": 11.290856,
+          "y": 7.308754
+        },
+        {
+          "x": -2.207409,
+          "y": -5.794522
+        },
+        {
+          "x": 0.129112,
+          "y": 0.872986
+        },
+        {
+          "x": 2.336521,
+          "y": 1.594186
+        },
+        {
+          "x": 2.038222,
+          "y": 1.831245
+        },
+        {
+          "x": 6.920655,
+          "y": 6.491304
+        },
+        {
+          "x": -0.170216,
+          "y": 0.302434
+        },
+        {
+          "x": 23.843968,
+          "y": 7.210801
+        },
+        {
+          "x": -2.609629,
+          "y": -4.560854
+        },
+        {
+          "x": -4.715128,
+          "y": -1.49168
+        },
+        {
+          "x": -0.067682,
+          "y": -0.069543
+        },
+        {
+          "x": -7.124038,
+          "y": -5.159574
+        }
+      ]
+    },
+    {
+      "id": "digit_sum_15",
+      "label": "Digit Sum=15",
+      "problem": "给定一个三位数，生成另一个各位数字之和为 15 的三位数。",
+      "model": "Qwen3.8 Max",
+      "r": 0.9249585224341511,
+      "pairs": 17,
+      "shown": 17,
+      "ci": [
+        0.6923507647075268,
+        0.9991271853570297
+      ],
+      "fit_converged": true,
+      "fit_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "points": [
+        {
+          "x": -2.441461,
+          "y": 1.824955
+        },
+        {
+          "x": 1.667498,
+          "y": 0.648829
+        },
+        {
+          "x": 6.969077,
+          "y": 7.580264
+        },
+        {
+          "x": 3.612193,
+          "y": 3.694869
+        },
+        {
+          "x": 0.538621,
+          "y": 0.538622
+        },
+        {
+          "x": 1.88802,
+          "y": 1.890585
+        },
+        {
+          "x": 0.002849,
+          "y": 0.204985
+        },
+        {
+          "x": -0.749322,
+          "y": -0.749321
+        },
+        {
+          "x": -0.201837,
+          "y": -0.192649
+        },
+        {
+          "x": 0.012674,
+          "y": 0.012672
+        },
+        {
+          "x": -0.270597,
+          "y": -0.270627
+        },
+        {
+          "x": -4.51316,
+          "y": -4.53304
+        },
+        {
+          "x": 4.123057,
+          "y": 4.196305
+        },
+        {
+          "x": 4.393655,
+          "y": 3.960043
+        },
+        {
+          "x": -2.460514,
+          "y": -2.419104
+        },
+        {
+          "x": -0.000209,
+          "y": 0.000888
+        },
+        {
+          "x": 1.99322,
+          "y": 1.993219
+        }
+      ]
+    },
+    {
+      "id": "sum_div10",
+      "label": "Sum÷10",
+      "problem": "给定一个单词，生成另一个字母和可被 10 整除的英文单词。",
+      "model": "Qwen3.8 Max",
+      "r": 1.0,
+      "pairs": 2,
+      "shown": 2,
+      "ci": [
+        null,
+        null
+      ],
+      "fit_converged": true,
+      "fit_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "points": [
+        {
+          "x": 5.114231,
+          "y": 5.087614
+        },
+        {
+          "x": -0.002431,
+          "y": -0.002135
+        }
+      ]
+    },
+    {
+      "id": "seven_letter_words",
+      "label": "7-Letter Words",
+      "problem": "给定一个示例，生成另一个恰有七个字母的常用英文单词。",
+      "model": "Qwen3.8 Max",
+      "r": 0.7785828807196209,
+      "pairs": 65,
+      "shown": 64,
+      "ci": [
+        0.6659000925223292,
+        0.8775369890528042
+      ],
+      "fit_converged": true,
+      "fit_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "points": [
+        {
+          "x": 5.379552,
+          "y": 3.641994
+        },
+        {
+          "x": -0.520119,
+          "y": -0.403492
+        },
+        {
+          "x": -4.829967,
+          "y": -3.301605
+        },
+        {
+          "x": -1.666058,
+          "y": 0.168722
+        },
+        {
+          "x": -1.571413,
+          "y": -3.427267
+        },
+        {
+          "x": 0.949913,
+          "y": 0.606577
+        },
+        {
+          "x": -0.617696,
+          "y": -3.063273
+        },
+        {
+          "x": -0.097576,
+          "y": -0.140102
+        },
+        {
+          "x": 3.258554,
+          "y": 4.920021
+        },
+        {
+          "x": -3.981928,
+          "y": -2.84558
+        },
+        {
+          "x": -1.008868,
+          "y": -1.96128
+        },
+        {
+          "x": 2.177121,
+          "y": 2.783296
+        },
+        {
+          "x": 3.479889,
+          "y": 3.479858
+        },
+        {
+          "x": 1.27022,
+          "y": -1.20681
+        },
+        {
+          "x": 1.048362,
+          "y": 1.934695
+        },
+        {
+          "x": 4.845401,
+          "y": 6.839188
+        },
+        {
+          "x": -2.796643,
+          "y": -2.790275
+        },
+        {
+          "x": 1.803329,
+          "y": 0.810855
+        },
+        {
+          "x": 1.051292,
+          "y": 5.921253
+        },
+        {
+          "x": -0.544548,
+          "y": -1.607604
+        },
+        {
+          "x": 1.721299,
+          "y": 2.569494
+        },
+        {
+          "x": 3.744686,
+          "y": 3.869694
+        },
+        {
+          "x": 2.521326,
+          "y": 6.52866
+        },
+        {
+          "x": 0.925485,
+          "y": 6.274838
+        },
+        {
+          "x": 7.625592,
+          "y": 6.338195
+        },
+        {
+          "x": -0.042687,
+          "y": -4.703324
+        },
+        {
+          "x": -0.161955,
+          "y": 0.737828
+        },
+        {
+          "x": 0.447643,
+          "y": -0.220821
+        },
+        {
+          "x": -1.037597,
+          "y": 0.584809
+        },
+        {
+          "x": -0.840685,
+          "y": -0.840686
+        },
+        {
+          "x": -0.119268,
+          "y": -0.966216
+        },
+        {
+          "x": -1.59584,
+          "y": -0.338503
+        },
+        {
+          "x": -6.788748,
+          "y": -5.234709
+        },
+        {
+          "x": 0.490331,
+          "y": -0.854975
+        },
+        {
+          "x": -3.381106,
+          "y": -3.161001
+        },
+        {
+          "x": 0.196113,
+          "y": 0.453098
+        },
+        {
+          "x": -0.994909,
+          "y": -2.840591
+        },
+        {
+          "x": 3.513057,
+          "y": 3.397227
+        },
+        {
+          "x": -2.223835,
+          "y": -1.690079
+        },
+        {
+          "x": -1.411121,
+          "y": -0.187064
+        },
+        {
+          "x": -1.231445,
+          "y": -1.530339
+        },
+        {
+          "x": -1.273484,
+          "y": -1.273481
+        },
+        {
+          "x": -1.705339,
+          "y": -1.975136
+        },
+        {
+          "x": -6.66948,
+          "y": -1.456868
+        },
+        {
+          "x": 0.609599,
+          "y": 0.104561
+        },
+        {
+          "x": 0.789274,
+          "y": 2.186513
+        },
+        {
+          "x": -3.836895,
+          "y": -3.535876
+        },
+        {
+          "x": -0.875642,
+          "y": -0.677126
+        },
+        {
+          "x": 3.708767,
+          "y": 3.324617
+        },
+        {
+          "x": 2.632419,
+          "y": 3.646869
+        },
+        {
+          "x": 2.086171,
+          "y": 2.276042
+        },
+        {
+          "x": 6.98486,
+          "y": 0.760757
+        },
+        {
+          "x": 0.518496,
+          "y": -1.091865
+        },
+        {
+          "x": 0.179676,
+          "y": -0.314283
+        },
+        {
+          "x": -5.540989,
+          "y": -2.056538
+        },
+        {
+          "x": -3.19866,
+          "y": -0.453082
+        },
+        {
+          "x": -2.201435,
+          "y": -1.91375
+        },
+        {
+          "x": -0.294218,
+          "y": -0.354887
+        },
+        {
+          "x": -1.48524,
+          "y": -1.724936
+        },
+        {
+          "x": -1.664916,
+          "y": -2.712961
+        },
+        {
+          "x": -1.076348,
+          "y": -1.265413
+        },
+        {
+          "x": 4.66458,
+          "y": 4.652776
+        },
+        {
+          "x": 2.035151,
+          "y": 1.473569
+        },
+        {
+          "x": -2.88236,
+          "y": -2.515504
+        }
+      ]
+    },
+    {
+      "id": "four_digit_div7",
+      "label": "4-Digit Div7",
+      "problem": "给定一个四位数，生成另一个可被 7 整除的四位数。",
+      "model": "Qwen3.8 Max",
+      "r": 0.970158613086332,
+      "pairs": 31,
+      "shown": 31,
+      "ci": [
+        0.9124729961095791,
+        0.9999997672200452
+      ],
+      "fit_converged": false,
+      "fit_message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+      "points": [
+        {
+          "x": 0.369646,
+          "y": 0.810738
+        },
+        {
+          "x": 1.700761,
+          "y": 1.706495
+        },
+        {
+          "x": 0.193665,
+          "y": 0.19375
+        },
+        {
+          "x": 1.244424,
+          "y": 1.244519
+        },
+        {
+          "x": 2.843835,
+          "y": 2.844182
+        },
+        {
+          "x": 1.332407,
+          "y": 1.332492
+        },
+        {
+          "x": 4.164021,
+          "y": 4.164549
+        },
+        {
+          "x": 0.340048,
+          "y": 0.340062
+        },
+        {
+          "x": 5.111923,
+          "y": 5.111988
+        },
+        {
+          "x": 0.774656,
+          "y": 0.77464
+        },
+        {
+          "x": -0.617814,
+          "y": -0.617798
+        },
+        {
+          "x": 2.366061,
+          "y": 2.366255
+        },
+        {
+          "x": 0.049035,
+          "y": 1.963316
+        },
+        {
+          "x": -0.50496,
+          "y": 0.594271
+        },
+        {
+          "x": 0.372368,
+          "y": 0.372389
+        },
+        {
+          "x": 2.577717,
+          "y": 2.577903
+        },
+        {
+          "x": 4.348847,
+          "y": 4.349356
+        },
+        {
+          "x": 3.914988,
+          "y": 3.914876
+        },
+        {
+          "x": 0.103315,
+          "y": 0.103318
+        },
+        {
+          "x": 2.280587,
+          "y": 2.280606
+        },
+        {
+          "x": -0.107865,
+          "y": -0.107833
+        },
+        {
+          "x": 3.790373,
+          "y": 3.789855
+        },
+        {
+          "x": 2.085941,
+          "y": 2.08595
+        },
+        {
+          "x": 3.150753,
+          "y": 3.150981
+        },
+        {
+          "x": 0.957768,
+          "y": 0.957771
+        },
+        {
+          "x": 2.440159,
+          "y": 2.440338
+        },
+        {
+          "x": 2.885801,
+          "y": 2.885857
+        },
+        {
+          "x": 1.066348,
+          "y": 1.066351
+        },
+        {
+          "x": 4.121162,
+          "y": 4.1213
+        },
+        {
+          "x": 0.90901,
+          "y": 0.90901
+        },
+        {
+          "x": -1e-05,
+          "y": 0.0
+        }
+      ]
+    }
+  ],
+  "timeline_audit": {
+    "common_tasks": [
+      "five_letter_s",
+      "digit_sum_15",
+      "seven_letter_words"
+    ],
+    "primary": "For each model snapshot, compute task-level Pearson r from log forward/reverse probability ratios versus fitted potential differences, then average those task r values weighted by each task's count of qualified bidirectional state pairs; q32509 is included.",
+    "exact": "Neither above nor below the median: Exact is a structural limit with undefined sample Pearson r, not r=1.",
+    "weighting": "The weights are counts of qualified bidirectional pairs, not the numerical log-ratios and not inverse-variance weights. Shared states and a jointly fitted potential mean that pairs are not independent; this weighted mean is a descriptive timeline lens.",
+    "fisher": "A two-pair sample with r=1 makes Fisher z infinite; do not clip it or substitute Exact=1 to manufacture a trend.",
+    "inference": "Descriptive comparisons, no claim of significant or monotonic temporal improvement."
+  }
+}

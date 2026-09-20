@@ -11,6 +11,14 @@ const config = {
   turbopack: {
     root: fileURLToPath(new URL(".", import.meta.url)),
   },
+  async rewrites() {
+    return [
+      {
+        source: "/detailed-balance",
+        destination: "/detailed-balance/index.html",
+      },
+    ];
+  },
 };
 
 export default withMDX(config);

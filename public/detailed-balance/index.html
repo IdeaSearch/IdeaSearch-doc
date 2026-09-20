@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="从 token 微观轨迹到 LLM agent 状态转移：真实 IdeaSearchFitter 数据上的细致平衡与最小作用量。">
+  <title>Detailed Balance / Agent Dynamics</title><link rel="icon" href="data:,">
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css?v=20260920-relaxation-layout">
+</head>
+<body>
+<header class="site-nav" id="site-nav">
+<div class="nav-inner">
+<a class="brand" href="#top">
+<span class="brand-mark" aria-hidden="true">⇄</span>
+<span>
+<b>DETAILED BALANCE</b>
+<small>PHYSICS OF AI</small>
+</span>
+</a>
+<button class="menu-toggle" aria-label="打开目录" aria-expanded="false">☰</button>
+<nav class="nav-links" aria-label="页面目录">
+<a href="#motivation">动机</a>
+<a href="#theory">理论</a>
+<a href="#experiment">实验</a>
+<a href="#application">应用</a>
+<a href="#discussion">讨论</a>
+</nav>
+</div>
+</header>
+<main id="top">
+<section class="hero section-shell">
+<div class="hero-copy">
+<p class="eyebrow">A statistical-physics lens</p>
+<h1>当生成变成一种<br>
+<em>可测的动力学</em>
+</h1>
+<p class="hero-lede">一个生活在特定 context 中的 LLM agent，如何在语义状态间移动？把它的转移通道量出来，再寻找组织这些转移的有效势。</p>
+<div class="hero-actions">
+<a class="button button-primary" href="https://arxiv.org/abs/2512.10047" target="_blank" rel="noopener">阅读论文 ↗</a>
+</div>
+</div>
+<figure class="unit-card">
+<img class="unit-framework-image" src="assets/figs/unit-sketch-square.png" width="1800" height="1800" alt="细致平衡理论示意图：从上到下依次为转移过程示意图，细致平衡公式，以及 prompt 经 LLM 生成与语义抽取形成的单元转移通道">
+</figure>
+</section>
+<div class="section-shell directory-grid" aria-label="五章目录">
+<a href="#motivation">
+<span>01</span>
+<svg class="directory-pictogram" viewBox="0 0 48 48" aria-hidden="true"><path d="M12 24h5 M31 24h4"/><path d="m14 21 4 3-4 3 M32 21l4 3-4 3"/><circle cx="7" cy="24" r="5"/><circle class="icon-accent" cx="24" cy="24" r="5"/><circle cx="41" cy="24" r="5"/></svg>
+<h3>动机</h3>
+</a>
+<a href="#theory">
+<span>02</span>
+<svg class="directory-pictogram" viewBox="0 0 48 48" aria-hidden="true"><path d="M15 16h16 M33 32H17"/><path d="m27 13 4 3-4 3 M21 29l-4 3 4 3"/><circle cx="9" cy="24" r="6"/><circle class="icon-accent" cx="39" cy="24" r="6"/></svg>
+<h3>理论</h3>
+</a>
+<a href="#experiment">
+<span>03</span>
+<svg class="directory-pictogram" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 7v33h33 M13 33l25-23"/><circle class="icon-accent" cx="17" cy="27" r="2.5"/><circle cx="25" cy="23" r="2.5"/><circle class="icon-accent" cx="33" cy="13" r="2.5"/></svg>
+<h3>实验</h3>
+</a>
+<a href="#application">
+<span>04</span>
+<svg class="directory-pictogram" viewBox="0 0 48 48" aria-hidden="true"><circle cx="21" cy="21" r="12"/><path d="m30 30 10 10"/><path class="icon-accent" d="M15 21h12 M21 15v12"/><circle cx="21" cy="21" r="4"/></svg>
+<h3>应用</h3>
+</a>
+<a href="#discussion">
+<span>05</span>
+<svg class="directory-pictogram" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 13v-1 M16 32 14 34 M32 32l2 2"/><circle cx="24" cy="24" r="10"/><text class="directory-question-glyph" x="24" y="32" text-anchor="middle">?</text><circle cx="24" cy="7" r="4"/><circle class="icon-accent" cx="10" cy="37" r="4"/><circle cx="38" cy="37" r="4"/></svg>
+<h3>讨论</h3>
+</a>
+</div>
+<section class="section-shell section" id="motivation">
+<div class="section-heading">
+<p class="eyebrow">01 / MOTIVATION</p>
+<h2>定义语义状态，<br>
+<em>并用 MCMC 测量通道。</em>
+</h2>
+<p>同一个意思，可以由许多不同的 token 序列表达。要理解 agent 的行为，就要从逐 token 的生成概率走向语义状态。</p>
+</div>
+<div class="motivation-strip" role="img" aria-label="从语义状态到 MCMC 测量再到有效势的动机流程">
+<article><span>01 / STATE SPACE</span><strong>语义状态</strong><b>f<sub>1</sub> · f<sub>2</sub> · …</b><p>同一语义允许多条不同的 token 序列实现</p></article>
+<i>→</i>
+<article><span>02 / MCMC MEASUREMENT</span><strong>采样与计数</strong><b>f → g : N<sub>fg</sub></b><p>重复生成并测量固定 context 下不同语义出现的频率</p></article>
+<i>→</i>
+<article><span>03 / QUESTION</span><strong>语义转移通道</strong><b>𝒯(g←f) ∝ N<sub>fg</sub></b><p>如何描述语义状态间的动力学联系？</p></article>
+</div>
+<figure class="panel micro-panel">
+<div class="figure-heading">
+<div>
+<span class="panel-kicker">MICROSCOPIC DEFINITION</span>
+<h3>𝒯 是一整束微观轨迹的概率之和</h3>
+</div>
+<span class="badge">固定环境 c</span>
+</div>
+<div class="micro-bundle" role="group" aria-label="许多不同的 token 序列都可提取为状态 g；展开两条示例，并用更多轨迹和省略号表示其余可能性，最后汇总全部轨迹概率">
+<div class="micro-input">
+<span class="micro-stage-label">01 / 同一个输入</span>
+<strong>f <span aria-hidden="true">→</span> x<sub>f</sub></strong>
+<span>由状态 f 与固定 context 构造 prompt</span>
+</div>
+<div class="micro-branch-label"><span aria-hidden="true">↓</span> LLM 逐 token 生成：不同序列，不同概率</div>
+<div class="micro-bundle-grid">
+<div class="micro-column-label">02 / 通向同一个 g 的微观轨迹</div>
+<div class="micro-column-label micro-result-heading">03 / 汇总这些轨迹的概率</div>
+<div class="micro-path-group">
+<div class="micro-path">
+<div class="micro-path-heading"><b>轨迹 y⁽¹⁾</b><span>p₁ = p<sub>θ</sub>(y⁽¹⁾ | x<sub>f</sub>)</span></div>
+<div class="micro-path-flow">
+<div class="micro-tokens" aria-label="第一条序列的 token 按顺序生成"><span>y₁⁽¹⁾</span><i>→</i><span>y₂⁽¹⁾</span><i>→</i><span>⋯</span><i>→</i><span>EOS</span></div>
+<div class="micro-path-target" aria-label="提取第一条序列的语义状态：state(y⁽¹⁾)=g"><span>语义提取</span><i aria-hidden="true">→</i><b class="micro-state">g</b></div>
+</div>
+</div>
+<div class="micro-path">
+<div class="micro-path-heading"><b>轨迹 y⁽²⁾</b><span>p₂ = p<sub>θ</sub>(y⁽²⁾ | x<sub>f</sub>)</span></div>
+<div class="micro-path-flow">
+<div class="micro-tokens" aria-label="第二条序列的 token 按顺序生成"><span>y₁⁽²⁾</span><i>→</i><span>y₂⁽²⁾</span><i>→</i><span>⋯</span><i>→</i><span>EOS</span></div>
+<div class="micro-path-target" aria-label="提取第二条序列的语义状态：state(y⁽²⁾)=g"><span>语义提取</span><i aria-hidden="true">→</i><b class="micro-state">g</b></div>
+</div>
+</div>
+<div class="micro-many-paths" role="img" aria-label="省略号表示还有许多可提取为状态 g 的轨迹">
+<div class="micro-many-ellipsis" aria-hidden="true">⋮</div>
+</div>
+</div>
+<div class="micro-merge-arrow" aria-hidden="true">→</div>
+<div class="micro-aggregate">
+<span>许多不同轨迹，同一个语义状态</span>
+<b class="micro-state">g</b>
+<strong>𝒯(g←f) = p₁ + p₂ + ⋯</strong>
+<span>把所有通向 g 的轨迹概率相加</span>
+</div>
+</div>
+</div>
+<div class="equation-grid">
+<div>
+<span>沿一条轨迹：条件概率相乘</span>
+<div class="equation">p<sub>θ</sub>(y|x<sub>f</sub>) = ∏<sub>t=1</sub>
+<sup>L</sup> p<sub>θ</sub>(y<sub>t</sub>|y<sub>&lt;t</sub>,x<sub>f</sub>)</div>
+</div>
+<div>
+<span>由所有能够实现 g 的轨迹推出</span>
+<div class="equation">𝒯(g←f) = ∑<sub>y: state(y)=g</sub> p<sub>θ</sub>(y|x<sub>f</sub>)</div>
+</div>
+</div>
+</figure>
+</section>
+<section class="section-shell section" id="theory">
+<div class="section-heading">
+<p class="eyebrow">02 / THEORY</p>
+<h2>找出唯一主导通路，<br>
+<em>再让低概率边显现。</em>
+</h2>
+<p>先取一个可控极限：可达两态之间只有一条主导路径。再为每条转移加入微弱返回，让有序骨架获得可返回的概率。正逆概率的强弱比，成为有效描述的入口。</p>
+</div>
+<div class="assumption-grid">
+<article>
+<span class="big-index">A</span>
+<div class="assumption-content">
+<h3>假设 A：任意可达 f → g，路径至多一条</h3>
+<!-- Original Russian wording retained from the previous subtitle (a retelling of the Baikal–Angara legend):
+У прекрасного Байкала много сыновей, но лишь одна дочь.
+Chinese wording below is this page's translation, not a cited published translation. -->
+<blockquote class="assumption-quote">
+<p class="assumption-subtitle">美丽的贝加尔湖有许多儿子，<br>却只有一个女儿。</p>
+<cite>——俄罗斯传说 贝加尔湖与安加拉河</cite>
+</blockquote>
+<p class="assumption-body">假设训练在模型中塑造的是一个势函数，而不只是一份规则清单。在这个极限中，竞争路径在训练中被压低，只留下一条主导通路，同一祖先不能经两条路抵达同一叶子。</p>
+<div class="assumption-diagram path-principle">
+<svg viewBox="0 0 360 210" role="img" aria-labelledby="path-diagram-title">
+<title id="path-diagram-title">从 f 经中介状态 h₁ 或 h₂ 到达 g：保留蓝色主导路径 f→h₁→g，压低灰色竞争路径 f→h₂→g</title>
+<defs>
+<marker id="path-forward-head" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="14" markerHeight="14" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L11 6 L1 11 Z" fill="#2f77ad"/></marker>
+<marker id="path-suppressed-head" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L11 6 L1 11 Z" fill="#9aaebc"/></marker>
+</defs>
+<path class="path-dominant" d="M76 97 L154 73" marker-end="url(#path-forward-head)"/>
+<path class="path-dominant" d="M206 73 L284 97" marker-end="url(#path-forward-head)"/>
+<path class="path-suppressed" d="M76 113 L154 137" marker-end="url(#path-suppressed-head)"/>
+<path class="path-suppressed" d="M206 137 L284 113" marker-end="url(#path-suppressed-head)"/>
+<path class="path-cross" d="M237 117 L253 133 M253 117 L237 133"/>
+<circle class="return-state" cx="50" cy="105" r="27"/>
+<circle class="return-state path-intermediate" cx="180" cy="65" r="27"/>
+<circle class="return-state path-intermediate" cx="180" cy="145" r="27"/>
+<circle class="return-state" cx="310" cy="105" r="27"/>
+<text class="return-state-label" x="50" y="105">f</text>
+<text class="return-state-label" x="180" y="65">h₁</text>
+<text class="return-state-label" x="180" y="145">h₂</text>
+<text class="return-state-label" x="310" y="105">g</text>
+<text class="return-label forward-label" x="180" y="30">唯一主导路径</text>
+<text class="return-label suppressed-label" x="180" y="193">竞争路径被压低</text>
+</svg>
+</div>
+<div class="equation">f ⇝ g ⇒ #paths(f→g) ≤ 1</div>
+</div>
+</article>
+<article>
+<span class="big-index">B</span>
+<div class="assumption-content">
+<h3>假设 B：每条路径都带着概率返回边</h3>
+<!-- Original: T. S. Eliot, Four Quartets, "Little Gidding", section V:
+And the end of all our exploring
+Will be to arrive where we started
+Chinese wording below is this page's translation, not a cited published translation. -->
+<blockquote class="assumption-quote">
+<p class="assumption-subtitle">我们所有探索的终点，<br>将是回到出发的地方。</p>
+<cite>——艾略特《四个四重奏 · 小吉丁》</cite>
+</blockquote>
+<p class="assumption-body">语言模型不是逻辑推理而是概率预测，因此有主导方向，不应该代表绝不返回。概率采样与语义的不确定性，启发我们为每条主导转移加入微弱回边。在这项假设下，正逆概率比由有效势差组织。</p>
+<div class="assumption-diagram return-diagram">
+<svg viewBox="0 0 360 210" role="img" aria-labelledby="return-diagram-title">
+<title id="return-diagram-title">两个状态 f 与 g：蓝色粗箭头从 f 指向 g，金色细箭头从 g 返回 f</title>
+<defs>
+<marker id="return-forward-head" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="14" markerHeight="14" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L11 6 L1 11 Z" fill="#2f77ad"/></marker>
+<marker id="return-backward-head" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L11 6 L1 11 Z" fill="#b78018"/></marker>
+</defs>
+<path class="return-forward" d="M76 93 C132 59 228 59 284 93" marker-end="url(#return-forward-head)"/>
+<path class="return-backward" d="M284 117 C228 151 132 151 76 117" marker-end="url(#return-backward-head)"/>
+<circle class="return-state" cx="50" cy="105" r="27"/>
+<circle class="return-state" cx="310" cy="105" r="27"/>
+<text class="return-state-label" x="50" y="105">f</text>
+<text class="return-state-label" x="310" y="105">g</text>
+<text class="return-label forward-label" x="180" y="30">主导转移</text>
+<text class="return-label backward-label" x="180" y="193">弱概率返回</text>
+</svg>
+</div>
+<div class="equation">log[𝒯(g←f)/𝒯(f←g)] = β[V(f)−V(g)]</div>
+</div>
+</article>
+</div>
+<figure class="panel theory-figure">
+<span class="panel-kicker">SAMPLE DATA</span>
+<div class="figure-heading sample-data-heading">
+<div><h3>从真实转移中剪出唯一通路骨架</h3></div>
+<span class="badge">真实数据结构</span>
+</div>
+<div class="legend">
+<span class="blue-line">主导路径</span>
+<span class="gold-line">概率返回边</span>
+<span>状态编号对应一个实测状态</span>
+</div>
+<div class="theory-plots">
+<div class="network-block">
+<h4>唯一通路骨架 + 概率返回边</h4>
+<canvas id="dagCanvas" role="img" aria-label="真实 IdeaSearchFitter 数据中的通路骨架和实测回边">
+</canvas>
+</div>
+<div class="matrix-block">
+<h4>同一组通道的 𝒯(f | g) · 按势能排序</h4>
+<canvas id="theoryMatrix" role="img" aria-label="理论通道的真实转移概率矩阵；行和列标出 state 编号，非零单元格标出转移幅度 T(f|g)">
+</canvas>
+</div>
+</div>
+<figcaption>蓝色主导通路与金色返回边来自同一组真实观测；右侧矩阵按势能排序。</figcaption>
+</figure>
+<details class="technical-note sm6-definitions">
+<summary>条件自由能 F 和有效势 V</summary>
+<h4>F：一整束轨迹的条件自由能</h4>
+<p>把序列 y 的概率写成下面的能量形式。E<sub>θ</sub> 描述这条序列的有效能量，Z<sub>θ</sub>(x<sub>f</sub>) 是所有可能输出的权重总和，用于归一化。</p>
+<div class="equation">p<sub>θ</sub>(y|x<sub>f</sub>) = e<sup>−E<sub>θ</sub>(x<sub>f</sub>,y)</sup> / Z<sub>θ</sub>(x<sub>f</sub>)</div>
+<p>固定输入 f，把所有通向 g 的序列权重加起来，再取负对数，就是 F(g|f)。它描述转移中的整体能量差。</p>
+<div class="equation">F(g|f) = −log ∑<sub>y: state(y)=g</sub> e<sup>−E<sub>θ</sub>(x<sub>f</sub>,y)</sup></div>
+<h4>F 与 𝒯：相差一个归一化项</h4>
+<div class="equation">−log 𝒯(g←f) = F(g|f) + log Z<sub>θ</sub>(x<sub>f</sub>)</div>
+<p>对同一个输入 f，F(g|f) 越低，转移到 g 的概率越高。但 F 并非直接等同于 −log𝒯，还要计入输入对应的归一化项。</p>
+<h4>F 与 V：局部方向差由全局势组织</h4>
+<p>在细致平衡成立时，正逆通道的条件自由能之差满足：</p>
+<div class="equation sm6-direction"><span>F(f|g) − F(g|f)</span><span>= β[V(f) − V(g)]</span><span>+ log Z<sub>θ</sub>(x<sub>f</sub>) − log Z<sub>θ</sub>(x<sub>g</sub>)</span></div>
+<p>右侧是同一个状态函数 βV+log Z<sub>θ</sub> 在 f、g 两点的差。这表明当条件自由能F满足 exact 1-form 时，存在一个全局有效势 V，可以用来描述系统的局部行为。这就是所假设条件的微观含义。</p>
+</details>
+</section>
+<section class="section-shell section" id="experiment">
+<div class="section-heading">
+<p class="eyebrow">03 / EXPERIMENT</p>
+<h2>让真实的边，<br>
+<em>决定势能的排序。</em>
+</h2>
+<p>从排序算法中抽象出一个目标：寻找让转移更倾向于“向下”的势能排列。最小作用量把这个目标变成可优化的量。保留真实数据中的局部转移通道，让状态逐渐找到对应全局有效势，看作用量如何随之下降。</p>
+</div>
+<div class="action-definition">
+<div class="equation">𝒮[V] = 1/N ∑<sub>f,g</sub> 𝒯(g←f) K(V(f)−V(g))</div>
+<p>K(x)=log(1+e<sup>−x</sup>)<br>只更新 V，不改动任何转移计数</p>
+</div>
+<figure class="panel optimization-panel">
+<div class="figure-heading">
+<div>
+<span class="panel-kicker">RELAXATION ON IDEASEARCHFITTER</span>
+<h3 id="experimentTitle">在真实通道上寻找势能</h3>
+</div>
+<div class="controls">
+<button id="sortButton" class="button button-primary">开始优化 ↗</button><button id="resetButton" class="button button-quiet">重置</button>
+</div>
+</div>
+<div class="experiment-tabs" role="tablist" aria-label="实验视图">
+<button class="experiment-tab is-active" role="tab" aria-selected="true" data-experiment="sort">可视化势能</button>
+<button class="experiment-tab" role="tab" aria-selected="false" data-experiment="matrix">排序转移矩阵</button>
+<button class="experiment-tab" role="tab" aria-selected="false" data-experiment="scatter">检验细致平衡</button>
+</div>
+<div class="optimization-grid">
+<div id="experimentStage" class="experiment-stage">
+<div id="sortView" class="experiment-view is-active">
+<p>沿同一批真实状态与转移边更新势能；点沿势能方向移动，代表转移中势能下降的绿色边增多，作用量下降。</p>
+<div class="legend experiment-legend">
+<span class="green-line">下降 V(g)&lt;V(f)</span>
+<span class="red-line">上升 V(g)&gt;V(f)</span>
+<span>箭头指向下一状态 · 线宽 ∝𝒯</span>
+</div>
+<canvas id="sortCanvas" role="img" aria-label="真实状态转移图的作用量优化动画">
+</canvas>
+<p id="sortStatus" class="readout view-readout">点击节点查看状态表达式、采样数和势能。</p>
+</div>
+ </div>
+<div class="action-pane">
+<h4>作用量随迭代下降</h4>
+<canvas id="actionCanvas" class="action-plot" role="img" aria-label="真实作用量随迭代下降曲线">
+</canvas>
+</div>
+</div>
+<div class="timeline">
+<label for="iterationRange">迭代 <output id="iterationValue">0 / 240</output>
+</label>
+<input id="iterationRange" type="range" min="0" max="99" value="0" step="0.01" aria-label="拖动查看原始 0 到 240 次迭代的回放">
+</div>
+<div class="live-metrics">
+<div>
+<span id="metricLabel1">全图作用量 𝒮</span>
+<strong id="actionValue">—</strong>
+</div>
+<div>
+<span id="metricLabel2">下降边 / 总边数</span>
+<strong id="secondaryValue">—</strong>
+</div>
+<div>
+<span id="metricLabel3">显示状态 / 拟合总状态</span>
+<strong id="countValue">—</strong>
+</div>
+</div>
+</figure>
+<div class="experiment-detail-grid">
+<figure id="matrixView" class="panel experiment-view">
+<p>行是目标 f，列是源 g。按势能重新排列状态，深色表示更强的转移，上三角对应向低势能流动。观察转移的方向性在热图中显现。</p>
+<canvas id="matrixCanvas" role="img" aria-label="按势能排序的真实转移概率矩阵">
+</canvas>
+<p class="readout" id="matrixStatus">点击格子查看转移概率 𝒯(f|g)。</p>
+</figure>
+<figure id="scatterView" class="panel experiment-view">
+<p>每个点连接一对状态的势差与实测正逆概率比。优化只改变势差，观察点云如何向对角线靠拢。</p>
+<canvas id="scatterCanvas" role="img" aria-label="真实双向转移的对数概率比">
+</canvas>
+<p class="readout view-readout" id="scatterStatus">点击点查看势差与实测正逆概率比。</p>
+</figure>
+</div>
+<div class="comparison panel" id="taskComparison">
+<div class="figure-heading comparison-heading">
+<div>
+<span class="panel-kicker">ROBUSTNESS ACROSS TASKS AND MODELS</span>
+<h3>跨越任务和时间检验理论</h3>
+</div>
+</div>
+<div class="task-tabs" role="tablist" aria-label="跨任务与时间演化">
+<button class="task-tab is-active" role="tab" aria-selected="true" data-task="robustness">跨任务检验</button>
+<button class="task-tab" role="tab" aria-selected="false" data-task="timeline">跨模型检验</button>
+</div>
+<div class="task-panel is-active" id="task-robustness" role="tabpanel">
+<p>从表达式到单词与数字，切换任务，看同一条势差关系如何出现在不同的生成空间中。每个任务的 Pearson r 都在该任务的全部合格双向状态对上计算。不同任务上模型均表现出向细致平衡的趋势。</p>
+<label class="task-picker" for="robustTaskSelect">选择任务 <select id="robustTaskSelect" aria-label="选择真实转移任务"></select></label>
+<div class="cross-task-layout"><canvas id="crossTaskCanvas" class="cross-task-plot" role="img" aria-label="所选任务的实测 log T/T 与 Delta V 散点图"></canvas><div id="crossTaskList" class="cross-task-list" aria-live="polite"></div></div>
+</div>
+<div class="task-panel" id="task-timeline" role="tabpanel" hidden>
+<p>沿时间比较同一任务池中的模型版本。这里先对每个任务的合格双向状态对计算 <em>r<sub>t</sub></em>（比较 log[T(g←f)/T(f←g)] 与 ΔV），再按该任务的双向对数量 <em>n<sub>t</sub></em> 加权计算皮尔逊相关系数：<em>R = Σ n<sub>t</sub>r<sub>t</sub> / Σ n<sub>t</sub></em>。横轴按版本先后排列，快照于 2026-08-14 09:38（北京时间）冻结。随着模型迭代，细致平衡的趋势逐渐增强。</p>
+<canvas id="timelineCanvas" class="timeline-plot" role="img" aria-label="Qwen 模型版本随时间的任务 Pearson r；按双向状态对数量加权"></canvas>
+</div>
+</div>
+<div class="source-links">
+<a href="https://arxiv.org/abs/2512.10047" target="_blank" rel="noopener">论文与补充材料 ↗</a>
+<a href="https://huggingface.co/datasets/Nondegeneracy/detailed-balance-llm" target="_blank" rel="noopener">公开数据 · CC BY 4.0 ↗</a>
+<a href="https://github.com/SonnyNondegeneracy/detialed-balance-llm" target="_blank" rel="noopener">分析代码· MIT Licence ↗</a>
+</div>
+</section>
+<section class="section-shell section" id="application">
+<div class="section-heading">
+<p class="eyebrow">04 / APPLICATION</p>
+<h2>从描述行为，<br>
+<em>走向设计行为。</em>
+</h2>
+<p>模型容易到达的地方，未必是任务需要的地方。若有效势描述满足稳态收敛条件，π(f)∝e<sup>−βV(f)</sup>。通过加入目标偏置重塑稳态，可以让搜索更多地到达目标区域。</p>
+</div>
+<div class="bias-flow panel">
+<div>
+<span>识别原有偏好</span>
+<strong>V(f)</strong>
+</div>
+<i>→</i>
+<div>
+<span>改变外部偏置</span>
+<strong>βV(f) − βtarget(f)</strong>
+</div>
+<i>→</i>
+<div>
+<span>引导模型行为</span>
+<strong>π<sub>h</sub>(f)</strong>
+</div>
+</div>
+<figure class="panel application-dynamics">
+<div class="figure-heading">
+<div>
+<span class="panel-kicker">SEARCH DYNAMICS ON IDEASEARCHFITTER</span>
+<h3>外部偏置如何把随机轨迹推向目标区域？</h3>
+</div>
+<span class="badge">真实状态空间演示</span>
+</div>
+<p class="application-lede">在给定的状态空间中，逐渐增加偏置的大小，观察一个迭代智能体在状态空间上游走的轨迹如何从原本的方向向外部偏置鼓励的方向漂移。</p>
+<div class="application-controls">
+<label for="biasRange">外部偏置 β <output id="biasValue">0.00</output></label>
+<input id="biasRange" type="range" min="0" max="100" value="0" step="1" aria-label="连续调节 β，从 0 到无穷大">
+<output class="temperature-readout" id="biasTemperature">T=∞</output>
+<button id="biasPlay" class="button button-primary">增加偏置 ↗</button>
+<button id="biasReset" class="button button-quiet">重置</button>
+</div>
+<div class="application-graph-wrap"><canvas id="biasCanvas" role="img" aria-label="真实 IdeaSearchFitter 状态图上的偏置随机动力学轨迹"></canvas></div>
+<div class="legend application-legend" aria-label="图中三条垂直线的含义">
+<span><i class="axis-potential"></i>最低势能所在的 MSE</span>
+<span><i class="axis-mse"></i>全图最低 MSE</span>
+<span><i class="axis-trajectory"></i>当前偏置下轨迹可达的最低 MSE</span>
+</div>
+<div class="bias-readout"><div><span>探索阶段</span><b id="biasDomain">原有偏好</b></div><div><span>当前轨迹的最低 MSE</span><b id="biasHit">—</b></div></div>
+</figure>
+<div class="research-grid">
+<a href="https://doi.org/10.1007/JHEP06(2026)225" target="_blank" rel="noopener">
+<span>01 / FEYNMAN INTEGRALS</span>
+<h3>费曼积分约化 ↗</h3>
+<p>搜索 priority function，确定性优化 IBP 约化算法</p>
+</a>
+<a href="https://arxiv.org/abs/2505.06347" target="_blank" rel="noopener">
+<span>02 / QUANTUM CIRCUITS</span>
+<h3>量子线路初态制备 ↗</h3>
+<p>生成式搜索发现高效的线路结构</p>
+</a>
+<a href="https://doi.org/10.1088/1572-9494/aea105" target="_blank" rel="noopener">
+<span>03 / SYMBOLIC REGRESSION</span>
+<h3>迭代式符号回归 ↗</h3>
+<p>在表达式状态空间中持续搜索</p>
+</a>
+</div>
+</section>
+<section class="section-shell section" id="discussion">
+<div class="section-heading">
+<p class="eyebrow">05 / DISCUSSION</p>
+<h2>若干讨论，<br>
+<em>非平衡效应、方法论和意义。</em>
+</h2>
+<p>一个势能，不必穷尽生成的全部细节。它的价值在于：明确主要结构，并说明如何修正。它把不同视角的研究连接起来。</p>
+</div>
+
+<article class="discussion-block panel" aria-labelledby="discussion-boundary-title">
+<header class="discussion-block-heading">
+<span class="discussion-number">01</span>
+<div><span class="panel-kicker">THE BOUNDARY</span><h3 id="discussion-boundary-title"><span class="discussion-title-part">转移路径有环时的平衡态</span></h3></div>
+</header>
+<div class="discussion-cycle-layout">
+<figure class="discussion-cycle-figure">
+<svg class="discussion-cycle-svg" viewBox="0 0 390 270" role="img" aria-labelledby="discussion-cycle-title discussion-cycle-desc">
+<title id="discussion-cycle-title">同一祖先经两条路径抵达同一后继</title>
+<desc id="discussion-cycle-desc">定义概率势能的基准模型已经包含正向与返回通道。现实中额外存在不同中介路径，图中 f 经 h₁ 或 h₂ 到 g，且每条边均可反向通过，构成正、逆闭环。</desc>
+<defs>
+<marker id="discussion-arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#2f77ad"/></marker>
+<marker id="discussion-arrow-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#b78c22"/></marker>
+</defs>
+<g fill="none" stroke="#2f77ad" stroke-width="4" marker-end="url(#discussion-arrow-blue)">
+<path d="M65 111 163 51"/><path d="M222 51 321 111"/>
+<path d="M73 150 172 210"/><path d="M215 210 313 150"/>
+</g>
+<g fill="none" stroke="#b78c22" stroke-width="2" marker-end="url(#discussion-arrow-gold)">
+<path d="M174 65 76 125"/><path d="M310 125 211 65"/>
+<path d="M162 224 63 164"/><path d="M323 164 225 224"/>
+</g>
+<g fill="#eaf4ff" stroke="#2f77ad" stroke-width="2.5"><circle cx="48" cy="138" r="27"/><circle cx="195" cy="44" r="27"/><circle cx="195" cy="230" r="27"/></g>
+<circle cx="340" cy="138" r="27" fill="#fff3c9" stroke="#b78c22" stroke-width="2.5"/>
+<g fill="#173b62" font-size="26" text-anchor="middle" dominant-baseline="central"><text x="48" y="138">f</text><text x="195" y="44">h₁</text><text x="195" y="230">h₂</text><text x="340" y="138">g</text></g>
+<text x="195" y="136" text-anchor="middle" fill="#173b62" font-size="21">双向闭环</text>
+<text x="195" y="165" text-anchor="middle" fill="#68809a" font-size="18">比较正逆权重之积</text>
+</svg>
+<div class="discussion-legend"><span><i class="discussion-line-blue"></i>主导转移</span><span><i class="discussion-line-gold"></i>弱返回</span></div>
+<figcaption>现实的多路径结构会构成双向闭环，为细致平衡的描述能力画出边界。</figcaption>
+</figure>
+<div class="discussion-cycle-reading">
+<div class="discussion-test">
+<span>定义势差时，正向与返回通道已经同时存在。现实中，同一祖先可能经不同路径抵达同一后继，此时，</span>
+<strong>log(P₊ / P₋) = 0,<span>就是待检验的零假设，其中正向一周的概率乘积 P₊ ，逆向为 P₋。即：这些环上的正逆概率比，能否仍由同一个势能统一描述？</span></strong>
+</div>
+<div class="discussion-finding"><span>正文闭环检验</span><h4>在当前采样误差内，<br>尚不能拒绝正逆对称。</h4><p>若检测到可靠的非零环流，单一势能才不足以描述全部方向性，需要进一步引入非平衡修正。</p></div>
+</div>
+</div>
+</article>
+
+<article class="discussion-block discussion-method panel" aria-labelledby="discussion-method-title">
+<header class="discussion-block-heading">
+<span class="discussion-number">02</span>
+<div><span class="panel-kicker">THE METHOD</span><h3 id="discussion-method-title"><span class="discussion-title-part">微扰论的应用</span></h3></div>
+</header>
+<p class="discussion-intro">不必先给复杂现实找到一条精确规律。先提取主导结构，把它推进到可解的极限，再用数据判断这个极限是否能够描述现实。</p>
+<ol class="discussion-method-steps">
+<li><span class="discussion-step-label">识别主导结构</span>
+<svg viewBox="0 0 260 140" role="img" aria-label="六个状态与六条通道，识别其中占主导的五条方向">
+<g fill="none" stroke="#2f77ad" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M41 35 119 66"/><path d="M217 35 141 66"/><path d="M139 78 217 108"/><path d="M119 77 41 111"/><path d="M130 27V58"/></g>
+<g fill="none" stroke="#2f77ad" stroke-width="2.6" stroke-linecap="round" marker-end="url(#discussion-arrow-blue)"><path d="M71 47 93 56"/><path d="M188 47 165 56"/><path d="M164 88 187 97"/><path d="M94 88 71 98"/><path d="M130 32V47"/></g>
+<path d="M230 42V103" fill="none" stroke="#b9cad9" stroke-width="3" stroke-linecap="round"/>
+<g fill="#eaf4ff" stroke="#2f77ad" stroke-width="2.5"><circle cx="30" cy="30" r="11"/><circle cx="130" cy="70" r="12"/><circle cx="230" cy="30" r="11"/><circle cx="230" cy="115" r="11"/><circle cx="30" cy="115" r="11"/><circle cx="130" cy="15" r="10"/></g>
+</svg>
+<h4>从转移中看见结构</h4><p>语言模型的生成有倾向性，生成通道稀疏。</p></li>
+<li><span class="discussion-step-label">建立自洽描述</span>
+<svg viewBox="0 0 260 140" role="img" aria-label="同一六点六边结构中加入势能方向与弱返回边">
+<g fill="none" stroke="#86a9c1" stroke-width="1.6" stroke-dasharray="4 4" opacity=".72"><path d="M18 15H242"/><path d="M18 30H242"/><path d="M18 70H242"/><path d="M18 115H242"/></g>
+<g fill="none" stroke="#2f77ad" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M41 35 119 66"/><path d="M217 35 141 66"/><path d="M139 78 217 108"/><path d="M119 77 41 111"/><path d="M130 27V58"/></g>
+<g fill="none" stroke="#2f77ad" stroke-width="2.6" stroke-linecap="round" marker-end="url(#discussion-arrow-blue)"><path d="M71 47 93 56"/><path d="M188 47 165 56"/><path d="M164 88 187 97"/><path d="M94 88 71 98"/><path d="M130 32V47"/></g>
+<path d="M230 42V103" fill="none" stroke="#b9cad9" stroke-width="3" stroke-linecap="round"/>
+<g fill="none" stroke="#b78c22" stroke-width="2" stroke-linecap="round" marker-end="url(#discussion-arrow-gold)"><path d="M93 56 71 47"/><path d="M165 56 188 47"/><path d="M187 97 164 88"/><path d="M71 98 94 88"/><path d="M130 47V32"/></g>
+<g fill="#eaf4ff" stroke="#2f77ad" stroke-width="2.5"><circle cx="30" cy="30" r="11"/><circle cx="130" cy="70" r="12"/><circle cx="230" cy="30" r="11"/><circle cx="230" cy="115" r="11"/><circle cx="30" cy="115" r="11"/><circle cx="130" cy="15" r="10"/></g>
+<text x="248" y="13" text-anchor="end" fill="#2f77ad" font-size="17" font-weight="600">V ↓</text>
+</svg>
+<h4>由正逆概率比定义势</h4><p>基于概率模型的本质给出最小描述。</p></li>
+<li><span class="discussion-step-label">检验现实情况</span>
+<svg viewBox="0 0 260 140" role="img" aria-label="六点结构恢复回边，在三角形内比较正环与逆环">
+<g fill="none" stroke="#2f77ad" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M41 35 119 66"/><path d="M217 35 141 66"/><path d="M139 78 217 108"/><path d="M41 111 119 77"/><path d="M130 27V58"/><path d="M230 42V103"/></g>
+<g fill="none" stroke="#2f77ad" stroke-width="2.5" stroke-linecap="round" marker-end="url(#discussion-arrow-blue)"><path d="M190 46 153 61"/><path d="M230 78V49"/><path d="M167 87 207 103"/></g>
+<g fill="none" stroke="#b78c22" stroke-width="1.9" stroke-linecap="round" marker-end="url(#discussion-arrow-gold)"><path d="M153 54 190 39"/><path d="M224 49V78"/><path d="M207 96 167 80"/></g>
+<g fill="#eaf4ff" stroke="#2f77ad" stroke-width="2.5"><circle cx="30" cy="30" r="11"/><circle cx="130" cy="70" r="12"/><circle cx="230" cy="30" r="11"/><circle cx="230" cy="115" r="11"/><circle cx="30" cy="115" r="11"/><circle cx="130" cy="15" r="10"/></g>
+</svg>
+<h4>在实际通道上检验势</h4><p>比较绕现实中多路径的正逆概率乘积，检验势能描述。</p></li>
+</ol>
+</article>
+
+<article class="discussion-block panel" aria-labelledby="discussion-bridge-title">
+<header class="discussion-block-heading">
+<span class="discussion-number">03</span>
+<div><span class="panel-kicker">THE BRIDGE</span><h3 id="discussion-bridge-title"><span class="discussion-title-part">向微观追溯，向宏观预测</span></h3></div>
+</header>
+<p class="discussion-intro">如同热力学不必追踪每个粒子，势能表示把完整输出的 token 序列构成的系综压缩为可测的宏观状态关系：向下可以追溯生成过程的 token 动力学，向上可以组织稳态、响应与搜索的设计。</p>
+<div class="discussion-scale-bridge">
+<div class="discussion-scale-side">
+<span class="discussion-step-label">微观生成</span><h4>许多 token 轨迹</h4>
+<div class="discussion-token-cloud" aria-hidden="true"><span>y⁽¹⁾</span><span>y⁽²⁾</span><span>⋯</span></div>
+<p>研究生成过程中 token 的微观动力学</p>
+</div>
+<div class="discussion-scale-center"><span class="discussion-bridge-arrow" aria-hidden="true">→</span><div><span>桥梁</span><strong>𝒯 → V</strong><p>用全局势能表示组织局部状态转移</p></div><span class="discussion-bridge-arrow" aria-hidden="true">→</span></div>
+<div class="discussion-scale-side"><span class="discussion-step-label">宏观行为</span><h4>少数可检验的量</h4><div class="discussion-observables"><span>稳态 π</span><span>响应 χ</span><span>⋯</span></div><p>研究真实 agent 的宏观行为模式</p></div>
+</div>
+</article>
+</section>
+</main>
+<footer class="data-provenance section-shell">
+<b>DETAILED BALANCE</b> · Song et al. <a href="https://arxiv.org/abs/2512.10047">arXiv:2512.10047 (PRX Intelligence Accepted)</a> · 数据与方法可由论文、公开数据集及分析代码追溯；实验图来自真实记录，网页动画为基于真实状态的演示。
+</footer>
+<script src="script.js?v=20260920-relaxation-layout">
+</script>
+</body>
+</html>
