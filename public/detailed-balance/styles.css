@@ -304,3 +304,4 @@ figure.panel{margin-left:0;margin-right:0}
 .section{padding-top:108px;padding-bottom:108px}
 .badge{padding:8px 11px;font-size:12.5px}
 @media(max-width:650px){.section{padding-top:88px;padding-bottom:88px}.badge{font-size:12px}}
+.language-toggle{padding:8px 13px;border:1px solid rgba(93,168,232,.32);border-radius:999px;color:var(--deep);background:rgba(255,255,255,.66);font:500 11px var(--mono);letter-spacing:.08em;transition:.2s var(--ease)}.language-toggle:hover{border-color:var(--blue);background:#fff;transform:translateY(-1px)}

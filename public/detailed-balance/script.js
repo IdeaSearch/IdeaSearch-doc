@@ -14,6 +14,109 @@ links?.querySelectorAll('a').forEach(link => link.addEventListener('click', () =
   menu?.classList.remove('is-open'); links?.classList.remove('is-open'); menu?.setAttribute('aria-expanded', 'false');
 }));
 
+// The article page is bilingual.  These translations follow the paper's
+// terminology: agent, semantic state, transition channel, conditional free
+// energy, exact 1-form, effective potential, and detailed balance.
+const englishText = {
+  '动机':'Motivation','理论':'Theory','实验':'Experiment','应用':'Application','讨论':'Discussion',
+  '当生成变成一种':'When generation becomes','可测的动力学':'a measurable dynamics',
+  '一个生活在特定 context 中的 LLM agent，如何在语义状态间移动？把它的转移通道量出来，再寻找组织这些转移的有效势。':'How does an LLM agent living in a fixed context move between semantic states? Measure its transition channels, then look for the effective potential that organizes them.',
+  '阅读论文 ↗':'Read the paper ↗',
+  '定义语义状态，':'Define semantic states,','并用 MCMC 测量通道。':'and measure channels with MCMC.',
+  '同一个意思，可以由许多不同的 token 序列表达。要理解 agent 的行为，就要从逐 token 的生成概率走向语义状态。':'The same meaning can be expressed by many token sequences. To understand an agent, move from token-by-token generation probabilities to semantic states.',
+  '语义状态':'Semantic state','采样与计数':'Sampling and counting','语义转移通道':'Semantic transition channel',
+  '同一语义允许多条不同的 token 序列实现':'One semantic state can have many token realizations',
+  '重复生成并测量固定 context 下不同语义出现的频率':'Repeat generation and measure semantic frequencies in a fixed context',
+  '如何描述语义状态间的动力学联系？':'How should the dynamics between semantic states be described?',
+  '𝒯 是一整束微观轨迹的概率之和':'𝒯 is the probability sum over a bundle of microscopic trajectories',
+  '固定环境 c':'fixed context c','01 / 同一个输入':'01 / The same input','由状态 f 与固定 context 构造 prompt':'Build a prompt from state f and the fixed context',
+  'LLM 逐 token 生成：不同序列，不同概率':'LLM token-by-token generation: different sequences, different probabilities',
+  '轨迹 y⁽¹⁾':'Trajectory y⁽¹⁾','轨迹 y⁽²⁾':'Trajectory y⁽²⁾','语义提取':'Semantic extraction',
+  '许多不同轨迹，同一个语义状态':'Many trajectories, one semantic state','把所有通向 g 的轨迹概率相加':'Sum the probabilities of all trajectories reaching g',
+  '沿一条轨迹：条件概率相乘':'Along one trajectory: multiply conditional probabilities','由所有能够实现 g 的轨迹推出':'Collect all trajectories that realize g',
+  '找出唯一主导通路，':'Find the unique dominant path,','再让低概率边显现。':'then reveal low-probability return edges.',
+  '先取一个可控极限：可达两态之间只有一条主导路径。再为每条转移加入微弱返回，让有序骨架获得可返回的概率。正逆概率的强弱比，成为有效描述的入口。':'First take a controlled limit: at most one dominant path connects any reachable pair. Add a weak return edge to every transition so the ordered backbone remains probabilistic. The forward–reverse ratio is the entry point for an effective description.',
+  '假设 A：任意可达 f → g，路径至多一条':'Assumption A: at most one path connects any reachable f → g',
+  '美丽的贝加尔湖有许多儿子，':'Beautiful Lake Baikal has many sons,','却只有一个女儿。':'but only one daughter.',
+  '假设训练在模型中塑造的是一个势函数，而不只是一份规则清单。在这个极限中，竞争路径在训练中被压低，只留下一条主导通路，同一祖先不能经两条路抵达同一叶子。':'Assume that training shapes a potential function, not merely a list of rules. In this limit, competing paths are suppressed and one dominant route remains: the same ancestor cannot reach the same leaf by two routes.',
+  '假设 B：每条路径都带着概率返回边':'Assumption B: every path carries a probabilistic return edge',
+  '我们所有探索的终点，':'The end of all our exploring','将是回到出发的地方。':'will be to arrive where we started.',
+  '语言模型不是逻辑推理而是概率预测，因此有主导方向，不应该代表绝不返回。概率采样与语义的不确定性，启发我们为每条主导转移加入微弱回边。在这项假设下，正逆概率比由有效势差组织。':'An LLM is a probabilistic predictor, not a deductive logic engine. A dominant direction therefore does not mean an impossible return. Sampling and semantic uncertainty motivate a weak return edge for every dominant transition. Under this assumption, forward–reverse ratios are organized by effective potential differences.',
+  '从真实转移中剪出唯一通路骨架':'Prune a unique-path backbone from real transitions','真实数据结构':'Real data structure','主导路径':'Dominant path','概率返回边':'Probabilistic return edge','状态编号对应一个实测状态':'Each state index denotes a measured state',
+  '唯一通路骨架 + 概率返回边':'Unique-path backbone + probabilistic return edges','同一组通道的 𝒯(f | g) · 按势能排序':'𝒯(f | g) for the same channels · ordered by potential','蓝色主导通路与金色返回边来自同一组真实观测；右侧矩阵按势能排序。':'The blue dominant paths and gold return edges come from the same observations; the matrix on the right is ordered by potential.',
+  'F：一整束轨迹的条件自由能':'F: conditional free energy of a trajectory bundle','把序列 y 的概率写成下面的能量形式。E θ 描述这条序列的有效能量，Z θ (x f ) 是所有可能输出的权重总和，用于归一化。':'Write the probability of sequence y in the energy form below. Eθ is the effective energy of the sequence; Zθ(xf) is the total weight of all possible outputs and normalizes the distribution.',
+  '固定输入 f，把所有通向 g 的序列权重加起来，再取负对数，就是 F(g|f)。它描述转移中的整体能量差。':'For fixed input f, sum the weights of all sequences reaching g and take the negative logarithm: this is F(g|f), the aggregate energy difference of the transition.',
+  'F 与 𝒯：相差一个归一化项':'F and 𝒯: separated by a normalization term','对同一个输入 f，F(g|f) 越低，转移到 g 的概率越高。但 F 并非直接等同于 −log𝒯，还要计入输入对应的归一化项。':'For the same input f, a lower F(g|f) means a higher probability of reaching g. But F is not simply −log𝒯; the input-dependent normalization term must also be included.',
+  'F 与 V：局部方向差由全局势组织':'F and V: local directional differences organized by a global potential','在细致平衡成立时，正逆通道的条件自由能之差满足：':'When detailed balance holds, the conditional free-energy difference of forward and reverse channels obeys:',
+  '右侧是同一个状态函数 βV+log Z θ 在 f、g 两点的差。这表明当条件自由能F满足 exact 1-form 时，存在一个全局有效势 V，可以用来描述系统的局部行为。这就是所假设条件的微观含义。':'The right-hand side is the difference of one state function, βV + log Zθ, evaluated at f and g. When the conditional free energy F is an exact 1-form, a global effective potential V exists to describe local behavior. This is the microscopic meaning of the assumption.',
+  '让真实的边，':'Let real edges','决定势能的排序。':'determine the potential ordering.',
+  '从排序算法中抽象出一个目标：寻找让转移更倾向于“向下”的势能排列。最小作用量把这个目标变成可优化的量。保留真实数据中的局部转移通道，让状态逐渐找到对应全局有效势，看作用量如何随之下降。':'Abstract a target from sorting algorithms: find a potential ordering that makes transitions preferentially move downhill. The minimum action turns this target into an optimizable quantity. Keep the measured local channels, let states discover a global effective potential, and watch the action decrease.',
+  '只更新 V，不改动任何转移计数':'Update V only; do not change any transition counts','在真实通道上寻找势能':'Find the potential on real channels','开始优化 ↗':'Play optimization ↗','重置':'Reset','可视化势能':'Visualize potential','排序转移矩阵':'Order transition matrix','检验细致平衡':'Test detailed balance',
+  '沿同一批真实状态与转移边更新势能；点沿势能方向移动，代表转移中势能下降的绿色边增多，作用量下降。':'Update the potential on the same measured states and transition edges. Points move along the potential direction; more green downhill edges indicate a decreasing action.',
+  '下降 V(g)<V(f)':'Downhill V(g)<V(f)','上升 V(g)>V(f)':'Uphill V(g)>V(f)','箭头指向下一状态 · 线宽 ∝𝒯':'Arrows point to the next state · width ∝ 𝒯','点击节点查看状态表达式、采样数和势能。':'Click a node to inspect its state expression, sample count, and potential.','作用量随迭代下降':'Action decreases with iteration','迭代':'Iteration','全图作用量 𝒮':'Global action 𝒮','下降边 / 总边数':'Downhill edges / total edges','显示状态 / 拟合总状态':'Displayed states / fitted states',
+  '行是目标 f，列是源 g。按势能重新排列状态，深色表示更强的转移，上三角对应向低势能流动。观察转移的方向性在热图中显现。':'Rows are target f and columns are source g. Reorder states by potential; darker cells are stronger transitions, and the upper triangle corresponds to downhill flow.',
+  '点击格子查看转移概率 𝒯(f|g)。':'Click a cell to inspect the transition probability 𝒯(f|g).','每个点连接一对状态的势差与实测正逆概率比。优化只改变势差，观察点云如何向对角线靠拢。':'Each point pairs a state-potential difference with a measured forward–reverse probability ratio. Optimization changes only the potential difference; watch the cloud approach the diagonal.','点击点查看势差与实测正逆概率比。':'Click a point to inspect the potential difference and measured forward–reverse ratio.',
+  '跨越任务和时间检验理论':'Test the theory across tasks and time','跨任务检验':'Across tasks','跨模型检验':'Across models','从表达式到单词与数字，切换任务，看同一条势差关系如何出现在不同的生成空间中。每个任务的 Pearson r 都在该任务的全部合格双向状态对上计算。不同任务上模型均表现出向细致平衡的趋势。':'Switch from expressions to words and numbers to see the same potential-difference relation across generation spaces. Pearson r is computed on every qualified bidirectional state pair in each task. The trend toward detailed balance appears across tasks.','选择任务':'Choose a task','沿时间比较同一任务池中的模型版本。这里先对每个任务的合格双向状态对计算 r t （比较 log[T(g←f)/T(f←g)] 与 ΔV），再按该任务的双向对数量 n t 加权计算皮尔逊相关系数： R = Σ n t r t / Σ n t 。横轴按版本先后排列，快照于 2026-08-14 09:38（北京时间）冻结。随着模型迭代，细致平衡的趋势逐渐增强。':'Compare model versions on the same task pool over time. First compute rₜ for qualified bidirectional pairs in each task, comparing log[T(g←f)/T(f←g)] with ΔV; then compute the Pearson coefficient weighted by the number nₜ of bidirectional pairs: R = Σ nₜrₜ / Σ nₜ. Versions are ordered chronologically; the snapshot was frozen on 2026-08-14 09:38 Beijing time. The trend toward detailed balance strengthens across model iterations.',
+  '论文与补充材料 ↗':'Paper and Supplemental Material ↗','公开数据 · CC BY 4.0 ↗':'Public data · CC BY 4.0 ↗','分析代码· MIT Licence ↗':'Analysis code · MIT Licence ↗',
+  '从描述行为，':'From describing behavior,','走向设计行为。':'to designing behavior.','模型容易到达的地方，未必是任务需要的地方。若有效势描述满足稳态收敛条件，π(f)∝e −βV(f) 。通过加入目标偏置重塑稳态，可以让搜索更多地到达目标区域。':'Where a model easily goes is not necessarily where the task requires. When the effective-potential description admits a stationary limit, π(f)∝e−βV(f). An external target bias reshapes the stationary distribution and can steer search toward the target region.',
+  '识别原有偏好':'Identify the existing preference','改变外部偏置':'Change the external bias','引导模型行为':'Steer model behavior','外部偏置如何把随机轨迹推向目标区域？':'How does an external bias steer random trajectories toward a target region?','真实状态空间演示':'Measured state-space demonstration','在给定的状态空间中，逐渐增加偏置的大小，观察一个迭代智能体在状态空间上游走的轨迹如何从原本的方向向外部偏置鼓励的方向漂移。':'In a fixed state space, gradually increase the bias and observe how an iterated agent drifts from its original direction toward the direction favored by the external bias.','外部偏置 β':'External bias β','增加偏置 ↗':'Increase bias ↗','最低势能所在的 MSE':'MSE at the lowest potential','全图最低 MSE':'Lowest MSE in the full graph','当前偏置下轨迹可达的最低 MSE':'Lowest MSE reachable by the current biased trajectory','探索阶段':'Exploration regime','当前轨迹的最低 MSE':'Lowest MSE on the current trajectory',
+  '费曼积分约化 ↗':'Feynman-integral reduction ↗','搜索 priority function，确定性优化 IBP 约化算法':'Search for a priority function and deterministically optimize IBP reduction','量子线路初态制备 ↗':'Quantum-circuit initial-state preparation ↗','生成式搜索发现高效的线路结构':'Generative search discovers efficient circuit structures','迭代式符号回归 ↗':'Iterated symbolic regression ↗','在表达式状态空间中持续搜索':'Continue searching in an expression state space',
+  '若干讨论，':'Three discussions:','非平衡效应、方法论和意义。':'nonequilibrium effects, methodology, and meaning.','一个势能，不必穷尽生成的全部细节。它的价值在于：明确主要结构，并说明如何修正。它把不同视角的研究连接起来。':'A potential need not exhaust every detail of generation. Its value is to make the dominant structure explicit and show how to correct it. It connects several levels of description.',
+  '转移路径有环时的平衡态':'Equilibrium when transition paths form cycles','主导转移':'Dominant transition','弱返回':'Weak return','现实的多路径结构会构成双向闭环，为细致平衡的描述能力画出边界。':'Multiple paths in reality form bidirectional cycles, marking the boundary of a detailed-balance description.','定义势差时，正向与返回通道已经同时存在。现实中，同一祖先可能经不同路径抵达同一后继，此时，':'When defining a potential difference, forward and return channels already coexist. In reality, the same ancestor may reach the same successor by different paths; then,','就是待检验的零假设，其中正向一周的概率乘积 P₊ ，逆向为 P₋。即：这些环上的正逆概率比，能否仍由同一个势能统一描述？':'is the null hypothesis to test. The forward cycle has probability product P₊ and the reverse cycle P₋. Can the forward–reverse ratio around these cycles still be unified by one potential?','正文闭环检验':'Main-text cycle test','在当前采样误差内，':'Within current sampling error,','尚不能拒绝正逆对称。':'forward–reverse symmetry cannot be rejected.','若检测到可靠的非零环流，单一势能才不足以描述全部方向性，需要进一步引入非平衡修正。':'Only a reliable nonzero circulation would show that one potential is insufficient for all directional structure and that a nonequilibrium correction is needed.',
+  '微扰论的应用':'Applying perturbation theory','不必先给复杂现实找到一条精确规律。先提取主导结构，把它推进到可解的极限，再用数据判断这个极限是否能够描述现实。':'We need not first find an exact law for a complex reality. Extract the dominant structure, push it to a solvable limit, and use data to test whether that limit describes reality.','识别主导结构':'Identify the dominant structure','从转移中看见结构':'Read structure from transitions','语言模型的生成有倾向性，生成通道稀疏。':'LLM generation is directional and its transition channels are sparse.','建立自洽描述':'Build a self-consistent description','由正逆概率比定义势':'Define a potential from forward–reverse ratios','基于概率模型的本质给出最小描述。':'The probability model itself supplies the minimal description.','检验现实情况':'Test the real system','在实际通道上检验势':'Test the potential on real channels','比较绕现实中多路径的正逆概率乘积，检验势能描述。':'Compare forward and reverse probability products around real multistep paths to test the potential description.',
+  '向微观追溯，向宏观预测':'Trace the microscopic, predict the macroscopic','如同热力学不必追踪每个粒子，势能表示把完整输出的 token 序列构成的系综压缩为可测的宏观状态关系：向下可以追溯生成过程的 token 动力学，向上可以组织稳态、响应与搜索的设计。':'As thermodynamics need not track every particle, the potential representation compresses the ensemble of complete token sequences into measurable macroscopic state relations: downward it traces token dynamics; upward it organizes stationary behavior, response, and search design.','微观生成':'Microscopic generation','许多 token 轨迹':'Many token trajectories','研究生成过程中 token 的微观动力学':'Study token-level microscopic dynamics during generation','桥梁':'Bridge','用全局势能表示组织局部状态转移':'Use a global potential to organize local state transitions','宏观行为':'Macroscopic behavior','少数可检验的量':'A few measurable quantities','稳态 π':'Stationary π','响应 χ':'Response χ','研究真实 agent 的宏观行为模式':'Study macroscopic patterns of real agents'
+  ,'02 / 通向同一个 g 的微观轨迹':'02 / Microscopic trajectories reaching the same g','03 / 汇总这些轨迹的概率':'03 / Aggregate the probabilities of these trajectories','——俄罗斯传说 贝加尔湖与安加拉河':'— Russian legend: Lake Baikal and the Angara River','从 f 经中介状态 h₁ 或 h₂ 到达 g：保留蓝色主导路径 f→h₁→g，压低灰色竞争路径 f→h₂→g':'From f to g through intermediate h₁ or h₂: retain the blue dominant path f→h₁→g and suppress the gray competing path f→h₂→g','唯一主导路径':'Unique dominant path','竞争路径被压低':'Competing path suppressed','——艾略特《四个四重奏 · 小吉丁》':'— T. S. Eliot, Four Quartets: Little Gidding','两个状态 f 与 g：蓝色粗箭头从 f 指向 g，金色细箭头从 g 返回 f':'Two states f and g: a thick blue arrow goes from f to g; a thin gold arrow returns from g to f','弱概率返回':'Weak-probability return','条件自由能 F 和有效势 V':'Conditional free energy F and effective potential V','把序列 y 的概率写成下面的能量形式。E':'Write the probability of sequence y in the energy form below. E','描述这条序列的有效能量，Z':' is the effective energy of the sequence; Z',') 是所有可能输出的权重总和，用于归一化。':') is the total weight of all possible outputs and normalizes the distribution.','右侧是同一个状态函数 βV+log Z':'The right-hand side is one state function, βV + log Z','在 f、g 两点的差。这表明当条件自由能F满足 exact 1-form 时，存在一个全局有效势 V，可以用来描述系统的局部行为。这就是所假设条件的微观含义。':' evaluated at f and g. When the conditional free energy F is an exact 1-form, a global effective potential V exists to describe local behavior. This is the microscopic meaning of the assumption.','沿时间比较同一任务池中的模型版本。这里先对每个任务的合格双向状态对计算':'Compare model versions on the same task pool over time. First compute','（比较 log[T(g←f)/T(f←g)] 与 ΔV），再按该任务的双向对数量':'(comparing log[T(g←f)/T(f←g)] with ΔV), then weight by the number','加权计算皮尔逊相关系数：':'of bidirectional pairs to compute the Pearson coefficient:','。横轴按版本先后排列，快照于 2026-08-14 09:38（北京时间）冻结。随着模型迭代，细致平衡的趋势逐渐增强。':'. Versions are ordered chronologically; the snapshot was frozen on 2026-08-14 09:38 Beijing time. The trend toward detailed balance strengthens across model iterations.','模型容易到达的地方，未必是任务需要的地方。若有效势描述满足稳态收敛条件，π(f)∝e':'Where a model easily goes is not necessarily where the task requires. When the effective-potential description admits a stationary limit, π(f)∝e','。通过加入目标偏置重塑稳态，可以让搜索更多地到达目标区域。':'. An external target bias reshapes the stationary distribution and can steer search toward the target region.','原有偏好':'existing preference','同一祖先经两条路径抵达同一后继':'the same ancestor reaches the same successor by two paths','定义概率势能的基准模型已经包含正向与返回通道。现实中额外存在不同中介路径，图中 f 经 h₁ 或 h₂ 到 g，且每条边均可反向通过，构成正、逆闭环。':'The baseline model for a probabilistic potential already contains forward and return channels. Reality adds distinct intermediate paths: here f reaches g through h₁ or h₂, and every edge can be traversed in reverse, forming forward and reverse cycles.','双向闭环':'Bidirectional cycle','比较正逆权重之积':'Compare the products of forward and reverse weights','· 数据与方法可由论文、公开数据集及分析代码追溯；实验图来自真实记录，网页动画为基于真实状态的演示。':'· Data and methods are traceable to the paper, public dataset, and analysis code; figures use measured records, while animations are replays built from real states.'
+};
+let locale='zh';
+const originalText=new WeakMap();
+function applyLocale(next){
+  locale=next==='en'?'en':'zh';
+  document.documentElement.lang=locale==='en'?'en':'zh-CN';
+  document.title=locale==='en'?'Detailed balance in large language model-driven agents':'Detailed Balance / Agent Dynamics';
+  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  let node;
+  while(node=walker.nextNode()){
+    if(node.parentElement?.closest('script,style'))continue;
+    if(!originalText.has(node))originalText.set(node,node.nodeValue||'');
+    const raw=originalText.get(node)||'', key=raw.trim();
+    if(!key)continue;
+    const value=locale==='en'?(englishText[key]||key):key;
+    node.nodeValue=raw.replace(key,value);
+  }
+  const toggle=$('#languageToggle');
+  if(toggle){toggle.textContent=locale==='en'?'中文':'EN';toggle.setAttribute('aria-label',locale==='en'?'Switch to Chinese':'切换到英文');}
+  updateDynamicLabels();
+  if(typeof graphData!=='undefined' && graphData){drawDag();drawTheoryMatrix();drawMatrix();drawSort();drawAction();drawScatter();drawCrossTask();drawBias();updateActionReadout();updateBias();}
+}
+const languageToggle=$('#languageToggle');
+languageToggle?.addEventListener('click',()=>{const next=locale==='en'?'zh':'en';localStorage.setItem('detailed-balance-locale',next);applyLocale(next);});
+const uiText={
+  zh:{sortStatus:'点击节点查看状态表达式、采样数和势能。',loadError:'动画暂未载入，请点击播放重试。',matrixAxis:'列：源 g',matrixRow:'行：目标 f',matrixLegend:'列：源 g · 行：目标 f',unmeasured:'自转移未测量',matrixHint:'12 个真实状态 · 色阶 0–0.30 · 点击格子查看转移概率',scatterHint:'点击点查看状态对、势差与实测正逆概率比。',actualIteration:'实际迭代',action:'全图作用量 𝒮',states:'显示状态 / 拟合总状态',downhill:'下降边 / 总边数',frob:'Frobenius 范数中上三角部分比例',play:'播放优化 ↗',prepare:'准备动画…',retry:'重试播放 ↻',pause:'暂停',line:'虚线 y = x · 实测双向转移',pairs:'个合格双向对 · 展示',point:'点',taskR:'按双向状态对数量加权的任务 Pearson r',biasPlay:'增加偏置 ↗',biasNone:'无偏置',biasZero:'零温极限',biasContinuous:'连续偏置'},
+  en:{sortStatus:'Click a node to inspect its state expression, sample count, and potential.',loadError:'Animation is not loaded. Click play to retry.',matrixAxis:'Columns: source g',matrixRow:'Rows: target f',matrixLegend:'Columns: source g · rows: target f',unmeasured:'self-transition not measured',matrixHint:'12 measured states · scale 0–0.30 · click a cell to inspect 𝒯',scatterHint:'Click a point to inspect the state pair, potential difference, and measured forward–reverse ratio.',actualIteration:'Iteration',action:'Global action 𝒮',states:'Displayed states / fitted states',downhill:'Downhill edges / total edges',frob:'Upper-triangle share of the Frobenius norm',play:'Play optimization ↗',prepare:'Preparing animation…',retry:'Retry playback ↻',pause:'Pause',line:'dashed y = x · measured bidirectional transitions',pairs:'qualified bidirectional pairs · showing',point:'points',taskR:'Task Pearson r weighted by bidirectional-state-pair counts',biasPlay:'Increase bias ↗',biasNone:'No bias',biasZero:'Zero-temperature limit',biasContinuous:'Continuous bias'}
+};
+const taskProblemEnglish={
+  idea:'Starting from an expression in a symbolic-fitting problem, generate new candidate expressions.',
+  gpt5nano_sum100:'Given an English word whose letter values sum to 100, generate another word with the same constraint.',
+  sum100:'Given a word, generate another English word whose letter values sum to 100 (A=1, …, Z=26).',
+  five_letter_s:'Given an example, generate another five-letter English word beginning with S.',
+  digit_sum_15:'Given a three-digit number, generate another three-digit number whose digit sum is 15.',
+  sum_div10:'Given a word, generate another English word whose letter sum is divisible by 10.',
+  seven_letter_words:'Given an example, generate another common English word with exactly seven letters.',
+  four_digit_div7:'Given a four-digit number, generate another four-digit number divisible by 7.'
+};
+function updateDynamicLabels(){
+  const u=uiText[locale];
+  if($('#sortStatus'))$('#sortStatus').textContent=u.sortStatus;
+  if($('#matrixStatus'))$('#matrixStatus').textContent=u.matrixHint;
+  if($('#scatterStatus'))$('#scatterStatus').textContent=u.scatterHint;
+  if($('#metricLabel1'))$('#metricLabel1').textContent=u.action;
+  if($('#metricLabel2'))$('#metricLabel2').textContent=u.downhill;
+  if($('#metricLabel3'))$('#metricLabel3').textContent=u.states;
+  if($('#sortButton')&&(typeof actionState==='undefined'||!actionState.running))$('#sortButton').textContent=u.play;
+  if($('#biasPlay')&&(typeof biasState==='undefined'||!biasState.running))$('#biasPlay').textContent=u.biasPlay;
+}
+applyLocale(new URLSearchParams(location.search).get('lang')||localStorage.getItem('detailed-balance-locale')||'zh');
+
 const observer = new IntersectionObserver(entries => entries.forEach(entry => {
   if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); }
 }), { threshold: .12 });
@@ -61,12 +164,12 @@ function loadGraphData(){
       // deliberate interaction (playback, dragging, or reset) then uses the
       // ordinary 0→99 presentation timeline.
       drawDag();drawTheoryMatrix();drawMatrix();drawSort();drawAction();drawScatter();drawCrossTask();drawBias();updateActionReadout();updateBias();
-      $('#sortStatus').textContent='点击节点查看状态表达式、采样数和势能。';
+      $('#sortStatus').textContent=uiText[locale].sortStatus;
       return data;
     })
     .catch(error=>{
       graphData=null;graphPromise=null;
-      $('#sortStatus').textContent='动画暂未载入，请点击播放重试。';
+      $('#sortStatus').textContent=uiText[locale].loadError;
       console.error('IdeaSearchFitter visualisation failed:',error);
       return null;
     });
@@ -152,8 +255,8 @@ function drawTheoryMatrix(){
       ctx.textAlign='center';ctx.fillText(id,p.l+(i+.5)*cell,p.t-20);
       ctx.textAlign='right';ctx.fillText(id,p.l-10,p.t+(i+.5)*cell);
     });
-    ctx.textAlign='center';ctx.font='11px DM Mono, monospace';ctx.fillStyle='#68809a';ctx.fillText('列：源 g',p.l+size/2,Math.min(h-14,p.t+size+31));
-    ctx.save();ctx.translate(15,p.t+size/2);ctx.rotate(-Math.PI/2);ctx.fillText('行：目标 f',0,0);ctx.restore();
+    ctx.textAlign='center';ctx.font='11px DM Mono, monospace';ctx.fillStyle='#68809a';ctx.fillText(uiText[locale].matrixAxis,p.l+size/2,Math.min(h-14,p.t+size+31));
+    ctx.save();ctx.translate(15,p.t+size/2);ctx.rotate(-Math.PI/2);ctx.fillText(uiText[locale].matrixRow,0,0);ctx.restore();
     ctx.textAlign='left';ctx.font='10px DM Mono, monospace';ctx.fillStyle='#68809a';ctx.fillText('T(f|g)',p.l,p.t-39);
 
     canvas.dataset.order=ids.join(',');canvas.dataset.sorted='true';
@@ -232,10 +335,10 @@ function drawMatrix(){
     ctx.save();ctx.strokeStyle='#d95f59';ctx.lineWidth=2;ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(l,t);ctx.lineTo(l+size,t+size);ctx.stroke();ctx.restore();
     ctx.fillStyle=palette.deep;ctx.font='12px monospace';ctx.textAlign='center';
     order.forEach((id,i)=>{ctx.save();ctx.translate(l+(i+.5)*cell,t-9);ctx.rotate(-Math.PI/2);ctx.fillText(id,0,0);ctx.restore();ctx.textAlign='right';ctx.fillText(id,l-8,t+(i+.65)*cell);ctx.textAlign='center';});
-    ctx.textAlign='left';ctx.font='13px sans-serif';ctx.fillStyle='#58758e';ctx.fillText('列：源 g · 行：目标 f',l,t+size+30);
+    ctx.textAlign='left';ctx.font='13px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(uiText[locale].matrixLegend,l,t+size+30);
     canvas.dataset.order=order.join(',');canvas.dataset.iteration=actionState.iteration.toFixed(2);canvas.dataset.sorted='true';
-    canvas.onclick=event=>{const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;if(x<l||y<t||x>=l+size||y>=t+size)return;const target=order[Math.floor((y-t)/cell)],source=order[Math.floor((x-l)/cell)];if(target===source){$('#matrixStatus').textContent='f='+target+' · g='+source+' · 自转移未测量';return;}const value=graphData.matrix[graphData.matrixIDs.indexOf(target)][graphData.matrixIDs.indexOf(source)]||0;$('#matrixStatus').textContent='f='+target+' · g='+source+' · T(f|g)='+value.toFixed(4);};
-    $('#matrixStatus').textContent='12 个真实状态 · 色阶 0–0.30 · 点击格子查看转移概率';
+    canvas.onclick=event=>{const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;if(x<l||y<t||x>=l+size||y>=t+size)return;const target=order[Math.floor((y-t)/cell)],source=order[Math.floor((x-l)/cell)];if(target===source){$('#matrixStatus').textContent='f='+target+' · g='+source+' · '+uiText[locale].unmeasured;return;}const value=graphData.matrix[graphData.matrixIDs.indexOf(target)][graphData.matrixIDs.indexOf(source)]||0;$('#matrixStatus').textContent='f='+target+' · g='+source+' · T(f|g)='+value.toFixed(4);};
+    $('#matrixStatus').textContent=uiText[locale].matrixHint;
   });
 }
 function drawSort(){
@@ -279,7 +382,7 @@ function drawScatter(){
       const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;
       let nearest=null,best=Infinity;
       points.forEach((d,i)=>{const px=sx(d.x),py=sy(d.y),distance=Math.hypot(px-x,py-y);if(distance<best){best=distance;nearest={d,i};}});
-      if(!nearest||best>14){$('#scatterStatus').textContent='点击点查看状态对、势差与实测正逆概率比。';return;}
+      if(!nearest||best>14){$('#scatterStatus').textContent=uiText[locale].scatterHint;return;}
       const d=nearest.d;
       $('#scatterStatus').textContent=`${d.source} → ${d.target} · ΔV=${d.x.toFixed(3)} · log[T(g←f)/T(f←g)]=${d.y.toFixed(3)}`;
     };
@@ -309,7 +412,7 @@ function drawAction(){
       line(ctx,{x,y:h-p.b-2},{x,y:h-p.b+4},'#efb83e',1.4);
       ctx.textAlign=index===0?'left':index===ticks.length-1?'right':'center';ctx.fillText(raw,x,h-p.b+23);
     });
-    ctx.fillStyle='#58758e';ctx.font='12px sans-serif';ctx.textAlign='right';ctx.fillText('实际迭代',w-p.r,h-8);
+    ctx.fillStyle='#58758e';ctx.font='12px sans-serif';ctx.textAlign='right';ctx.fillText(uiText[locale].actualIteration,w-p.r,h-8);
     canvas.dataset.iteration=String(Math.round(currentFrame().raw));canvas.dataset.displayIteration=actionState.iteration.toFixed(2);
   });
 }
@@ -321,11 +424,11 @@ function updateActionReadout(){
   $('#iterationRange').value=actionState.iteration;$('#actionValue').textContent=frame.action.toFixed(3);
   const fitStates=Number(graphData.meta?.fitStates||0);
   const fittedCount=fitStates.toLocaleString('en-US');
-  $('#metricLabel1').textContent='全图作用量 𝒮';
-  $('#metricLabel3').textContent='显示状态 / 拟合总状态';
+  $('#metricLabel1').textContent=uiText[locale].action;
+  $('#metricLabel3').textContent=uiText[locale].states;
   if(actionState.view==='sort'){
     const downhillShare=edges.length?down/edges.length:0;
-    $('#metricLabel2').textContent='下降边 / 总边数';
+    $('#metricLabel2').textContent=uiText[locale].downhill;
     $('#secondaryValue').textContent=(downhillShare*100).toFixed(1)+'%';
     $('#countValue').textContent=`${graphData.nodes.length} / ${fittedCount}`;
   }else if(actionState.view==='matrix'){
@@ -338,7 +441,7 @@ function updateActionReadout(){
       offDiagonalSq+=value*value;if(i<j)upperSq+=value*value;
     }));
     const upperShare=offDiagonalSq?Math.sqrt(upperSq/offDiagonalSq):0;
-    $('#metricLabel2').textContent=' Frobenius 范数中上三角部分比例';
+    $('#metricLabel2').textContent=uiText[locale].frob;
     $('#secondaryValue').textContent=(upperShare*100).toFixed(1)+'%';
     $('#countValue').textContent=`${states.length} / ${fittedCount}`;
   }else{
@@ -352,7 +455,7 @@ function renderExperiment(){drawSort();drawMatrix();drawScatter();drawAction();u
 function stopAction(){
   actionState.running=false;actionState.pending=false;actionState.requestId++;
   cancelAnimationFrame(actionState.timer);actionState.timer=null;
-  $('#sortButton').textContent='播放优化 ↗';$('#sortButton').setAttribute('aria-busy','false');
+  $('#sortButton').textContent=uiText[locale].play;$('#sortButton').setAttribute('aria-busy','false');
 }
 const PLAYBACK_OPENING_MS=200;
 function playbackSchedule(){
@@ -377,17 +480,17 @@ async function startAction(){
   const requestId=++actionState.requestId;
   if(!graphData){
     actionState.pending=true;
-    $('#sortButton').textContent='准备动画…';$('#sortButton').setAttribute('aria-busy','true');
+    $('#sortButton').textContent=uiText[locale].prepare;$('#sortButton').setAttribute('aria-busy','true');
     const data=await loadGraphData();
     // Reset, a second click or a slider change cancels this pending intent.
     if(requestId!==actionState.requestId)return;
     actionState.pending=false;$('#sortButton').setAttribute('aria-busy','false');
-    if(!data){$('#sortButton').textContent='重试播放 ↻';return;}
+    if(!data){$('#sortButton').textContent=uiText[locale].retry;return;}
   }
   if(actionState.iteration>=actionState.steps){
     actionState.iteration=0;actionState.plotPosition=0;actionState.rawOverride=null;actionState.playbackElapsed=0;
   }
-  actionState.running=true;$('#sortButton').textContent='暂停';
+  actionState.running=true;$('#sortButton').textContent=uiText[locale].pause;
   // Traverse only recorded iteration 0→1 in 0.2 s. Keep 1→2 at the normal
   // presentation pace so the main deformation remains visible. Only the playback
   // clock changes: the raw mapping, interpolation and final data stay intact.
@@ -473,7 +576,7 @@ function drawCrossTask(){
     });
     ctx.textAlign='left';ctx.fillStyle=palette.deep;ctx.font='600 14px sans-serif';
     ctx.fillText('log[T(g←f) / T(f←g)]',p.l,24);
-    ctx.font='12px sans-serif';ctx.fillStyle='#58758e';ctx.fillText('虚线 y = x · 实测双向转移',p.l,44);
+    ctx.font='12px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(uiText[locale].line,p.l,44);
     ctx.textAlign='right';ctx.fillText('ΔV = V(f) − V(g)',w-p.r,h-10);
     canvas.dataset.task=task.id;canvas.dataset.points=points.length;
     canvas.dataset.source=task.id==='idea'
@@ -483,10 +586,10 @@ function drawCrossTask(){
   canvas.__draw();
   const list=$('#crossTaskList');list.replaceChildren();
   const heading=document.createElement('h4');heading.textContent=task.label;
-  const problem=document.createElement('p');problem.textContent=task.problem;
+  const problem=document.createElement('p');problem.textContent=locale==='en'?(taskProblemEnglish[task.id]||task.problem):task.problem;
   const model=document.createElement('p');model.className='task-model';model.textContent=task.model;
   const statistic=document.createElement('strong');statistic.className='task-r';statistic.textContent='r = '+task.r.toFixed(2);
-  const count=document.createElement('p');count.textContent=task.pairs.toLocaleString('en-US')+' 个合格双向对 · 展示 '+Math.min(PUBLIC_TASK_POINTS,task.points.length)+' 点';
+  const count=document.createElement('p');count.textContent=task.pairs.toLocaleString('en-US')+' '+uiText[locale].pairs+' '+Math.min(PUBLIC_TASK_POINTS,task.points.length)+' '+uiText[locale].point;
   list.append(heading,problem,model,statistic,count);
   drawModelTimeline();
 }
@@ -501,7 +604,7 @@ function drawModelTimeline(){
     // bidirectional-state-pair count; the log values themselves are not
     // used as weights.
     const metric='pair_weighted_mean';
-    const label='按双向状态对数量加权的任务 Pearson r';
+    const label=uiText[locale].taskR;
     const values=rows.map(row=>Number(row[metric]));
     const [yMin,yMax]=[.65,.9];
     const sx=i=>p.l+i/Math.max(1,rows.length-1)*(w-p.l-p.r),sy=v=>h-p.b-(v-yMin)/(yMax-yMin)*(h-p.t-p.b);
@@ -639,10 +742,10 @@ function drawBias(){
 function pathNodesForBias(data,path){return path.map(id=>data.nodes.find(n=>n.id===id)).filter(Boolean);}
 function textCanvas(ctx,s,x,y,align='left'){ctx.fillStyle='#173b62';ctx.font='12px DM Mono, monospace';ctx.textAlign=align;ctx.fillText(s,x,y);}
 function arrowCanvas(ctx,a,b,color,width=1,head=7){const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy);if(len<2)return;const ux=dx/len,uy=dy/len,x=b.x-ux*5,y=b.y-uy*5;line(ctx,a,b,color,width);ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-ux*head+uy*head*.6,y-uy*head-ux*head*.6);ctx.lineTo(x-ux*head-uy*head*.6,y-uy*head+ux*head*.6);ctx.fill();}
-function updateBias(){const input=$('#biasRange');if(!input||!graphData)return;biasState.control=Number(input.value);biasState.value=betaFromControl(biasState.control);biasState.trajectory=sampleTrajectory(biasState.value);$('#biasValue').textContent=Number.isFinite(biasState.value)?biasState.value.toFixed(2):'∞';$('#biasTemperature').textContent=biasState.value===0?'T=∞':Number.isFinite(biasState.value)?`T≈${(1/biasState.value).toFixed(3)}`:'T=0';$('#biasDomain').textContent=biasState.value===0?'无偏置':biasState.value===Infinity?'零温极限':'连续偏置';const pathNodes=pathNodesForBias(graphData,biasState.trajectory),minLogMSE=pathNodes.length?Math.min(...pathNodes.map(n=>n.logMSE)):null;$('#biasHit').textContent=minLogMSE===null?'—':(10**minLogMSE).toPrecision(3);$('#biasCanvas')?.__draw();}
+function updateBias(){const input=$('#biasRange');if(!input||!graphData)return;biasState.control=Number(input.value);biasState.value=betaFromControl(biasState.control);biasState.trajectory=sampleTrajectory(biasState.value);$('#biasValue').textContent=Number.isFinite(biasState.value)?biasState.value.toFixed(2):'∞';$('#biasTemperature').textContent=biasState.value===0?'T=∞':Number.isFinite(biasState.value)?`T≈${(1/biasState.value).toFixed(3)}`:'T=0';$('#biasDomain').textContent=biasState.value===0?uiText[locale].biasNone:biasState.value===Infinity?uiText[locale].biasZero:uiText[locale].biasContinuous;const pathNodes=pathNodesForBias(graphData,biasState.trajectory),minLogMSE=pathNodes.length?Math.min(...pathNodes.map(n=>n.logMSE)):null;$('#biasHit').textContent=minLogMSE===null?'—':(10**minLogMSE).toPrecision(3);$('#biasCanvas')?.__draw();}
 $('#biasRange')?.addEventListener('input',()=>{stopBias();updateBias();});
-function stopBias(){biasState.running=false;clearInterval(biasState.timer);const button=$('#biasPlay');if(button)button.textContent='增加偏置 ↗';}
-function playBias(){if(!graphData)return;if(biasState.running){stopBias();return;}if(biasState.control>=BIAS_CONTROL_MAX){$('#biasRange').value=0;updateBias();}biasState.running=true;$('#biasPlay').textContent='暂停';biasState.timer=setInterval(()=>{const next=Math.min(BIAS_CONTROL_MAX,biasState.control+1);$('#biasRange').value=next;updateBias();if(next>=BIAS_CONTROL_MAX)stopBias();},90);}
+function stopBias(){biasState.running=false;clearInterval(biasState.timer);const button=$('#biasPlay');if(button)button.textContent=uiText[locale].biasPlay;}
+function playBias(){if(!graphData)return;if(biasState.running){stopBias();return;}if(biasState.control>=BIAS_CONTROL_MAX){$('#biasRange').value=0;updateBias();}biasState.running=true;$('#biasPlay').textContent=uiText[locale].pause;biasState.timer=setInterval(()=>{const next=Math.min(BIAS_CONTROL_MAX,biasState.control+1);$('#biasRange').value=next;updateBias();if(next>=BIAS_CONTROL_MAX)stopBias();},90);}
 $('#biasPlay')?.addEventListener('click',playBias);
 $('#biasReset')?.addEventListener('click',()=>{stopBias();$('#biasRange').value=0;updateBias();});
 

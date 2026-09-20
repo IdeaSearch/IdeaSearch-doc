@@ -83,47 +83,49 @@ export function PhysicsDirectory({
         </Link>
       </div>
 
-      <div className="relative z-10 w-full max-w-5xl">
-        <h1 className="mb-10 text-center text-4xl font-semibold tracking-[0.18em] text-foreground sm:text-6xl lg:text-7xl">
+      <div className="relative z-10 w-full max-w-6xl">
+        <h1 className="mb-12 text-center text-4xl font-semibold tracking-[0.18em] text-foreground sm:text-6xl lg:text-7xl">
           PHYSICS OF AI
         </h1>
 
-        <article className="mx-auto grid max-w-4xl overflow-hidden rounded-[2rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/10 md:grid-cols-[0.9fr_1.1fr]">
-          <div className="relative min-h-[300px] bg-slate-100 dark:bg-slate-900 md:min-h-[430px]">
-            <Image
-              src="/detailed-balance/assets/figs/unit-sketch-square.png"
-              alt={text.imageAlt}
-              fill
-              sizes="(max-width: 768px) 100vw, 45vw"
-              className="object-cover"
-              priority
-            />
-          </div>
-          <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
-            <h2 className="text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
-              {text.title}
-            </h2>
-            <p className="mt-5 text-base leading-7 text-foreground/65 sm:text-lg sm:leading-8">
-              {text.abstract}
-            </p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <a
-                href="https://arxiv.org/abs/2512.10047"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition hover:-translate-y-0.5"
-              >
-                {text.article}
-              </a>
-              <Link
-                href="/detailed-balance"
-                className="rounded-full border border-foreground/20 bg-white/35 px-5 py-3 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20"
-              >
-                {text.enter}
-              </Link>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <article className="overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/10">
+            <div className="relative aspect-square bg-slate-100 dark:bg-slate-900">
+              <Image
+                src="/detailed-balance/assets/figs/unit-sketch-square.png"
+                alt={text.imageAlt}
+                fill
+                sizes="(max-width: 768px) 100vw, 45vw"
+                className="object-cover"
+                priority
+              />
             </div>
-          </div>
-        </article>
+            <div className="flex flex-col p-6 sm:p-7">
+              <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
+                {text.title}
+              </h2>
+              <p className="mt-4 text-sm leading-6 text-foreground/65 sm:text-base sm:leading-7">
+                {text.abstract}
+              </p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                <a
+                  href="https://arxiv.org/abs/2512.10047"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full bg-foreground px-4 py-2.5 text-xs font-semibold text-background transition hover:-translate-y-0.5"
+                >
+                  {text.article}
+                </a>
+                <Link
+                  href="/detailed-balance"
+                  className="rounded-full border border-foreground/20 bg-white/35 px-4 py-2.5 text-xs font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20"
+                >
+                  {text.enter}
+                </Link>
+              </div>
+            </div>
+          </article>
+        </div>
       </div>
     </main>
   );
