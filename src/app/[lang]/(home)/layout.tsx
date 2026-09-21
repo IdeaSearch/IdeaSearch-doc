@@ -14,10 +14,10 @@ export async function generateMetadata({
   if (host.split(":")[0] !== "physics.ideasearch.cn") return {};
 
   const isChinese = lang === "cn";
-  const title = isChinese ? "PHYSICS OF AI · 细致平衡" : "PHYSICS OF AI · Detailed Balance";
+  const title = "PHYSICS OF AI";
   const description = isChinese
-    ? "Physics of AI：从 token 微观轨迹到智能体状态转移的细致平衡。"
-    : "Physics of AI: detailed balance from token trajectories to state transitions in agents.";
+    ? "面向 AI 系统与智能体的物理学研究目录。"
+    : "A directory of research on physical principles for AI systems and agents.";
 
   return {
     metadataBase: new URL("https://physics.ideasearch.cn"),
