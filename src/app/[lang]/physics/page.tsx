@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function PhysicsPreviewPage({
@@ -6,7 +7,12 @@ export default async function PhysicsPreviewPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  // Backwards-compatible alias for the former `/en/physics` and `/cn/physics`
-  // paths. The public directory lives directly at `/{lang}`.
-  redirect(`/${lang}`);
+  const host = (await headers()).get("host") ?? "";
+  if (host.split(":")[0] === "physics.ideasearch.cn") {
+    redirect(`/${lang}`);
+  }
+
+  // Keep old internal links working, but make the dedicated Physics domain
+  // the single public home for this directory.
+  redirect(`https://physics.ideasearch.cn/${lang}`);
 }

@@ -28,10 +28,8 @@ const copy = {
 
 export function PhysicsDirectory({
   lang,
-  preview = false,
 }: {
   lang: string;
-  preview?: boolean;
 }) {
   const locale = lang === "cn" ? "cn" : "en";
   const text = copy[locale];
@@ -39,9 +37,7 @@ export function PhysicsDirectory({
   const [mounted, setMounted] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 1600, height: 1000 });
   const nextLocale = locale === "cn" ? "en" : "cn";
-  const languageHref = preview
-    ? `/${nextLocale}?site=physics`
-    : `/${nextLocale}`;
+  const languageHref = `/${nextLocale}`;
   const detailHref = "/detailed-balance";
 
   useEffect(() => {
