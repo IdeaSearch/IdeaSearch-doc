@@ -118,6 +118,16 @@ figure.panel{margin-left:0;margin-right:0}
 /* English headings are more compact so translated titles keep their intended rhythm. */
 html[lang="en"] .comparison h3{font-size:clamp(20px,2.1vw,23px);letter-spacing:-.035em}
 html[lang="en"] .section-heading h2{font-size:clamp(32px,3.7vw,52px);letter-spacing:-.035em}
+@media(min-width:651px){
+  html[lang="en"] .hero h1{font-size:clamp(36px,4vw,52px);letter-spacing:-.045em}
+  html[lang="en"] .section-heading{max-width:1100px}
+  html[lang="en"] .section-heading h2{font-size:clamp(30px,3.25vw,46px);white-space:nowrap}
+}
+@media(max-width:650px){
+  html[lang="en"] .hero h1{font-size:38px}
+  html[lang="en"] .section-heading{max-width:100%}
+  html[lang="en"] .section-heading h2{font-size:34px;white-space:normal}
+}
 .assumption-subtitle{margin:0 0 8px!important;color:#ad7a17!important;font:600 14px/1.65 var(--serif)!important;letter-spacing:.02em}
 .assumption-quote{margin:6px 0 16px}
 .assumption-quote cite{display:block;color:var(--muted);font:normal 12px/1.6 var(--sans)}
