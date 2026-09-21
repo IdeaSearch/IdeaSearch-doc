@@ -73,11 +73,11 @@ export function PhysicsDirectory({
         <div className="absolute inset-0 bg-white/45 dark:bg-black/40" />
       </div>
 
-      <div className="absolute right-5 top-5 z-10 sm:right-8 sm:top-8">
+      <div className="pointer-events-auto absolute right-5 top-5 z-20 sm:right-8 sm:top-8">
         <a
           href={languageHref}
           aria-label={text.language}
-          className="cursor-pointer rounded-full border border-foreground/15 bg-white/45 px-4 py-2 text-sm font-medium backdrop-blur transition hover:bg-white/75 dark:bg-white/10 dark:hover:bg-white/20"
+          className="inline-flex min-h-12 min-w-24 cursor-pointer items-center justify-center rounded-full border border-foreground/15 bg-white/45 px-5 py-3 text-sm font-medium backdrop-blur transition hover:bg-white/75 dark:bg-white/10 dark:hover:bg-white/20"
         >
           {text.language}
         </a>
@@ -109,13 +109,13 @@ export function PhysicsDirectory({
                   href="https://arxiv.org/abs/2512.10047"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full bg-foreground px-4 py-2.5 text-xs font-semibold text-background transition hover:-translate-y-0.5"
+                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-foreground px-5 py-3 text-xs font-semibold text-background transition hover:-translate-y-0.5"
                 >
                   {text.article}
                 </a>
                 <Link
                   href={detailHref}
-                  className="rounded-full border border-foreground/20 bg-white/35 px-4 py-2.5 text-xs font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20"
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-foreground/20 bg-white/35 px-5 py-3 text-xs font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20"
                 >
                   {text.enter}
                 </Link>
