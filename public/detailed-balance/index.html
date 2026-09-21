@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="/detailed-balance/">
   <meta name="description" content="从 token 微观轨迹到 LLM agent 状态转移：真实 IdeaSearchFitter 数据上的细致平衡与最小作用量。">
-<title>Detailed Balance</title><link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="styles.css?v=20260921-cycle-label">
+<title>Detailed Balance</title><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="alternate icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://fonts.loli.net/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css?v=20260922-language-menu">
 </head>
 <body>
 <header class="site-nav" id="site-nav">
 <div class="nav-inner">
 <a id="homeBrand" class="brand" href="/cn" aria-label="返回主页">
-<span class="brand-mark" aria-hidden="true">⇄</span>
+<span class="brand-mark" aria-hidden="true"><img src="/favicon.svg" alt=""></span>
 <span>
 <b>DETAILED BALANCE</b>
-<small>PHYSICS OF AI</small>
+<small>physics of AI</small>
 </span>
 </a>
 <button class="menu-toggle" aria-label="打开目录" aria-expanded="false">☰</button>
@@ -27,7 +27,16 @@
 <a href="#application">应用</a>
 <a href="#discussion">讨论</a>
 </nav>
-<button class="language-toggle" id="languageToggle" type="button" aria-label="切换到英文">EN</button>
+<div class="language-select">
+<button class="language-toggle" id="languageToggle" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="选择语言">
+<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+</button>
+<div class="language-menu" id="languageMenu" role="menu" hidden>
+<p id="languageMenuTitle">选择语言</p>
+<button type="button" role="menuitem" data-locale="en">English</button>
+<button type="button" role="menuitem" data-locale="zh">中文</button>
+</div>
+</div>
 </div>
 </header>
 <main id="top">
@@ -39,7 +48,7 @@
 </h1>
 <p class="hero-lede">一个生活在特定 context 中的 LLM agent，如何在语义状态间移动？把它的转移通道量出来，再寻找组织这些转移的有效势。</p>
 <div class="hero-actions">
-<a class="button button-primary" href="https://arxiv.org/abs/2512.10047" target="_blank" rel="noopener">阅读论文 ↗</a>
+<a class="button button-primary" href="https://arxiv.org/abs/2512.10047" target="_blank" rel="noopener">阅读论文 ↗︎</a>
 </div>
 </div>
 <figure class="unit-card">
@@ -289,7 +298,7 @@ Chinese wording below is this page's translation, not a cited published translat
 <h3 id="experimentTitle">在真实通道上寻找势能</h3>
 </div>
 <div class="controls">
-<button id="sortButton" class="button button-primary">开始优化 ↗</button><button id="resetButton" class="button button-quiet">重置</button>
+<button id="sortButton" class="button button-primary">开始优化 ↗︎</button><button id="resetButton" class="button button-quiet">重置</button>
 </div>
 </div>
 <div class="experiment-tabs" role="tablist" aria-label="实验视图">
@@ -373,9 +382,9 @@ Chinese wording below is this page's translation, not a cited published translat
 </div>
 </div>
 <div class="source-links">
-<a href="https://arxiv.org/abs/2512.10047" target="_blank" rel="noopener">论文与补充材料 ↗</a>
-<a href="https://huggingface.co/datasets/Nondegeneracy/detailed-balance-llm" target="_blank" rel="noopener">公开数据 · CC BY 4.0 ↗</a>
-<a href="https://github.com/SonnyNondegeneracy/detialed-balance-llm" target="_blank" rel="noopener">分析代码· MIT Licence ↗</a>
+<a href="https://arxiv.org/abs/2512.10047" target="_blank" rel="noopener">论文与补充材料 ↗︎</a>
+<a href="https://huggingface.co/datasets/Nondegeneracy/detailed-balance-llm" target="_blank" rel="noopener">公开数据 · CC BY 4.0 ↗︎</a>
+<a href="https://github.com/SonnyNondegeneracy/detialed-balance-llm" target="_blank" rel="noopener">分析代码· MIT Licence ↗︎</a>
 </div>
 </section>
 <section class="section-shell section" id="application">
@@ -415,7 +424,7 @@ Chinese wording below is this page's translation, not a cited published translat
 <label for="biasRange">外部偏置 β <output id="biasValue">0.00</output></label>
 <input id="biasRange" type="range" min="0" max="100" value="0" step="1" aria-label="连续调节 β，从 0 到无穷大">
 <output class="temperature-readout" id="biasTemperature">T=∞</output>
-<button id="biasPlay" class="button button-primary">增加偏置 ↗</button>
+<button id="biasPlay" class="button button-primary">增加偏置 ↗︎</button>
 <button id="biasReset" class="button button-quiet">重置</button>
 </div>
 <div class="application-graph-wrap"><canvas id="biasCanvas" role="img" aria-label="真实 IdeaSearchFitter 状态图上的偏置随机动力学轨迹"></canvas></div>
@@ -429,17 +438,17 @@ Chinese wording below is this page's translation, not a cited published translat
 <div class="research-grid">
 <a href="https://doi.org/10.1007/JHEP06(2026)225" target="_blank" rel="noopener">
 <span>01 / FEYNMAN INTEGRALS</span>
-<h3>费曼积分约化 ↗</h3>
+<h3>费曼积分约化 ↗︎</h3>
 <p>搜索 priority function，确定性优化 IBP 约化算法</p>
 </a>
 <a href="https://arxiv.org/abs/2505.06347" target="_blank" rel="noopener">
 <span>02 / QUANTUM CIRCUITS</span>
-<h3>量子线路初态制备 ↗</h3>
+<h3>量子线路初态制备 ↗︎</h3>
 <p>生成式搜索发现高效的线路结构</p>
 </a>
 <a href="https://doi.org/10.1088/1572-9494/aea105" target="_blank" rel="noopener">
 <span>03 / SYMBOLIC REGRESSION</span>
-<h3>迭代式符号回归 ↗</h3>
+<h3>迭代式符号回归 ↗︎</h3>
 <p>在表达式状态空间中持续搜索</p>
 </a>
 </div>

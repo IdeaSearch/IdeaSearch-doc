@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { isPhysicsHost } from "@/lib/physics-host";
 
 export default async function PhysicsPreviewPage({
   params,
@@ -8,7 +9,7 @@ export default async function PhysicsPreviewPage({
 }) {
   const { lang } = await params;
   const host = (await headers()).get("host") ?? "";
-  if (host.split(":")[0] === "physics.ideasearch.cn") {
+  if (isPhysicsHost(host)) {
     redirect(`/${lang}`);
   }
 

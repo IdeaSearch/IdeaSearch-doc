@@ -120,3 +120,425 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .physics-topbar {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 50;
+    pointer-events: auto;
+    height: 3.5rem;
+    border-bottom: 1px solid color-mix(in oklab, currentColor 10%, transparent);
+    background: color-mix(in oklab, white 42%, transparent);
+    backdrop-filter: blur(18px) saturate(135%);
+  }
+
+  .dark .physics-topbar {
+    border-bottom-color: color-mix(in oklab, white 14%, transparent);
+    background: color-mix(in oklab, #0b1220 78%, transparent);
+  }
+
+  .physics-topbar-inner {
+    display: flex;
+    width: min(100% - 2rem, 76rem);
+    height: 100%;
+    align-items: center;
+    gap: 1rem;
+    margin-inline: auto;
+    pointer-events: auto;
+  }
+
+  .physics-topbar-brand {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--foreground);
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    pointer-events: auto;
+  }
+
+  .physics-topbar-mark {
+    display: grid;
+    width: 1.65rem;
+    height: 1.65rem;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, currentColor 14%, transparent);
+    border-radius: 0.55rem 0.55rem 0.55rem 0.18rem;
+    background: color-mix(in oklab, white 60%, transparent);
+    transform: rotate(-5deg);
+  }
+
+  .physics-topbar-mark img {
+    width: 78%;
+    height: 78%;
+    object-fit: contain;
+    transform: rotate(5deg);
+  }
+
+  .dark .physics-topbar-mark,
+  .dark .physics-wordmark-mark {
+    border-color: color-mix(in oklab, white 18%, transparent);
+    background: color-mix(in oklab, #172554 74%, transparent);
+  }
+
+  .physics-topbar-tabs {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.15rem;
+    margin-left: 0.35rem;
+  }
+
+  .physics-topbar-tab {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 0.45rem;
+    padding: 0.38rem 0.62rem;
+    color: color-mix(in oklab, currentColor 62%, transparent);
+    font-size: 0.76rem;
+    white-space: nowrap;
+    transition: background 120ms ease, color 120ms ease;
+    pointer-events: auto;
+  }
+
+  .physics-topbar-tab:hover,
+  .physics-topbar-tab.is-active {
+    background: color-mix(in oklab, currentColor 8%, transparent);
+    color: var(--foreground);
+  }
+
+  .physics-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: auto;
+    pointer-events: auto;
+  }
+
+  .physics-topbar-search {
+    width: clamp(7rem, 16vw, 13rem);
+    min-height: 2rem;
+    border-color: color-mix(in oklab, currentColor 14%, transparent) !important;
+    border-radius: 999px !important;
+    background: color-mix(in oklab, white 38%, transparent) !important;
+    color: color-mix(in oklab, currentColor 62%, transparent) !important;
+    font-size: 0.72rem !important;
+  }
+
+  .physics-topbar-search:hover {
+    background: color-mix(in oklab, white 68%, transparent) !important;
+    color: var(--foreground) !important;
+  }
+
+  .dark .physics-topbar-search,
+  .dark .physics-topbar-theme,
+  .dark .physics-topbar-language,
+  .dark .physics-topbar-search-icon {
+    border-color: color-mix(in oklab, white 18%, transparent) !important;
+    background: color-mix(in oklab, white 9%, transparent) !important;
+    color: color-mix(in oklab, white 76%, transparent) !important;
+  }
+
+  .dark .physics-topbar-search:hover,
+  .dark .physics-topbar-language:hover,
+  .dark .physics-topbar-search-icon:hover {
+    background: color-mix(in oklab, white 16%, transparent) !important;
+    color: var(--foreground) !important;
+  }
+
+  .physics-topbar-search-icon {
+    display: none !important;
+  }
+
+  .physics-topbar-theme {
+    min-height: 2rem;
+    border-color: color-mix(in oklab, currentColor 14%, transparent) !important;
+    background: color-mix(in oklab, white 35%, transparent) !important;
+  }
+
+  .physics-topbar-theme > * {
+    border-radius: 999px;
+  }
+
+  .physics-topbar-language {
+    display: inline-flex;
+    min-height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in oklab, currentColor 16%, transparent);
+    border-radius: 999px;
+    padding: 0.28rem 0.72rem;
+    background: color-mix(in oklab, white 45%, transparent);
+    font-size: 0.72rem;
+    font-weight: 550;
+    white-space: nowrap;
+    transition: background 120ms ease, border-color 120ms ease;
+    pointer-events: auto;
+  }
+
+  .physics-topbar-language:hover {
+    border-color: color-mix(in oklab, currentColor 30%, transparent);
+    background: color-mix(in oklab, white 70%, transparent);
+  }
+
+  @media (max-width: 540px) {
+    .physics-topbar-inner {
+      width: calc(100% - 1.25rem);
+      gap: 0.55rem;
+    }
+
+    .physics-topbar-brand {
+      font-size: 0.66rem;
+      letter-spacing: 0.04em;
+    }
+
+    .physics-topbar-brand-text {
+      display: none;
+    }
+
+    .physics-topbar-mark {
+      width: 1.45rem;
+      height: 1.45rem;
+    }
+
+    .physics-topbar-tabs {
+      display: flex;
+      flex: 1 1 auto;
+      margin-left: 0;
+    }
+
+    .physics-topbar-tab {
+      padding-inline: 0.2rem;
+      font-size: 0.62rem;
+    }
+
+    .physics-topbar-tab.is-active {
+      display: none;
+    }
+
+    .physics-topbar-language {
+      min-height: 1.8rem;
+      padding-inline: 0.58rem;
+      font-size: 0.66rem;
+    }
+
+    .physics-topbar-search {
+      display: none !important;
+    }
+
+    .physics-topbar-search-icon {
+      display: inline-flex !important;
+      min-height: 1.8rem;
+      min-width: 1.8rem;
+      border-radius: 999px !important;
+      border: 1px solid color-mix(in oklab, currentColor 16%, transparent) !important;
+      background: color-mix(in oklab, white 45%, transparent) !important;
+    }
+
+    .physics-topbar-theme {
+      min-height: 1.8rem;
+    }
+  }
+
+  .physics-directory {
+    font-variant-emoji: text;
+  }
+
+  .physics-wordmark {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.75rem, 2.2vw, 1.35rem);
+    margin-inline: auto;
+    color: var(--foreground);
+  }
+
+  .physics-directory-content {
+    padding-top: clamp(5.75rem, 12vh, 8.5rem);
+    padding-bottom: 2rem;
+  }
+
+  .physics-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 26rem));
+    justify-content: start;
+    gap: 1rem;
+  }
+
+  .physics-project-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .physics-project-card-body {
+    flex: 1 1 auto;
+  }
+
+  .physics-wordmark-mark {
+    display: grid;
+    width: clamp(3.35rem, 7vw, 5.25rem);
+    aspect-ratio: 1;
+    flex: 0 0 auto;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, currentColor 16%, transparent);
+    border-radius: 1.25rem 1.25rem 1.25rem 0.35rem;
+    background: color-mix(in oklab, white 54%, transparent);
+    box-shadow: 0 1rem 2.5rem color-mix(in oklab, currentColor 12%, transparent);
+    transform: rotate(-5deg);
+  }
+
+  .physics-wordmark-mark img {
+    width: 76%;
+    height: 76%;
+    object-fit: contain;
+    transform: rotate(5deg);
+  }
+
+  .physics-wordmark-type {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 0.88;
+  }
+
+  .physics-wordmark-main {
+    font-size: clamp(2.05rem, 6.4vw, 5.3rem);
+    font-weight: 650;
+    letter-spacing: 0.075em;
+  }
+
+  .physics-wordmark-subtitle {
+    margin-top: 0.42rem;
+    max-width: 42rem;
+    font-size: clamp(0.78rem, 1.45vw, 1.05rem);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.45;
+    opacity: 0.58;
+  }
+
+  .physics-card-abstract {
+    margin: 0;
+    color: color-mix(in oklab, currentColor 68%, transparent);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .physics-card-abstract.is-expanded {
+    display: block;
+  }
+
+  .physics-card-abstract-wrap {
+    margin-top: 1rem;
+  }
+
+  .physics-card-abstract-toggle {
+    display: block;
+    margin-top: 0.55rem;
+    padding: 0;
+    cursor: pointer;
+    color: color-mix(in oklab, currentColor 68%, transparent);
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, currentColor 24%, transparent);
+    text-underline-offset: 0.22em;
+    transition: color 120ms ease;
+  }
+
+  .physics-card-abstract-toggle:hover,
+  .physics-card-abstract-toggle:focus-visible {
+    color: var(--foreground);
+  }
+
+  .physics-more-card {
+    display: flex;
+    min-height: 28rem;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    border: 1px dashed color-mix(in oklab, currentColor 24%, transparent);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    background: color-mix(in oklab, white 28%, transparent);
+    color: color-mix(in oklab, currentColor 68%, transparent);
+  }
+
+  .dark .physics-more-card {
+    border-color: color-mix(in oklab, white 22%, transparent);
+    background: color-mix(in oklab, white 7%, transparent);
+  }
+
+  .physics-more-card-label {
+    color: color-mix(in oklab, currentColor 58%, transparent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
+  .physics-more-card h2 {
+    margin: 0.85rem 0 0;
+    color: var(--foreground);
+    font-size: 1.5rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  .physics-more-card p {
+    max-width: 18rem;
+    margin: 0.7rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .physics-more-image {
+    background: linear-gradient(145deg, color-mix(in oklab, var(--ice-1) 86%, white), color-mix(in oklab, white 64%, transparent));
+  }
+
+  .dark .physics-more-image {
+    background: linear-gradient(145deg, color-mix(in oklab, #172554 82%, transparent), color-mix(in oklab, #0f172a 82%, transparent));
+  }
+
+  .physics-placeholder-button {
+    cursor: default;
+    opacity: 0.58;
+  }
+
+  @media (max-width: 420px) {
+    .physics-directory-content {
+      padding-top: 5.5rem;
+    }
+
+    .physics-wordmark {
+      gap: 0.65rem;
+    }
+
+    .physics-wordmark-mark {
+      width: 3rem;
+      border-radius: 0.95rem 0.95rem 0.95rem 0.3rem;
+    }
+
+    .physics-wordmark-main {
+      font-size: 2.05rem;
+      letter-spacing: 0.045em;
+    }
+
+    .physics-wordmark-subtitle {
+      max-width: 16rem;
+      font-size: 0.72rem;
+    }
+  }
+}

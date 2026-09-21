@@ -3,6 +3,9 @@ import { defineI18nUI } from 'fumadocs-ui/i18n';
 import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { headers } from "next/headers";
+import { isPhysicsHost } from "@/lib/physics-host";
+import { physicsSearchResults } from "@/lib/physics-search";
 import { i18n } from '@/lib/i18n';
 
 const inter = Inter({
@@ -44,7 +47,10 @@ export const metadata: Metadata = {
   title: "IdeaSearch",
   description: "IdeaSearch 文档",
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', type: 'image/x-icon' },
+    ],
   },
 };
 
@@ -56,6 +62,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const lang = (await params).lang;
+  const physics = isPhysicsHost((await headers()).get("host") ?? "");
   return (
     <html
       lang={htmlLang[lang] ?? i18n.defaultLanguage}
@@ -63,7 +70,23 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="flex flex-col min-h-screen">
-        <RootProvider i18n={provider(lang)}>{children}</RootProvider>
+        <RootProvider
+          i18n={provider(lang)}
+          search={{
+            enabled: true,
+            options: { api: physics ? "/api/physics-search" : "/api/search" },
+            links: physics
+              ? physicsSearchResults("", lang).map((entry) => [entry.content, entry.url])
+              : undefined,
+          }}
+          theme={{
+            attribute: "class",
+            defaultTheme: "system",
+            enableSystem: true,
+          }}
+        >
+          {children}
+        </RootProvider>
       </body>
     </html>
   );

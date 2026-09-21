@@ -15,7 +15,7 @@ export function baseOptions(locale: string): BaseLayoutProps {
       title: (
         <>
           <Image
-            src="/logo.png"
+            src="/favicon.svg"
             alt="IdeaSearch Logo"
             width={24}
             height={24}

@@ -4,6 +4,8 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const nav = $('#site-nav');
 const menu = $('.menu-toggle');
 const links = $('.nav-links');
+const languageToggle = $('#languageToggle');
+const languageMenu = $('#languageMenu');
 window.addEventListener('scroll', () => nav?.classList.toggle('is-scrolled', window.scrollY > 14), { passive: true });
 menu?.addEventListener('click', () => {
   const open = menu.classList.toggle('is-open');
@@ -21,7 +23,7 @@ const englishText = {
   '动机':'Motivation','理论':'Theory','实验':'Experiment','应用':'Application','讨论':'Discussion',
   '当生成变成一种':'When generation becomes','可测的动力学':'a measurable dynamics',
   '一个生活在特定 context 中的 LLM agent，如何在语义状态间移动？把它的转移通道量出来，再寻找组织这些转移的有效势。':'How does an LLM agent living in a fixed context move between semantic states? Measure its transition channels, then look for the effective potential that organizes them.',
-  '阅读论文 ↗':'Read the paper ↗',
+  '阅读论文 ↗︎':'Read the paper ↗︎',
   '定义语义状态，':'Define semantic states,','并用 MCMC 测量通道。':'and measure channels with MCMC.',
   '同一个意思，可以由许多不同的 token 序列表达。要理解 agent 的行为，就要从逐 token 的生成概率走向语义状态。':'The same meaning can be expressed by many token sequences. To understand an agent, move from token-by-token generation probabilities to semantic states.',
   '语义状态':'Semantic state','采样与计数':'Sampling and counting','语义转移通道':'Semantic transition channel',
@@ -51,16 +53,16 @@ const englishText = {
   '右侧是同一个状态函数 βV+log Z θ 在 f、g 两点的差。这表明当条件自由能F满足 exact 1-form 时，存在一个全局有效势 V，可以用来描述系统的局部行为。这就是所假设条件的微观含义。':'The right-hand side is the difference of one state function, βV + log Zθ, evaluated at f and g. When the conditional free energy F is an exact 1-form, a global effective potential V exists to describe local behavior. This is the microscopic meaning of the assumption.',
   '让真实的边，':'Let real edges','决定势能的排序。':'determine the potential ordering.',
   '从排序算法中抽象出一个目标：寻找让转移更倾向于“向下”的势能排列。最小作用量把这个目标变成可优化的量。保留真实数据中的局部转移通道，让状态逐渐找到对应全局有效势，看作用量如何随之下降。':'Abstract a target from sorting algorithms: find a potential ordering that makes transitions preferentially move downhill. The minimum action turns this target into an optimizable quantity. Keep the measured local channels, let states discover a global effective potential, and watch the action decrease.',
-  '只更新 V，不改动任何转移计数':'Update V only; do not change any transition counts','在真实通道上寻找势能':'Find the potential on real channels','开始优化 ↗':'Play optimization ↗','重置':'Reset','可视化势能':'Visualize potential','排序转移矩阵':'Order transition matrix','检验细致平衡':'Test detailed balance',
+  '只更新 V，不改动任何转移计数':'Update V only; do not change any transition counts','在真实通道上寻找势能':'Find the potential on real channels','开始优化 ↗︎':'Play optimization ↗︎','重置':'Reset','可视化势能':'Visualize potential','排序转移矩阵':'Order transition matrix','检验细致平衡':'Test detailed balance',
   '沿同一批真实状态与转移边更新势能；点沿势能方向移动，代表转移中势能下降的绿色边增多，作用量下降。':'Update the potential on the same measured states and transition edges. Points move along the potential direction; more green downhill edges indicate a decreasing action.',
   '下降 V(g)<V(f)':'Downhill V(g)<V(f)','上升 V(g)>V(f)':'Uphill V(g)>V(f)','箭头指向下一状态 · 线宽 ∝𝒯':'Arrows point to the next state · width ∝ 𝒯','点击节点查看状态表达式、采样数和势能。':'Click a node to inspect its state expression, sample count, and potential.','作用量随迭代下降':'Action decreases with iteration','迭代':'Iteration','全图作用量 𝒮':'Global action 𝒮','下降边 / 总边数':'Downhill edges / total edges','显示状态 / 拟合总状态':'Displayed states / fitted states',
   '行是目标 f，列是源 g。按势能重新排列状态，深色表示更强的转移，上三角对应向低势能流动。观察转移的方向性在热图中显现。':'Rows are target f and columns are source g. Reorder states by potential; darker cells are stronger transitions, and the upper triangle corresponds to downhill flow.',
   '点击格子查看转移概率 𝒯(f|g)。':'Click a cell to inspect the transition probability 𝒯(f|g).','每个点连接一对状态的势差与实测正逆概率比。优化只改变势差，观察点云如何向对角线靠拢。':'Each point pairs a state-potential difference with a measured forward–reverse probability ratio. Optimization changes only the potential difference; watch the cloud approach the diagonal.','点击点查看势差与实测正逆概率比。':'Click a point to inspect the potential difference and measured forward–reverse ratio.',
   '跨越任务和时间检验理论':'Test the theory across tasks and time','跨任务检验':'Across tasks','跨模型检验':'Across models','从表达式到单词与数字，切换任务，看同一条势差关系如何出现在不同的生成空间中。每个任务的 Pearson r 都在该任务的全部合格双向状态对上计算。不同任务上模型均表现出向细致平衡的趋势。':'Switch from expressions to words and numbers to see the same potential-difference relation across generation spaces. Pearson r is computed on every qualified bidirectional state pair in each task. The trend toward detailed balance appears across tasks.','选择任务':'Choose a task','沿时间比较同一任务池中的模型版本。这里先对每个任务的合格双向状态对计算 r t （比较 log[T(g←f)/T(f←g)] 与 ΔV），再按该任务的双向对数量 n t 加权计算皮尔逊相关系数： R = Σ n t r t / Σ n t 。横轴按版本先后排列，快照于 2026-08-14 09:38（北京时间）冻结。随着模型迭代，细致平衡的趋势逐渐增强。':'Compare model versions on the same task pool over time. First compute rₜ for qualified bidirectional pairs in each task, comparing log[T(g←f)/T(f←g)] with ΔV; then compute the Pearson coefficient weighted by the number nₜ of bidirectional pairs: R = Σ nₜrₜ / Σ nₜ. Versions are ordered chronologically; the snapshot was frozen on 2026-08-14 09:38 Beijing time. The trend toward detailed balance strengthens across model iterations.',
-  '论文与补充材料 ↗':'Paper and Supplemental Material ↗','公开数据 · CC BY 4.0 ↗':'Public data · CC BY 4.0 ↗','分析代码· MIT Licence ↗':'Analysis code · MIT Licence ↗',
+  '论文与补充材料 ↗︎':'Paper and Supplemental Material ↗︎','公开数据 · CC BY 4.0 ↗︎':'Public data · CC BY 4.0 ↗︎','分析代码· MIT Licence ↗︎':'Analysis code · MIT Licence ↗︎',
   '从描述行为，':'From describing behavior,','走向设计行为。':'to designing behavior.','模型容易到达的地方，未必是任务需要的地方。若有效势描述满足稳态收敛条件，π(f)∝e −βV(f) 。通过加入目标偏置重塑稳态，可以让搜索更多地到达目标区域。':'Where a model easily goes is not necessarily where the task requires. When the effective-potential description admits a stationary limit, π(f)∝e−βV(f). An external target bias reshapes the stationary distribution and can steer search toward the target region.',
-  '识别原有偏好':'Identify the existing preference','改变外部偏置':'Change the external bias','引导模型行为':'Steer model behavior','外部偏置如何把随机轨迹推向目标区域？':'How does an external bias steer random trajectories toward a target region?','真实状态空间演示':'Measured state-space demonstration','在给定的状态空间中，逐渐增加偏置的大小，观察一个迭代智能体在状态空间上游走的轨迹如何从原本的方向向外部偏置鼓励的方向漂移。':'In a fixed state space, gradually increase the bias and observe how an iterated agent drifts from its original direction toward the direction favored by the external bias.','外部偏置 β':'External bias β','增加偏置 ↗':'Increase bias ↗','最低势能所在的 MSE':'MSE at the lowest potential','全图最低 MSE':'Lowest MSE in the full graph','当前偏置下轨迹可达的最低 MSE':'Lowest MSE reachable by the current biased trajectory','探索阶段':'Exploration regime','当前轨迹的最低 MSE':'Lowest MSE on the current trajectory',
-  '费曼积分约化 ↗':'Feynman-integral reduction ↗','搜索 priority function，确定性优化 IBP 约化算法':'Search for a priority function and deterministically optimize IBP reduction','量子线路初态制备 ↗':'Quantum-circuit initial-state preparation ↗','生成式搜索发现高效的线路结构':'Generative search discovers efficient circuit structures','迭代式符号回归 ↗':'Iterated symbolic regression ↗','在表达式状态空间中持续搜索':'Continue searching in an expression state space',
+  '识别原有偏好':'Identify the existing preference','改变外部偏置':'Change the external bias','引导模型行为':'Steer model behavior','外部偏置如何把随机轨迹推向目标区域？':'How does an external bias steer random trajectories toward a target region?','真实状态空间演示':'Measured state-space demonstration','在给定的状态空间中，逐渐增加偏置的大小，观察一个迭代智能体在状态空间上游走的轨迹如何从原本的方向向外部偏置鼓励的方向漂移。':'In a fixed state space, gradually increase the bias and observe how an iterated agent drifts from its original direction toward the direction favored by the external bias.','外部偏置 β':'External bias β','增加偏置 ↗︎':'Increase bias ↗︎','最低势能所在的 MSE':'MSE at the lowest potential','全图最低 MSE':'Lowest MSE in the full graph','当前偏置下轨迹可达的最低 MSE':'Lowest MSE reachable by the current biased trajectory','探索阶段':'Exploration regime','当前轨迹的最低 MSE':'Lowest MSE on the current trajectory',
+  '费曼积分约化 ↗︎':'Feynman-integral reduction ↗︎','搜索 priority function，确定性优化 IBP 约化算法':'Search for a priority function and deterministically optimize IBP reduction','量子线路初态制备 ↗︎':'Quantum-circuit initial-state preparation ↗︎','生成式搜索发现高效的线路结构':'Generative search discovers efficient circuit structures','迭代式符号回归 ↗︎':'Iterated symbolic regression ↗︎','在表达式状态空间中持续搜索':'Continue searching in an expression state space',
   '若干讨论，':'Three discussions:','非平衡效应、方法论和意义。':'nonequilibrium effects, methodology, and meaning.','一个势能，不必穷尽生成的全部细节。它的价值在于：明确主要结构，并说明如何修正。它把不同视角的研究连接起来。':'A potential need not exhaust every detail of generation. Its value is to make the dominant structure explicit and show how to correct it. It connects several levels of description.',
   '转移路径有环时的平衡态':'Equilibrium when transition paths form cycles','主导转移':'Dominant transition','弱返回':'Weak return','现实的多路径结构会构成双向闭环，为细致平衡的描述能力画出边界。':'Multiple paths in reality form bidirectional cycles, marking the boundary of a detailed-balance description.','定义势差时，正向与返回通道已经同时存在。现实中，同一祖先可能经不同路径抵达同一后继，此时，':'When defining a potential difference, forward and return channels already coexist. In reality, the same ancestor may reach the same successor by different paths; then,','就是待检验的零假设，其中正向一周的概率乘积 P₊ ，逆向为 P₋。即：这些环上的正逆概率比，能否仍由同一个势能统一描述？':'is the null hypothesis to test. The forward cycle has probability product P₊ and the reverse cycle P₋. Can the forward–reverse ratio around these cycles still be unified by one potential?','正文闭环检验':'Main-text cycle test','在当前采样误差内，':'Within current sampling error,','尚不能拒绝正逆对称。':'forward–reverse symmetry cannot be rejected.','若检测到可靠的非零环流，单一势能才不足以描述全部方向性，需要进一步引入非平衡修正。':'Only a reliable nonzero circulation would show that one potential is insufficient for all directional structure and that a nonequilibrium correction is needed.',
   '微扰论的应用':'Applying perturbation theory','不必先给复杂现实找到一条精确规律。先提取主导结构，把它推进到可解的极限，再用数据判断这个极限是否能够描述现实。':'We need not first find an exact law for a complex reality. Extract the dominant structure, push it to a solvable limit, and use data to test whether that limit describes reality.','识别主导结构':'Identify the dominant structure','从转移中看见结构':'Read structure from transitions','语言模型的生成有倾向性，生成通道稀疏。':'LLM generation is directional and its transition channels are sparse.','建立自洽描述':'Build a self-consistent description','由正逆概率比定义势':'Define a potential from forward–reverse ratios','基于概率模型的本质给出最小描述。':'The probability model itself supplies the minimal description.','检验现实情况':'Test the real system','在实际通道上检验势':'Test the potential on real channels','比较绕现实中多路径的正逆概率乘积，检验势能描述。':'Compare forward and reverse probability products around real multistep paths to test the potential description.',
@@ -84,15 +86,31 @@ function applyLocale(next){
     node.nodeValue=raw.replace(key,value);
   }
   const toggle=$('#languageToggle');
-  if(toggle){toggle.textContent=locale==='en'?'中文':'EN';toggle.setAttribute('aria-label',locale==='en'?'Switch to Chinese':'切换到英文');}
+  if(toggle)toggle.setAttribute('aria-label',locale==='en'?'Choose a language':'选择语言');
   updateDynamicLabels();
   if(typeof graphData!=='undefined' && graphData){drawDag();drawTheoryMatrix();drawMatrix();drawSort();drawAction();drawScatter();drawCrossTask();drawBias();updateActionReadout();updateBias();}
 }
-const languageToggle=$('#languageToggle');
-languageToggle?.addEventListener('click',()=>{const next=locale==='en'?'zh':'en';localStorage.setItem('detailed-balance-locale',next);applyLocale(next);});
+languageToggle?.addEventListener('click',()=>{
+  const open = languageMenu?.hasAttribute('hidden') ?? true;
+  if (languageMenu) languageMenu.toggleAttribute('hidden', !open);
+  languageToggle.setAttribute('aria-expanded', String(open));
+});
+$$('[data-locale]').forEach(item=>item.addEventListener('click',()=>{
+  const next=item.dataset.locale==='en'?'en':'zh';
+  localStorage.setItem('detailed-balance-locale',next);
+  applyLocale(next);
+  languageMenu?.setAttribute('hidden','');
+  languageToggle?.setAttribute('aria-expanded','false');
+}));
+document.addEventListener('click',event=>{
+  if(languageMenu && languageToggle && !languageMenu.contains(event.target) && !languageToggle.contains(event.target)){
+    languageMenu.setAttribute('hidden','');
+    languageToggle.setAttribute('aria-expanded','false');
+  }
+});
 const uiText={
-  zh:{sortStatus:'点击节点查看状态表达式、采样数和势能。',loadError:'动画暂未载入，请点击播放重试。',matrixAxis:'列：源 g',matrixRow:'行：目标 f',matrixLegend:'列：源 g · 行：目标 f',unmeasured:'自转移未测量',matrixHint:'12 个真实状态 · 色阶 0–0.30 · 点击格子查看转移概率',scatterHint:'点击点查看状态对、势差与实测正逆概率比。',potentialAxis:'势能 V',actionAxis:'作用量 𝒮',scatterAxis:'log[𝒯(g←f)/𝒯(f←g)]',crossAxisX:'势差 ΔV = V(f) − V(g)',crossAxisY:'log[𝒯(g←f) / 𝒯(f←g)]',crossMeasured:'实测双向状态对',crossPrediction:'细致平衡预测：y = x',actualIteration:'实际迭代',action:'全图作用量 𝒮',states:'显示状态 / 拟合总状态',downhill:'下降边 / 总边数',frob:'Frobenius 范数中上三角部分比例',play:'播放优化 ↗',prepare:'准备动画…',retry:'重试播放 ↻',pause:'暂停',line:'虚线 y = x · 实测双向转移',pairs:'个合格双向对 · 展示',point:'点',taskR:'按双向状态对数量加权的任务 Pearson r',biasPlay:'增加偏置 ↗',biasNone:'无偏置',biasZero:'零温极限',biasContinuous:'连续偏置'},
-  en:{sortStatus:'Click a node to inspect its state expression, sample count, and potential.',loadError:'Animation is not loaded. Click play to retry.',matrixAxis:'Columns: source g',matrixRow:'Rows: target f',matrixLegend:'Columns: source g · rows: target f',unmeasured:'self-transition not measured',matrixHint:'12 measured states · scale 0–0.30 · click a cell to inspect 𝒯',scatterHint:'Click a point to inspect the state pair, potential difference, and measured forward–reverse ratio.',potentialAxis:'Potential V',actionAxis:'Action 𝒮',scatterAxis:'log[𝒯(g←f)/𝒯(f←g)]',crossAxisX:'Potential difference ΔV = V(f) − V(g)',crossAxisY:'log[𝒯(g←f) / 𝒯(f←g)]',crossMeasured:'Measured reciprocal state pairs',crossPrediction:'Detailed-balance prediction: y = x',actualIteration:'Iteration',action:'Global action 𝒮',states:'Displayed states / fitted states',downhill:'Downhill edges / total edges',frob:'Upper-triangle share of the Frobenius norm',play:'Play optimization ↗',prepare:'Preparing animation…',retry:'Retry playback ↻',pause:'Pause',line:'dashed y = x · measured bidirectional transitions',pairs:'qualified bidirectional pairs · showing',point:'points',taskR:'Task Pearson r weighted by bidirectional-state-pair counts',biasPlay:'Increase bias ↗',biasNone:'No bias',biasZero:'Zero-temperature limit',biasContinuous:'Continuous bias'}
+  zh:{sortStatus:'点击节点查看状态表达式、采样数和势能。',loadError:'动画暂未载入，请点击播放重试。',matrixAxis:'列：源 g',matrixRow:'行：目标 f',matrixLegend:'列：源 g · 行：目标 f',unmeasured:'自转移未测量',matrixHint:'12 个真实状态 · 色阶 0–0.30 · 点击格子查看转移概率',scatterHint:'点击点查看状态对、势差与实测正逆概率比。',potentialAxis:'势能 V',actionAxis:'作用量 𝒮',scatterAxis:'log[𝒯(g←f)/𝒯(f←g)]',crossAxisX:'势差 ΔV = V(f) − V(g)',crossAxisY:'log[𝒯(g←f) / 𝒯(f←g)]',crossMeasured:'实测双向状态对',crossPrediction:'细致平衡预测：y = x',actualIteration:'实际迭代',action:'全图作用量 𝒮',states:'显示状态 / 拟合总状态',downhill:'下降边 / 总边数',frob:'Frobenius 范数中上三角部分比例',play:'播放优化 ↗︎',prepare:'准备动画…',retry:'重试播放 ↻',pause:'暂停',line:'虚线 y = x · 实测双向转移',pairs:'个合格双向对 · 展示',point:'点',taskR:'按双向状态对数量加权的任务 Pearson r',biasPlay:'增加偏置 ↗︎',biasNone:'无偏置',biasZero:'零温极限',biasContinuous:'连续偏置'},
+  en:{sortStatus:'Click a node to inspect its state expression, sample count, and potential.',loadError:'Animation is not loaded. Click play to retry.',matrixAxis:'Columns: source g',matrixRow:'Rows: target f',matrixLegend:'Columns: source g · rows: target f',unmeasured:'self-transition not measured',matrixHint:'12 measured states · scale 0–0.30 · click a cell to inspect 𝒯',scatterHint:'Click a point to inspect the state pair, potential difference, and measured forward–reverse ratio.',potentialAxis:'Potential V',actionAxis:'Action 𝒮',scatterAxis:'log[𝒯(g←f)/𝒯(f←g)]',crossAxisX:'Potential difference ΔV = V(f) − V(g)',crossAxisY:'log[𝒯(g←f) / 𝒯(f←g)]',crossMeasured:'Measured reciprocal state pairs',crossPrediction:'Detailed-balance prediction: y = x',actualIteration:'Iteration',action:'Global action 𝒮',states:'Displayed states / fitted states',downhill:'Downhill edges / total edges',frob:'Upper-triangle share of the Frobenius norm',play:'Play optimization ↗︎',prepare:'Preparing animation…',retry:'Retry playback ↻',pause:'Pause',line:'dashed y = x · measured bidirectional transitions',pairs:'qualified bidirectional pairs · showing',point:'points',taskR:'Task Pearson r weighted by bidirectional-state-pair counts',biasPlay:'Increase bias ↗︎',biasNone:'No bias',biasZero:'Zero-temperature limit',biasContinuous:'Continuous bias'}
 };
 const taskProblemEnglish={
   idea:'Starting from an expression in a symbolic-fitting problem, generate new candidate expressions.',
@@ -112,8 +130,11 @@ function updateDynamicLabels(){
   if($('#crossTaskCanvas'))$('#crossTaskCanvas').setAttribute('aria-label',`${u.crossAxisY}; x: ${u.crossAxisX}; ${u.crossMeasured}; ${u.crossPrediction}`);
   if($('#homeBrand')){
     $('#homeBrand').setAttribute('href',locale==='en'?'/en':'/cn');
-    $('#homeBrand').setAttribute('aria-label',locale==='en'?'Back to PHYSICS OF AI':'返回主页');
+    $('#homeBrand').setAttribute('aria-label',locale==='en'?'Back to physics of AI':'返回主页');
   }
+  if($('#languageMenuTitle'))$('#languageMenuTitle').textContent=locale==='en'?'Choose a language':'选择语言';
+  if(languageToggle)languageToggle.setAttribute('aria-label',locale==='en'?'Choose a language':'选择语言');
+  $$('[data-locale]').forEach(item=>item.setAttribute('aria-current',item.dataset.locale===(locale==='en'?'en':'zh')?'true':'false'));
   if($('#metricLabel1'))$('#metricLabel1').textContent=u.action;
   if($('#metricLabel2'))$('#metricLabel2').textContent=u.downhill;
   if($('#metricLabel3'))$('#metricLabel3').textContent=u.states;
