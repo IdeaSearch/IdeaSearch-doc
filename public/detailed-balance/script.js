@@ -91,8 +91,8 @@ function applyLocale(next){
 const languageToggle=$('#languageToggle');
 languageToggle?.addEventListener('click',()=>{const next=locale==='en'?'zh':'en';localStorage.setItem('detailed-balance-locale',next);applyLocale(next);});
 const uiText={
-  zh:{sortStatus:'点击节点查看状态表达式、采样数和势能。',loadError:'动画暂未载入，请点击播放重试。',matrixAxis:'列：源 g',matrixRow:'行：目标 f',matrixLegend:'列：源 g · 行：目标 f',unmeasured:'自转移未测量',matrixHint:'12 个真实状态 · 色阶 0–0.30 · 点击格子查看转移概率',scatterHint:'点击点查看状态对、势差与实测正逆概率比。',actualIteration:'实际迭代',action:'全图作用量 𝒮',states:'显示状态 / 拟合总状态',downhill:'下降边 / 总边数',frob:'Frobenius 范数中上三角部分比例',play:'播放优化 ↗',prepare:'准备动画…',retry:'重试播放 ↻',pause:'暂停',line:'虚线 y = x · 实测双向转移',pairs:'个合格双向对 · 展示',point:'点',taskR:'按双向状态对数量加权的任务 Pearson r',biasPlay:'增加偏置 ↗',biasNone:'无偏置',biasZero:'零温极限',biasContinuous:'连续偏置'},
-  en:{sortStatus:'Click a node to inspect its state expression, sample count, and potential.',loadError:'Animation is not loaded. Click play to retry.',matrixAxis:'Columns: source g',matrixRow:'Rows: target f',matrixLegend:'Columns: source g · rows: target f',unmeasured:'self-transition not measured',matrixHint:'12 measured states · scale 0–0.30 · click a cell to inspect 𝒯',scatterHint:'Click a point to inspect the state pair, potential difference, and measured forward–reverse ratio.',actualIteration:'Iteration',action:'Global action 𝒮',states:'Displayed states / fitted states',downhill:'Downhill edges / total edges',frob:'Upper-triangle share of the Frobenius norm',play:'Play optimization ↗',prepare:'Preparing animation…',retry:'Retry playback ↻',pause:'Pause',line:'dashed y = x · measured bidirectional transitions',pairs:'qualified bidirectional pairs · showing',point:'points',taskR:'Task Pearson r weighted by bidirectional-state-pair counts',biasPlay:'Increase bias ↗',biasNone:'No bias',biasZero:'Zero-temperature limit',biasContinuous:'Continuous bias'}
+  zh:{sortStatus:'点击节点查看状态表达式、采样数和势能。',loadError:'动画暂未载入，请点击播放重试。',matrixAxis:'列：源 g',matrixRow:'行：目标 f',matrixLegend:'列：源 g · 行：目标 f',unmeasured:'自转移未测量',matrixHint:'12 个真实状态 · 色阶 0–0.30 · 点击格子查看转移概率',scatterHint:'点击点查看状态对、势差与实测正逆概率比。',potentialAxis:'势能 V',actionAxis:'作用量 𝒮',scatterAxis:'log[𝒯(g←f)/𝒯(f←g)]',crossAxisX:'势差 ΔV = V(f) − V(g)',crossAxisY:'log[𝒯(g←f) / 𝒯(f←g)]',crossMeasured:'实测双向状态对',crossPrediction:'细致平衡预测：y = x',actualIteration:'实际迭代',action:'全图作用量 𝒮',states:'显示状态 / 拟合总状态',downhill:'下降边 / 总边数',frob:'Frobenius 范数中上三角部分比例',play:'播放优化 ↗',prepare:'准备动画…',retry:'重试播放 ↻',pause:'暂停',line:'虚线 y = x · 实测双向转移',pairs:'个合格双向对 · 展示',point:'点',taskR:'按双向状态对数量加权的任务 Pearson r',biasPlay:'增加偏置 ↗',biasNone:'无偏置',biasZero:'零温极限',biasContinuous:'连续偏置'},
+  en:{sortStatus:'Click a node to inspect its state expression, sample count, and potential.',loadError:'Animation is not loaded. Click play to retry.',matrixAxis:'Columns: source g',matrixRow:'Rows: target f',matrixLegend:'Columns: source g · rows: target f',unmeasured:'self-transition not measured',matrixHint:'12 measured states · scale 0–0.30 · click a cell to inspect 𝒯',scatterHint:'Click a point to inspect the state pair, potential difference, and measured forward–reverse ratio.',potentialAxis:'Potential V',actionAxis:'Action 𝒮',scatterAxis:'log[𝒯(g←f)/𝒯(f←g)]',crossAxisX:'Potential difference ΔV = V(f) − V(g)',crossAxisY:'log[𝒯(g←f) / 𝒯(f←g)]',crossMeasured:'Measured reciprocal state pairs',crossPrediction:'Detailed-balance prediction: y = x',actualIteration:'Iteration',action:'Global action 𝒮',states:'Displayed states / fitted states',downhill:'Downhill edges / total edges',frob:'Upper-triangle share of the Frobenius norm',play:'Play optimization ↗',prepare:'Preparing animation…',retry:'Retry playback ↻',pause:'Pause',line:'dashed y = x · measured bidirectional transitions',pairs:'qualified bidirectional pairs · showing',point:'points',taskR:'Task Pearson r weighted by bidirectional-state-pair counts',biasPlay:'Increase bias ↗',biasNone:'No bias',biasZero:'Zero-temperature limit',biasContinuous:'Continuous bias'}
 };
 const taskProblemEnglish={
   idea:'Starting from an expression in a symbolic-fitting problem, generate new candidate expressions.',
@@ -109,6 +109,7 @@ function updateDynamicLabels(){
   if($('#sortStatus'))$('#sortStatus').textContent=u.sortStatus;
   if($('#matrixStatus'))$('#matrixStatus').textContent=u.matrixHint;
   if($('#scatterStatus'))$('#scatterStatus').textContent=u.scatterHint;
+  if($('#crossTaskCanvas'))$('#crossTaskCanvas').setAttribute('aria-label',`${u.crossAxisY}; x: ${u.crossAxisX}; ${u.crossMeasured}; ${u.crossPrediction}`);
   if($('#metricLabel1'))$('#metricLabel1').textContent=u.action;
   if($('#metricLabel2'))$('#metricLabel2').textContent=u.downhill;
   if($('#metricLabel3'))$('#metricLabel3').textContent=u.states;
@@ -348,13 +349,14 @@ function drawMatrix(){
 function drawSort(){
   activeCanvas('#sortCanvas',(ctx,{w,h},canvas)=>{
     const values=currentFrame().v,xs=graphData.nodes.map(n=>n.logMSE);
-    const p={l:44,r:20,t:48,b:36},P={};
+    const p={l:60,r:20,t:48,b:36},P={};
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#f8fbfe';ctx.fillRect(0,0,w,h);
     graphData.nodes.forEach((n,i)=>P[n.id]={x:p.l+norm(xs,n.logMSE)*(w-p.l-p.r),y:h-p.b-norm(values,values[i])*(h-p.t-p.b),v:values[i]});
     for(let i=0;i<5;i++)line(ctx,{x:p.l,y:p.t+i*(h-p.t-p.b)/4},{x:w-p.r,y:p.t+i*(h-p.t-p.b)/4},palette.grid);
     graphData.edges.filter(e=>e.t>=.05).forEach(e=>{const a=P[e.source],b=P[e.target],color=a.v>b.v?'#47a66f':'#d95f59';line(ctx,a,b,color,Math.max(.8,e.t*8));drawArrow(ctx,a,b,color,1,5);});
     graphData.nodes.forEach(n=>{const a=P[n.id];ctx.beginPath();ctx.arc(a.x,a.y,4.5,0,Math.PI*2);ctx.fillStyle='white';ctx.fill();ctx.strokeStyle=palette.deep;ctx.lineWidth=1.3;ctx.stroke();});
     ctx.textAlign='left';ctx.fillStyle='#58758e';ctx.font='12px monospace';ctx.fillText('log₁₀(MSE) →',Math.max(44,w-150),h-12);
+    ctx.save();ctx.translate(17,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';ctx.fillText(uiText[locale].potentialAxis,0,0);ctx.restore();
     canvas.__points=P;canvas.dataset.iteration=actionState.iteration.toFixed(2);
     canvas.onclick=event=>{const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;const node=graphData.nodes.find(n=>Math.hypot(P[n.id].x-x,P[n.id].y-y)<10);if(node)$('#sortStatus').textContent=node.id+' · '+node.expression+' · samples '+node.samples+' · V='+P[node.id].v.toFixed(3);};
   });
@@ -368,7 +370,7 @@ function reciprocalPairs(){
 }
 function drawScatter(){
   activeCanvas('#scatterCanvas',(ctx,{w,h},canvas)=>{
-    const pairs=reciprocalPairs(),p={l:48,r:18,t:52,b:48};
+    const pairs=reciprocalPairs(),p={l:68,r:18,t:52,b:48};
     const frame=currentFrame(),index=Object.fromEntries(graphData.nodes.map((n,i)=>[n.id,i]));
     const points=pairs.map(d=>({...d,x:(frame.v[index[d.source]]-frame.v[index[d.target]])*(d.flip||1)}));
     // Fixed bounds keep the moving ΔV cloud on the same ruler throughout
@@ -381,6 +383,7 @@ function drawScatter(){
     [-limit,0,limit].forEach(t=>{ctx.fillStyle='#58758e';ctx.font='12px monospace';ctx.textAlign='center';ctx.fillText(t,sx(t),h-p.b+18);ctx.textAlign='right';ctx.fillText(t,p.l-8,sy(t)+4);});
     points.forEach(d=>{ctx.beginPath();ctx.arc(sx(d.x),sy(d.y),3.6,0,Math.PI*2);ctx.fillStyle='rgba(47,119,173,.65)';ctx.fill();});
     ctx.textAlign='right';ctx.fillStyle='#58758e';ctx.font='12px sans-serif';ctx.fillText('ΔV = V(f) − V(g)',w-p.r,h-10);
+    ctx.save();ctx.translate(17,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='10px monospace';ctx.fillText(uiText[locale].scatterAxis,0,0);ctx.restore();
     canvas.dataset.iteration=String(Math.round(frame.raw));canvas.dataset.displayIteration=actionState.iteration.toFixed(2);canvas.dataset.pairs=pairs.length;canvas.dataset.x=JSON.stringify(points.map(d=>d.x));
     canvas.onclick=event=>{
       const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;
@@ -399,7 +402,7 @@ function displayPositionForRaw(rawTarget){
 }
 function drawAction(){
   activeCanvas('#actionCanvas',(ctx,{w,h},canvas)=>{
-    const frames=Array.from({length:actionState.steps+1},(_,i)=>frameAt(i)),p={l:50,r:20,t:45,b:58},hi=frames[0].action,lo=Math.min(...frames.map(frame=>frame.action));
+    const frames=Array.from({length:actionState.steps+1},(_,i)=>frameAt(i)),p={l:62,r:20,t:45,b:58},hi=frames[0].action,lo=Math.min(...frames.map(frame=>frame.action));
     const sx=i=>p.l+i/actionState.steps*(w-p.l-p.r),sy=a=>h-p.b-(a-lo)/(hi-lo||1)*(h-p.t-p.b);
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#f8fbfe';ctx.fillRect(0,0,w,h);ctx.font='13px monospace';ctx.fillStyle=palette.deep;ctx.textAlign='left';
     [0,.5,1].forEach(t=>{line(ctx,{x:p.l,y:sy(t)},{x:w-p.r,y:sy(t)},palette.grid);ctx.fillText(t.toFixed(1),12,sy(t)+4);});
@@ -417,6 +420,7 @@ function drawAction(){
       ctx.textAlign=index===0?'left':index===ticks.length-1?'right':'center';ctx.fillText(raw,x,h-p.b+23);
     });
     ctx.fillStyle='#58758e';ctx.font='12px sans-serif';ctx.textAlign='right';ctx.fillText(uiText[locale].actualIteration,w-p.r,h-8);
+    ctx.save();ctx.translate(17,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';ctx.fillText(uiText[locale].actionAxis,0,0);ctx.restore();
     canvas.dataset.iteration=String(Math.round(currentFrame().raw));canvas.dataset.displayIteration=actionState.iteration.toFixed(2);
   });
 }
@@ -565,7 +569,7 @@ function drawCrossTask(){
   const task=datasets.find(item=>item.id===selectedRobustTask) || datasets[0];
   const canvas=$('#crossTaskCanvas'),ctx=setupCanvas(canvas,360);
   canvas.__draw=()=>{
-    const {w,h}=canvas.__size,p={l:48,r:22,t:62,b:48};
+    const {w,h}=canvas.__size,p={l:68,r:22,t:90,b:62},u=uiText[locale];
     const points=seededTaskSample(task.points,PUBLIC_TASK_POINTS,task.id),limit=Math.ceil(Math.max(1,...points.flatMap(d=>[Math.abs(d.x),Math.abs(d.y)])));
     const sx=x=>p.l+(x+limit)/(2*limit)*(w-p.l-p.r);
     const sy=y=>h-p.b-(y+limit)/(2*limit)*(h-p.t-p.b);
@@ -578,10 +582,20 @@ function drawCrossTask(){
       ctx.fillStyle='#58758e';ctx.font='12px monospace';ctx.textAlign='center';ctx.fillText(t,sx(t),h-p.b+19);
       ctx.textAlign='right';ctx.fillText(t,p.l-8,sy(t)+4);
     });
-    ctx.textAlign='left';ctx.fillStyle=palette.deep;ctx.font='600 14px sans-serif';
-    ctx.fillText('log[T(g←f) / T(f←g)]',p.l,24);
-    ctx.font='12px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(uiText[locale].line,p.l,44);
-    ctx.textAlign='right';ctx.fillText('ΔV = V(f) − V(g)',w-p.r,h-10);
+    // Keep the plot self-explanatory: the y-axis is the measured log ratio,
+    // dots are measured reciprocal pairs, and the dashed diagonal is the
+    // detailed-balance prediction y=x.
+    ctx.textAlign='left';ctx.fillStyle=palette.deep;ctx.font='600 13px sans-serif';
+    ctx.fillText(u.crossAxisY,p.l,22);
+    const legendY=43;
+    ctx.save();ctx.strokeStyle=palette.deep;ctx.lineWidth=1.7;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(p.l,legendY);ctx.lineTo(p.l+23,legendY);ctx.stroke();ctx.restore();
+    ctx.font='11px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(u.crossPrediction,p.l+31,legendY+4);
+    const dotX=w<500?p.l:Math.min(w-190,Math.max(p.l+190,w*.52));
+    const dotY=w<500?63:legendY;
+    ctx.beginPath();ctx.arc(dotX,dotY-1,3.5,0,Math.PI*2);ctx.fillStyle='rgba(47,119,173,.7)';ctx.fill();
+    ctx.fillStyle='#58758e';ctx.fillText(u.crossMeasured,dotX+11,dotY+4);
+    ctx.save();ctx.translate(17,(p.t+h-p.b)/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(u.crossAxisY,0,0);ctx.restore();
+    ctx.textAlign='right';ctx.fillStyle='#58758e';ctx.font='11px sans-serif';ctx.fillText(u.crossAxisX,w-p.r,h-10);
     canvas.dataset.task=task.id;canvas.dataset.points=points.length;
     canvas.dataset.source=task.id==='idea'
       ?'IdeaSearchFitter published plot sample'

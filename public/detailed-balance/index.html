@@ -306,14 +306,14 @@ Chinese wording below is this page's translation, not a cited published translat
 <span class="red-line">上升 V(g)&gt;V(f)</span>
 <span>箭头指向下一状态 · 线宽 ∝𝒯</span>
 </div>
-<canvas id="sortCanvas" role="img" aria-label="真实状态转移图的作用量优化动画">
+<canvas id="sortCanvas" role="img" aria-label="真实状态转移图：横轴为 log10 MSE，纵轴为势能 V">
 </canvas>
 <p id="sortStatus" class="readout view-readout">点击节点查看状态表达式、采样数和势能。</p>
 </div>
  </div>
 <div class="action-pane">
 <h4>作用量随迭代下降</h4>
-<canvas id="actionCanvas" class="action-plot" role="img" aria-label="真实作用量随迭代下降曲线">
+<canvas id="actionCanvas" class="action-plot" role="img" aria-label="真实作用量随迭代下降曲线：纵轴为作用量 S">
 </canvas>
 </div>
 </div>
@@ -346,7 +346,7 @@ Chinese wording below is this page's translation, not a cited published translat
 </figure>
 <figure id="scatterView" class="panel experiment-view">
 <p>每个点连接一对状态的势差与实测正逆概率比。优化只改变势差，观察点云如何向对角线靠拢。</p>
-<canvas id="scatterCanvas" role="img" aria-label="真实双向转移的对数概率比">
+<canvas id="scatterCanvas" role="img" aria-label="真实双向转移：横轴为势差 Delta V，纵轴为正逆概率对数比">
 </canvas>
 <p class="readout view-readout" id="scatterStatus">点击点查看势差与实测正逆概率比。</p>
 </figure>
@@ -365,7 +365,7 @@ Chinese wording below is this page's translation, not a cited published translat
 <div class="task-panel is-active" id="task-robustness" role="tabpanel">
 <p>从表达式到单词与数字，切换任务，看同一条势差关系如何出现在不同的生成空间中。每个任务的 Pearson r 都在该任务的全部合格双向状态对上计算。不同任务上模型均表现出向细致平衡的趋势。</p>
 <label class="task-picker" for="robustTaskSelect">选择任务 <select id="robustTaskSelect" aria-label="选择真实转移任务"></select></label>
-<div class="cross-task-layout"><canvas id="crossTaskCanvas" class="cross-task-plot" role="img" aria-label="所选任务的实测 log T/T 与 Delta V 散点图"></canvas><div id="crossTaskList" class="cross-task-list" aria-live="polite"></div></div>
+<div class="cross-task-layout"><canvas id="crossTaskCanvas" class="cross-task-plot" role="img" aria-label="纵轴为 log[𝒯(g←f) / 𝒯(f←g)]，横轴为势差 ΔV = V(f) − V(g)；点为实测双向状态对，虚线为细致平衡预测 y = x"></canvas><div id="crossTaskList" class="cross-task-list" aria-live="polite"></div></div>
 </div>
 <div class="task-panel" id="task-timeline" role="tabpanel" hidden>
 <p>沿时间比较同一任务池中的模型版本。这里先对每个任务的合格双向状态对计算 <em>r<sub>t</sub></em>（比较 log[T(g←f)/T(f←g)] 与 ΔV），再按该任务的双向对数量 <em>n<sub>t</sub></em> 加权计算皮尔逊相关系数：<em>R = Σ n<sub>t</sub>r<sub>t</sub> / Σ n<sub>t</sub></em>。横轴按版本先后排列，快照于 2026-08-14 09:38（北京时间）冻结。随着模型迭代，细致平衡的趋势逐渐增强。</p>
