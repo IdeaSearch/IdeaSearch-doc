@@ -430,7 +430,7 @@ function drawAction(){
     const frames=Array.from({length:actionState.steps+1},(_,i)=>frameAt(i)),p={l:62,r:20,t:45,b:58},hi=frames[0].action,lo=Math.min(...frames.map(frame=>frame.action));
     const sx=i=>p.l+i/actionState.steps*(w-p.l-p.r),sy=a=>h-p.b-(a-lo)/(hi-lo||1)*(h-p.t-p.b);
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#f8fbfe';ctx.fillRect(0,0,w,h);ctx.font='13px monospace';ctx.fillStyle=palette.deep;ctx.textAlign='left';
-    [0,.5,1].forEach(t=>{line(ctx,{x:p.l,y:sy(t)},{x:w-p.r,y:sy(t)},palette.grid);ctx.fillText(t.toFixed(1),12,sy(t)+4);});
+    [0,.5,1].forEach(t=>{line(ctx,{x:p.l,y:sy(t)},{x:w-p.r,y:sy(t)},palette.grid);ctx.textAlign='right';ctx.fillText(t.toFixed(1),p.l-10,sy(t)+4);});
     for(let i=1;i<frames.length;i++)line(ctx,{x:sx(i-1),y:sy(frames[i-1].action)},{x:sx(i),y:sy(frames[i].action)},'#c7dbe9',2);
     const plotPosition=actionState.plotPosition;
     for(let i=1;i<=Math.floor(plotPosition);i++)line(ctx,{x:sx(i-1),y:sy(frames[i-1].action)},{x:sx(i),y:sy(frames[i].action)},'#2f77ad',3);
@@ -445,7 +445,7 @@ function drawAction(){
       ctx.textAlign=index===0?'left':index===ticks.length-1?'right':'center';ctx.fillText(raw,x,h-p.b+23);
     });
     ctx.fillStyle='#58758e';ctx.font='12px sans-serif';ctx.textAlign='right';ctx.fillText(uiText[locale].actualIteration,w-p.r,h-8);
-    ctx.save();ctx.translate(17,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';ctx.fillText(uiText[locale].actionAxis,0,0);ctx.restore();
+    ctx.save();ctx.translate(13,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';ctx.fillText(uiText[locale].actionAxis,0,0);ctx.restore();
     canvas.dataset.iteration=String(Math.round(currentFrame().raw));canvas.dataset.displayIteration=actionState.iteration.toFixed(2);
   });
 }
