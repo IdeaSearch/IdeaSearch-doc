@@ -1,5 +1,4 @@
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { IdeaHome } from "@/components/ui/idea-home";
 import { PhysicsDirectory } from "@/components/ui/physics-directory";
 
@@ -18,13 +17,11 @@ export default async function HomePage({
   const physicsHost = host.split(":")[0] === "physics.ideasearch.cn";
   const preview = query.site === "physics";
 
-  // Keep one canonical URL for the Physics of AI directory.  The custom
-  // domain and the `?site=physics` preview used to render the same page at
-  // different paths, which made the language switch appear disconnected.
-  // `/en/physics` and `/cn/physics` are now the shared entry points on both
-  // hosts; the custom-domain root is routed here through `/en` first.
+  // The custom domain uses the same locale paths as the main site: `/en` and
+  // `/cn`. Keep the query-string preview for local/main-site inspection, but
+  // do not introduce a second `/physics` URL scheme for the public domain.
   if (physicsHost || preview) {
-    redirect(`/${lang}/physics`);
+    return <PhysicsDirectory lang={lang} preview={preview && !physicsHost} />;
   }
 
   return <IdeaHome lang={lang} />;

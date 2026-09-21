@@ -39,8 +39,10 @@ export function PhysicsDirectory({
   const [mounted, setMounted] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 1600, height: 1000 });
   const nextLocale = locale === "cn" ? "en" : "cn";
-  const languageHref = preview ? `/${nextLocale}/physics` : `/${nextLocale}`;
-  const detailHref = `/detailed-balance${locale === "en" ? "?lang=en" : ""}`;
+  const languageHref = preview
+    ? `/${nextLocale}?site=physics`
+    : `/${nextLocale}`;
+  const detailHref = "/detailed-balance";
 
   useEffect(() => {
     setMounted(true);

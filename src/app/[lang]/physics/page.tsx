@@ -1,4 +1,4 @@
-import { PhysicsDirectory } from "@/components/ui/physics-directory";
+import { redirect } from "next/navigation";
 
 export default async function PhysicsPreviewPage({
   params,
@@ -6,5 +6,7 @@ export default async function PhysicsPreviewPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  return <PhysicsDirectory lang={lang} preview />;
+  // Backwards-compatible alias for the former `/en/physics` and `/cn/physics`
+  // paths. The public directory lives directly at `/{lang}`.
+  redirect(`/${lang}`);
 }

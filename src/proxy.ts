@@ -8,14 +8,12 @@ export default function proxy(request: NextRequest, event: NextFetchEvent) {
   const url = new URL(request.url);
   const hostname = request.headers.get("host")?.split(":")[0];
 
-  // The Physics of AI domain has one canonical directory route per locale.
-  // Handle these aliases before the generic locale middleware adds its own
-  // trailing-slash/default-language redirect, so the root never looks like a
-  // missing page to visitors.
+  // The Physics of AI domain uses the same locale paths as the main site. The
+  // root therefore has one explicit default-language destination, while
+  // `/en` and `/cn` remain the two public directory entries.
   if (hostname === "physics.ideasearch.cn") {
-    const locale = url.pathname.startsWith("/cn") ? "cn" : "en";
-    if (url.pathname === "/" || url.pathname === "/en" || url.pathname === "/en/" || url.pathname === "/cn" || url.pathname === "/cn/") {
-      url.pathname = `/${locale}/physics`;
+    if (url.pathname === "/") {
+      url.pathname = "/en";
       return NextResponse.redirect(url);
     }
   }

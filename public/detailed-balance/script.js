@@ -115,7 +115,7 @@ function updateDynamicLabels(){
   if($('#sortButton')&&(typeof actionState==='undefined'||!actionState.running))$('#sortButton').textContent=u.play;
   if($('#biasPlay')&&(typeof biasState==='undefined'||!biasState.running))$('#biasPlay').textContent=u.biasPlay;
 }
-applyLocale(new URLSearchParams(location.search).get('lang')||localStorage.getItem('detailed-balance-locale')||'zh');
+applyLocale(new URLSearchParams(location.search).get('lang')||localStorage.getItem('detailed-balance-locale')||'en');
 
 const observer = new IntersectionObserver(entries => entries.forEach(entry => {
   if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); }
