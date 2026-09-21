@@ -38,7 +38,8 @@ export function PhysicsDirectory({
   const [dimensions, setDimensions] = useState({ width: 1600, height: 1000 });
   const nextLocale = locale === "cn" ? "en" : "cn";
   const languageHref = `/${nextLocale}`;
-  const detailHref = "/detailed-balance";
+  const detailHref =
+    locale === "cn" ? "/detailed-balance?lang=zh" : "/detailed-balance";
 
   useEffect(() => {
     setMounted(true);
@@ -73,12 +74,13 @@ export function PhysicsDirectory({
       </div>
 
       <div className="absolute right-5 top-5 z-10 sm:right-8 sm:top-8">
-        <Link
+        <a
           href={languageHref}
-          className="rounded-full border border-foreground/15 bg-white/45 px-4 py-2 text-sm font-medium backdrop-blur transition hover:bg-white/75 dark:bg-white/10 dark:hover:bg-white/20"
+          aria-label={text.language}
+          className="cursor-pointer rounded-full border border-foreground/15 bg-white/45 px-4 py-2 text-sm font-medium backdrop-blur transition hover:bg-white/75 dark:bg-white/10 dark:hover:bg-white/20"
         >
           {text.language}
-        </Link>
+        </a>
       </div>
 
       <div className="relative z-10 w-full max-w-6xl">
