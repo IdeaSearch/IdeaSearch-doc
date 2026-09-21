@@ -21,7 +21,7 @@ const englishText = {
   '动机':'Motivation','理论':'Theory','实验':'Experiment','应用':'Application','讨论':'Discussion',
   '当生成变成一种':'When generation becomes','可测的动力学':'a measurable dynamics',
   '一个生活在特定 context 中的 LLM agent，如何在语义状态间移动？把它的转移通道量出来，再寻找组织这些转移的有效势。':'How does an LLM agent living in a fixed context move between semantic states? Measure its transition channels, then look for the effective potential that organizes them.',
-  '阅读论文 ↗':'Read the paper ↗',
+  '阅读论文 ↗':'Read the paper ↗','返回主页':'Back to PHYSICS OF AI',
   '定义语义状态，':'Define semantic states,','并用 MCMC 测量通道。':'and measure channels with MCMC.',
   '同一个意思，可以由许多不同的 token 序列表达。要理解 agent 的行为，就要从逐 token 的生成概率走向语义状态。':'The same meaning can be expressed by many token sequences. To understand an agent, move from token-by-token generation probabilities to semantic states.',
   '语义状态':'Semantic state','采样与计数':'Sampling and counting','语义转移通道':'Semantic transition channel',
@@ -110,6 +110,7 @@ function updateDynamicLabels(){
   if($('#matrixStatus'))$('#matrixStatus').textContent=u.matrixHint;
   if($('#scatterStatus'))$('#scatterStatus').textContent=u.scatterHint;
   if($('#crossTaskCanvas'))$('#crossTaskCanvas').setAttribute('aria-label',`${u.crossAxisY}; x: ${u.crossAxisX}; ${u.crossMeasured}; ${u.crossPrediction}`);
+  if($('#homeLink'))$('#homeLink').setAttribute('href',locale==='en'?'/en':'/cn');
   if($('#metricLabel1'))$('#metricLabel1').textContent=u.action;
   if($('#metricLabel2'))$('#metricLabel2').textContent=u.downhill;
   if($('#metricLabel3'))$('#metricLabel3').textContent=u.states;
