@@ -72,7 +72,7 @@ const originalText=new WeakMap();
 function applyLocale(next){
   locale=next==='en'?'en':'zh';
   document.documentElement.lang=locale==='en'?'en':'zh-CN';
-  document.title=locale==='en'?'Detailed balance in large language model-driven agents':'Detailed Balance / Agent Dynamics';
+  document.title=locale==='en'?'PHYSICS OF AI / Detailed Balance':'PHYSICS OF AI / 细致平衡';
   const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
   let node;
   while(node=walker.nextNode()){

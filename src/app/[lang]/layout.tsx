@@ -63,7 +63,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link rel="icon" href="/logo.png" type="image/png" sizes="256x256" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
       </head>
       <body className="flex flex-col min-h-screen">
         <RootProvider i18n={provider(lang)}>{children}</RootProvider>
