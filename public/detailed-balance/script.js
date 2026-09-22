@@ -45,14 +45,23 @@ const englishText = {
   '我们所有探索的终点，':'The end of all our exploring','将是回到出发的地方。':'will be to arrive where we started.',
   '语言模型不是逻辑推理而是概率预测，因此有主导方向，不应该代表绝不返回。概率采样与语义的不确定性，启发我们为每条主导转移加入微弱回边。在这项假设下，正逆概率比由有效势差组织。':'An LLM is a probabilistic predictor, not a deductive logic engine. A dominant direction therefore does not mean an impossible return. Sampling and semantic uncertainty motivate a weak return edge for every dominant transition. Under this assumption, forward–reverse ratios are organized by effective potential differences.',
   '从真实转移中剪出唯一通路骨架':'Prune a unique-path backbone from real transitions','真实数据结构':'Real data structure','主导路径':'Dominant path','概率返回边':'Probabilistic return edge','状态编号对应一个实测状态':'Each state index denotes a measured state',
-  '唯一通路骨架 + 概率返回边':'Unique-path backbone + probabilistic return edges','同一组通道的 𝒯(f | g) · 按势能排序':'𝒯(f | g) for the same channels · ordered by potential','蓝色主导通路与金色返回边来自同一组真实观测；右侧矩阵按势能排序。':'The blue dominant paths and gold return edges come from the same observations; the matrix on the right is ordered by potential.',
+  '唯一通路骨架 + 概率返回边':'Unique-path backbone + probabilistic return edges','同一组通道的 𝒯(f←g) · 按势能排序':'𝒯(f←g) for the same channels · ordered by potential','蓝色主导通路与金色返回边来自同一组真实观测；右侧矩阵按势能排序。':'The blue dominant paths and gold return edges come from the same observations; the matrix on the right is ordered by potential.',
   'F：一整束轨迹的条件自由能':'F: conditional free energy of a trajectory bundle','把序列 y 的概率写成下面的能量形式。E θ 描述这条序列的有效能量，Z θ (x f ) 是所有可能输出的权重总和，用于归一化。':'Write the probability of sequence y in the energy form below. Eθ is the effective energy of the sequence; Zθ(xf) is the total weight of all possible outputs and normalizes the distribution.',
   '固定输入 f，把所有通向 g 的序列权重加起来，再取负对数，就是 F(g|f)。它描述转移中的整体能量差。':'For fixed input f, sum the weights of all sequences reaching g and take the negative logarithm: this is F(g|f), the aggregate energy difference of the transition.',
   'F 与 𝒯：相差一个归一化项':'F and 𝒯: separated by a normalization term','对同一个输入 f，F(g|f) 越低，转移到 g 的概率越高。但 F 并非直接等同于 −log𝒯，还要计入输入对应的归一化项。':'For the same input f, a lower F(g|f) means a higher probability of reaching g. But F is not simply −log𝒯; the input-dependent normalization term must also be included.',
   'F 与 V：局部方向差由全局势组织':'F and V: local directional differences organized by a global potential','在细致平衡成立时，正逆通道的条件自由能之差满足：':'When detailed balance holds, the conditional free-energy difference of forward and reverse channels obeys:',
   '非度量 MDS。':'Non-metric MDS.','我们先在转移图上计算状态间的图距离，再只保留这些距离的':'We first compute graph distances between states and retain only their','排序关系':'rank ordering','，把状态嵌入二维坐标；坐标本身不是原始物理量。':' to embed the states in two dimensions; the coordinates are not raw physical quantities.','其中 δ':'Here δ',' 是转移图距离，φ 是保持排序的单调变换。因而图上相邻较近的状态，意味着它们之间的转移概率较大（图距离较短）。':' is the graph distance, and φ is the monotonic rank-preserving transform. Nearby states therefore have larger transition probabilities (shorter graph distances).',
   '如何读 landscape。':'How to read the landscape.','彩色表面是拟合势能 V 的平滑摘要。梯度大，表示状态转移的方向性强，适合描述确定性任务；梯度小，表示多个方向都容易到达，更适合探索。':'The colored surface is a smoothed summary of fitted potential V. A steep gradient indicates strongly directional transitions and suits deterministic tasks; a shallow gradient means multiple directions are accessible and suits exploration.',
-  '粗糙度与尺度。':'Roughness and scale.','峰谷起伏的粗糙度决定 agent 运行时的特征长度：粗糙度高对应更短、更局部的变化尺度，粗糙度低对应更长、更平滑的变化尺度。表面是宏观可视化摘要，不是额外测量。':'The roughness of the peaks and valleys sets the agent’s characteristic operating length: high roughness gives shorter, more local variation; low roughness gives longer, smoother variation. The surface is a macroscopic visualization summary, not an extra measurement.',
+  '粗糙度与尺度。':'Roughness and scale.','峰谷起伏的粗糙度决定 agent 运行时的特征长度：粗糙度高对应更短、更局部的变化尺度，粗糙度低对应更长、更平滑的变化尺度。表面是宏观可视化摘要，不是额外测量。':'The roughness of the peaks and valleys sets the agent’s characteristic operating length: high roughness gives shorter, more local variation; low roughness gives longer, smoother variation. The surface is a macroscopic visualization summary, not an extra measurement.','其优化目标可写为':'Its optimization objective is','任务势能形状。':'Task potential shape.','横轴 ':'The horizontal axis ',' 是非度量 MDS 坐标，纵轴 ':' is the non-metric MDS coordinate y, and the vertical axis ',' 是拟合势能；选择任务后显示该任务自己的状态点和显示用平滑曲线。连通分支内少于 64 个双向状态点的任务不强行绘图，而是明确标为数据点不足。':' is the fitted potential V. Selecting a task shows its own states and a display-only smoothed curve. Tasks with fewer than 64 bidirectional state points in their connected component are explicitly marked as insufficient instead of being forced into a plot.',
+  '非度量 MDS 只保留图距离 δᵢⱼ 的排序，把状态嵌入一维坐标 y；采用等权':'Non-metric MDS keeps only the rank order of graph distances δᵢⱼ and embeds the states on one coordinate y with equal weights',
+  '的 stress：':'stress:',
+  '非度量 MDS 只保留图距离 δᵢⱼ 的排序，把状态嵌入一维坐标 y：':'Non-metric MDS keeps only the rank order of graph distances δᵢⱼ and embeds the states on one coordinate y:',
+  '其中':'Here',
+  '因此状态相邻时 δ 较小。梯度大表示转移方向性强，适合确定性任务；梯度小则更适合探索。粗糙度表示 agent 的特运行周期：越粗糙，运行周期越长。':'Thus neighboring states have smaller δ. Steep gradients indicate strongly directional transitions and suit deterministic tasks; shallow gradients suit exploration. Roughness represents the agent’s characteristic operating cycle: the rougher the landscape, the longer the operating cycle.',
+  '用MDS度量势能景观':'Measure the potential landscape with MDS','打开可交互三维图 ↗︎':'Open the interactive 3D plot ↗︎',
+  '是拟合势能；选择任务后显示该任务自己的状态点和显示用平滑曲线。每个任务只使用最大的一个连通分支。Sum=100 与 Sum÷10 已移除；4-Digit Div7 的一维 MDS 未收敛，因此不显示。':'is the fitted potential V. Selecting a task shows its states and a display-only smoothed guide. Each task uses only its largest connected component. Sum=100 and Sum÷10 are removed; 4-Digit Div7 is not shown because its one-dimensional MDS did not converge.',
+  '横轴':'The horizontal axis','是非度量 MDS 坐标，纵轴':'is the non-metric MDS coordinate y, and the vertical axis','是势能，每个任务只使用最大的一个连通分支。':'is the potential V; each task uses only its largest connected component.',
+  'φ 单调':'φ monotonic',',  φ 单调':', φ monotonic',
   '右侧是同一个状态函数 βV+log Z θ 在 f、g 两点的差。这表明当条件自由能F满足 exact 1-form 时，存在一个全局有效势 V，可以用来描述系统的局部行为。这就是所假设条件的微观含义。':'The right-hand side is the difference of one state function, βV + log Zθ, evaluated at f and g. When the conditional free energy F is an exact 1-form, a global effective potential V exists to describe local behavior. This is the microscopic meaning of the assumption.',
   '让真实的边，':'Let real edges','决定势能的排序。':'determine the potential ordering.',
   '从排序算法中抽象出一个目标：寻找让转移更倾向于“向下”的势能排列。最小作用量把这个目标变成可优化的量。保留真实数据中的局部转移通道，让状态逐渐找到对应全局有效势，看作用量如何随之下降。':'Abstract a target from sorting algorithms: find a potential ordering that makes transitions preferentially move downhill. The minimum action turns this target into an optimizable quantity. Keep the measured local channels, let states discover a global effective potential, and watch the action decrease.',
@@ -60,7 +69,7 @@ const englishText = {
   '沿同一批真实状态与转移边更新势能；点沿势能方向移动，代表转移中势能下降的绿色边增多，作用量下降。':'Update the potential on the same measured states and transition edges. Points move along the potential direction; more green downhill edges indicate a decreasing action.',
   '下降 V(g)<V(f)':'Downhill V(g)<V(f)','上升 V(g)>V(f)':'Uphill V(g)>V(f)','箭头指向下一状态 · 线宽 ∝𝒯':'Arrows point to the next state · width ∝ 𝒯','点击节点查看状态表达式、采样数和势能。':'Click a node to inspect its state expression, sample count, and potential.','作用量随迭代下降':'Action decreases with iteration','迭代':'Iteration','全图作用量 𝒮':'Global action 𝒮','下降边 / 总边数':'Downhill edges / total edges','显示状态 / 拟合总状态':'Displayed states / fitted states',
   '行是目标 f，列是源 g。按势能重新排列状态，深色表示更强的转移，上三角对应向低势能流动。观察转移的方向性在热图中显现。':'Rows are target f and columns are source g. Reorder states by potential; darker cells are stronger transitions, and the upper triangle corresponds to downhill flow.',
-  '点击格子查看转移概率 𝒯(f|g)。':'Click a cell to inspect the transition probability 𝒯(f|g).','每个点连接一对状态的势差与实测正逆概率比。优化只改变势差，观察点云如何向对角线靠拢。':'Each point pairs a state-potential difference with a measured forward–reverse probability ratio. Optimization changes only the potential difference; watch the cloud approach the diagonal.','点击点查看势差与实测正逆概率比。':'Click a point to inspect the potential difference and measured forward–reverse ratio.',
+  '点击格子查看转移概率 𝒯(f←g)。':'Click a cell to inspect the transition probability 𝒯(f←g).','每个点连接一对状态的势差与实测正逆概率比。优化只改变势差，观察点云如何向对角线靠拢。':'Each point pairs a state-potential difference with a measured forward–reverse probability ratio. Optimization changes only the potential difference; watch the cloud approach the diagonal.','点击点查看势差与实测正逆概率比。':'Click a point to inspect the potential difference and measured forward–reverse ratio.',
   '跨越任务和时间检验理论':'Test the theory across tasks and time','跨任务检验':'Across tasks','跨模型检验':'Across models','从表达式到单词与数字，切换任务，看同一条势差关系如何出现在不同的生成空间中。每个任务的 Pearson r 都在该任务的全部合格双向状态对上计算。不同任务上模型均表现出向细致平衡的趋势。':'Switch from expressions to words and numbers to see the same potential-difference relation across generation spaces. Pearson r is computed on every qualified bidirectional state pair in each task. The trend toward detailed balance appears across tasks.','选择任务':'Choose a task','沿时间比较同一任务池中的模型版本。这里先对每个任务的合格双向状态对计算 r t （比较 log[T(g←f)/T(f←g)] 与 ΔV），再按该任务的双向对数量 n t 加权计算皮尔逊相关系数： R = Σ n t r t / Σ n t 。横轴按版本先后排列，快照于 2026-08-14 09:38（北京时间）冻结。随着模型迭代，细致平衡的趋势逐渐增强。':'Compare model versions on the same task pool over time. First compute rₜ for qualified bidirectional pairs in each task, comparing log[T(g←f)/T(f←g)] with ΔV; then compute the Pearson coefficient weighted by the number nₜ of bidirectional pairs: R = Σ nₜrₜ / Σ nₜ. Versions are ordered chronologically; the snapshot was frozen on 2026-08-14 09:38 Beijing time. The trend toward detailed balance strengthens across model iterations.',
   '论文与补充材料 ↗︎':'Paper and Supplemental Material ↗︎','公开数据 · CC BY 4.0 ↗︎':'Public data · CC BY 4.0 ↗︎','分析代码· MIT Licence ↗︎':'Analysis code · MIT Licence ↗︎',
   '从描述行为，':'From describing behavior,','走向设计行为。':'to designing behavior.','模型容易到达的地方，未必是任务需要的地方。若有效势描述满足稳态收敛条件，π(f)∝e −βV(f) 。通过加入目标偏置重塑稳态，可以让搜索更多地到达目标区域。':'Where a model easily goes is not necessarily where the task requires. When the effective-potential description admits a stationary limit, π(f)∝e−βV(f). An external target bias reshapes the stationary distribution and can steer search toward the target region.',
@@ -223,6 +232,7 @@ loadGraphData().then(data=>{
 });
 const crossTaskPromise = fetch('assets/data/qwen-timeline.json').then(r => r.ok ? r.json() : null).then(data => { crossTaskData=data; drawCrossTask(); return data; }).catch(error => { console.error('Cross-task summary visualisation failed:', error); return null; });
 const gptWordPromise = fetch('assets/data/gpt5nano-sum100.json').then(r => r.ok ? r.json() : null).then(data => { gptWordData=data; drawCrossTask(); return data; }).catch(error => { console.error('GPT-5 nano word visualisation failed:', error); return null; });
+const taskLandscapePromise = fetch('assets/figs/all_tasks_mds_vs_potential_data.json').then(r => r.ok ? r.json() : null).then(data => { taskLandscapeData=data?.datasets||[]; drawCrossTask(); return data; }).catch(error => { console.error('Task landscape data failed:', error); return null; });
 
 function drawArrow(ctx, A, B, color, width = 1, head = 7) {
   const ax=A.px ?? A.x, ay=A.py ?? A.y, bx=B.px ?? B.x, by=B.py ?? B.y;
@@ -290,7 +300,7 @@ function drawTheoryMatrix(){
     });
     ctx.textAlign='center';ctx.font='11px DM Mono, monospace';ctx.fillStyle='#68809a';ctx.fillText(uiText[locale].matrixAxis,p.l+size/2,Math.min(h-14,p.t+size+31));
     ctx.save();ctx.translate(15,p.t+size/2);ctx.rotate(-Math.PI/2);ctx.fillText(uiText[locale].matrixRow,0,0);ctx.restore();
-    ctx.textAlign='left';ctx.font='10px DM Mono, monospace';ctx.fillStyle='#68809a';ctx.fillText('T(f|g)',p.l,p.t-39);
+    ctx.textAlign='left';ctx.font='10px DM Mono, monospace';ctx.fillStyle='#68809a';ctx.fillText('𝒯(f←g)',p.l,p.t-39);
 
     canvas.dataset.order=ids.join(',');canvas.dataset.sorted='true';
   };canvas.__draw();
@@ -370,7 +380,7 @@ function drawMatrix(){
     order.forEach((id,i)=>{ctx.save();ctx.translate(l+(i+.5)*cell,t-9);ctx.rotate(-Math.PI/2);ctx.fillText(id,0,0);ctx.restore();ctx.textAlign='right';ctx.fillText(id,l-8,t+(i+.65)*cell);ctx.textAlign='center';});
     ctx.textAlign='left';ctx.font='13px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(uiText[locale].matrixLegend,l,t+size+30);
     canvas.dataset.order=order.join(',');canvas.dataset.iteration=actionState.iteration.toFixed(2);canvas.dataset.sorted='true';
-    canvas.onclick=event=>{const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;if(x<l||y<t||x>=l+size||y>=t+size)return;const target=order[Math.floor((y-t)/cell)],source=order[Math.floor((x-l)/cell)];if(target===source){$('#matrixStatus').textContent='f='+target+' · g='+source+' · '+uiText[locale].unmeasured;return;}const value=graphData.matrix[graphData.matrixIDs.indexOf(target)][graphData.matrixIDs.indexOf(source)]||0;$('#matrixStatus').textContent='f='+target+' · g='+source+' · T(f|g)='+value.toFixed(4);};
+    canvas.onclick=event=>{const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;if(x<l||y<t||x>=l+size||y>=t+size)return;const target=order[Math.floor((y-t)/cell)],source=order[Math.floor((x-l)/cell)];if(target===source){$('#matrixStatus').textContent='f='+target+' · g='+source+' · '+uiText[locale].unmeasured;return;}const value=graphData.matrix[graphData.matrixIDs.indexOf(target)][graphData.matrixIDs.indexOf(source)]||0;$('#matrixStatus').textContent='f='+target+' · g='+source+' · 𝒯(f←g)='+value.toFixed(4);};
     $('#matrixStatus').textContent=uiText[locale].matrixHint;
   });
 }
@@ -562,12 +572,16 @@ $$('.task-tab').forEach(tab=>tab.addEventListener('click',()=>{
 }));
 
 let selectedRobustTask = 'idea';
+let taskLandscapeData = [];
 // A task with only a handful of reciprocal pairs is useful for an audit, but
 // not for the public comparison figure: the cloud would invite a stronger
 // visual conclusion than the data can support. Keep the threshold explicit
 // so the selector and its provenance stay synchronized.
 const MIN_PUBLIC_TASK_PAIRS = 15;
 const PUBLIC_TASK_POINTS = 64;
+const HIDDEN_TASK_IDS = new Set(['sum100']);
+const LANDSCAPE_UNAVAILABLE_TASK_IDS = new Set(['four_digit_div7']);
+const LANDSCAPE_INSUFFICIENT_TASK_IDS = new Set(['sum_div10']);
 function seededTaskSample(points, target=PUBLIC_TASK_POINTS, seedText='task'){
   if(!Array.isArray(points)||points.length<=target)return points||[];
   let seed=0; for(const ch of seedText) seed=(seed*31+ch.charCodeAt(0))>>>0;
@@ -583,7 +597,10 @@ function drawCrossTask(){
     r:.92,pairs:1317,shown:graphData.scatter.length,points:graphData.scatter},
     ...(gptWordData?[gptWordData]:[]),
     ...crossTaskData.tasks];
-  const datasets=allDatasets.filter(item=>item.id==='idea' || item.pairs>=MIN_PUBLIC_TASK_PAIRS);
+  // Publish only the reviewed task set. Sum=100 is removed. Sum÷10 remains
+  // selectable for review but has too few points for a landscape; Div7 also
+  // remains selectable because its one-dimensional MDS did not converge.
+  const datasets=allDatasets.filter(item=>!HIDDEN_TASK_IDS.has(item.id));
   if(!datasets.some(item=>item.id===selectedRobustTask))selectedRobustTask=datasets[0].id;
   if(!select.options.length){
     datasets.forEach(item=>select.add(new Option(item.label,item.id)));
@@ -641,7 +658,53 @@ function drawCrossTask(){
   const statistic=document.createElement('strong');statistic.className='task-r';statistic.textContent='r = '+task.r.toFixed(2);
   const count=document.createElement('p');count.textContent=task.pairs.toLocaleString('en-US')+' '+uiText[locale].pairs+' '+Math.min(PUBLIC_TASK_POINTS,task.points.length)+' '+uiText[locale].point;
   list.append(heading,problem,model,statistic,count);
+  drawTaskLandscape(task);
   drawModelTimeline();
+}
+function drawTaskLandscape(task){
+  const canvas=$('#taskLandscapeCanvas'),status=$('#taskLandscapeStatus');
+  if(!canvas)return;
+  const ctx=setupCanvas(canvas,300), match=taskLandscapeData.find(d=>d.key===task.id||d.label===task.label);
+  canvas.__draw=()=>{
+    const {w,h}=canvas.__size,p={l:52,r:20,t:30,b:44};
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#f8fbfe';ctx.fillRect(0,0,w,h);
+    if(LANDSCAPE_UNAVAILABLE_TASK_IDS.has(task.id)){
+      ctx.fillStyle='#58758e';ctx.font='600 14px sans-serif';ctx.textAlign='center';
+      ctx.fillText(locale==='en'?'4-Digit Div7: one-dimensional MDS did not converge; landscape unavailable.':'4-Digit Div7：一维非度量 MDS 未收敛，不显示任务势能形状。',w/2,h/2);
+      return;
+    }
+    if(LANDSCAPE_INSUFFICIENT_TASK_IDS.has(task.id)){
+      ctx.fillStyle='#58758e';ctx.font='600 14px sans-serif';ctx.textAlign='center';
+      ctx.fillText(locale==='en'?'Sum÷10: not enough state points for a landscape.':'Sum÷10：状态点数不够，不显示任务势能形状。',w/2,h/2);
+      return;
+    }
+    if(!match){ctx.fillStyle='#58758e';ctx.font='600 14px sans-serif';ctx.textAlign='center';ctx.fillText(locale==='en'?'Not enough bidirectional points to draw this landscape.':'双向状态点不足，无法绘制该任务的 landscape。',w/2,h/2);return;}
+    const pts=match.points||[],guide=match.smoothed_guide||[],xs=pts.map(d=>d.mds),ys=pts.map(d=>d.potential);
+    const xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys),xpad=(xmax-xmin||1)*.06,ypad=(ymax-ymin||1)*.08;
+    const sx=x=>p.l+(x-(xmin-xpad))/((xmax+xpad)-(xmin-xpad))*(w-p.l-p.r);
+    const sy=y=>h-p.b-(y-(ymin-ypad))/((ymax+ypad)-(ymin-ypad))*(h-p.t-p.b);
+    ctx.strokeStyle='#d9e0e5';ctx.lineWidth=1;ctx.setLineDash([]);for(let i=0;i<5;i++){const yy=p.t+i*(h-p.t-p.b)/4;ctx.beginPath();ctx.moveTo(p.l,yy);ctx.lineTo(w-p.r,yy);ctx.stroke();}
+    ctx.strokeStyle='#8aa0b2';ctx.beginPath();ctx.moveTo(p.l,p.t);ctx.lineTo(p.l,h-p.b);ctx.lineTo(w-p.r,h-p.b);ctx.stroke();
+    ctx.fillStyle='#58758e';ctx.font='11px monospace';
+    for(let i=0;i<5;i++){
+      const tx=p.l+i*(w-p.l-p.r)/4, xv=(xmin-xpad)+i*(xmax-xmin+2*xpad)/4;
+      const yy=h-p.b-i*(h-p.t-p.b)/4, yv=(ymin-ypad)+i*(ymax-ymin+2*ypad)/4;
+      ctx.textAlign='center';ctx.fillText(xv.toFixed(1),tx,h-p.b+18);
+      ctx.textAlign='right';ctx.fillText(yv.toFixed(1),p.l-8,yy+4);
+    }
+    pts.forEach(d=>{ctx.beginPath();ctx.arc(sx(d.mds),sy(d.potential),2.5,0,Math.PI*2);ctx.fillStyle='rgba(47,119,173,.34)';ctx.fill();});
+    // Draw the guide last so it is legible where it passes through the state cloud.
+    ctx.beginPath();guide.forEach((d,i)=>{const x=sx(d.mds),y=sy(d.potential);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.strokeStyle=palette.deep;ctx.lineWidth=2.5;ctx.stroke();
+    ctx.fillStyle='#58758e';ctx.font='12px monospace';ctx.textAlign='center';ctx.fillText('y',w/2,h-10);ctx.save();ctx.translate(22,h/2);ctx.rotate(-Math.PI/2);ctx.fillText('V',0,0);ctx.restore();
+  };
+  canvas.__draw();
+  if(status)status.textContent=LANDSCAPE_UNAVAILABLE_TASK_IDS.has(task.id)
+    ? (locale==='en'?'4-Digit Div7: one-dimensional MDS did not converge; landscape unavailable.':'4-Digit Div7：一维非度量 MDS 未收敛，不显示任务势能形状。')
+    : LANDSCAPE_INSUFFICIENT_TASK_IDS.has(task.id)
+    ? (locale==='en'?'Sum÷10: not enough state points for a landscape.':'Sum÷10：状态点数不够，不显示任务势能形状。')
+    : match
+    ? `${match.label} · largest connected component · ${match.states.toLocaleString('en-US')} states · ${match.bidirectional_points==null?'—':match.bidirectional_points.toLocaleString('en-US')} bidirectional points · stress=${match.mds_stress.toFixed(3)}${match.eligible_at_64_bidirectional_points?'':' · below 64-point review threshold (shown for review)'}`
+    : (locale==='en'?'This connected component has fewer than 64 bidirectional points; the landscape is not drawn.':'该连通分支的双向状态点少于 64 个，不绘制 landscape。');
 }
 function drawModelTimeline(){
   const canvas=$('#timelineCanvas'),ctx=setupCanvas(canvas,340);

@@ -114,6 +114,12 @@ figure.panel{margin-left:0;margin-right:0}
 .application-axis-legend .solid-temp{border-color:#d95f59}
 @media(max-width:650px){.task-plot{height:160px}.application-axis-legend{display:grid;gap:7px}}
 .inline-formula{color:var(--deep);font-family:var(--mono);white-space:nowrap}.cross-task-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(250px,.85fr);gap:20px;align-items:start;margin-top:18px}.cross-task-plot,.timeline-plot{display:block;width:100%;height:300px;border:1px solid var(--line);border-radius:10px;background:#f8fbfe}.cross-task-list{display:grid;gap:7px}.cross-task-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#f8fbff}.cross-task-row span{color:var(--muted);font-size:11px;line-height:1.45}.cross-task-row b{color:var(--deep);font:600 15px var(--mono)}.cross-task-row small{grid-column:1/-1;color:#7c95a9;font:10px var(--mono)}.timeline-note{display:flex;align-items:baseline;gap:12px;margin-top:12px;padding:11px 13px;border-left:3px solid var(--gold);background:#fffaf0}.timeline-note span{color:#806d35;font:11px var(--mono)}.timeline-note b{color:var(--deep);font-size:13px}.timeline-note small{color:var(--muted);font-size:11px}.cross-task-layout+ .annotation{margin-top:14px}@media(max-width:900px){.cross-task-layout{grid-template-columns:1fr}}@media(max-width:650px){.cross-task-plot,.timeline-plot{height:250px}.timeline-note{display:grid;gap:4px}}
+.task-landscape-view{margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
+.task-landscape-explain{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.75}
+.task-landscape-explain strong{color:var(--deep)}
+.task-landscape-plot{display:block;width:100%;height:300px;border:1px solid var(--line);border-radius:10px;background:#f8fbfe}
+.task-landscape-status{min-height:1.6em;margin:8px 0 0;color:var(--muted);font:12px var(--mono)}
+.task-landscape-data-link{display:inline-block;margin-top:4px;color:var(--blue-deep);font:12px var(--mono);text-decoration:none}
 /* Latest launch-pass refinements */
 /* English headings are more compact so translated titles keep their intended rhythm. */
 html[lang="en"] .comparison h3{font-size:clamp(20px,2.1vw,23px);letter-spacing:-.035em}
@@ -203,10 +209,10 @@ html[lang="en"] .section-heading h2{font-size:clamp(32px,3.7vw,52px);letter-spac
 .micro-path{padding:14px;border:1px solid rgba(47,119,173,.2);border-radius:10px;background:#fff;min-width:0}
 .micro-path-heading{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 12px;color:var(--deep);font-size:16px}
 .micro-path-heading>span{font:15px var(--serif);white-space:nowrap}
-.micro-path-flow{display:grid;grid-template-columns:minmax(0,1fr) 190px;align-items:center;gap:12px;margin-top:16px}
+.micro-path-flow{display:grid;grid-template-columns:minmax(0,1fr) 78px;align-items:center;gap:12px;margin-top:34px}
 .micro-path-flow .micro-tokens{margin-top:0}
-.micro-path-target{display:flex;justify-content:flex-end;align-items:center;gap:8px;white-space:nowrap}
-.micro-path-target>span{color:var(--blue-deep);text-align:right;font-size:13px;line-height:1.4;white-space:nowrap}
+.micro-path-target{position:relative;display:grid;grid-template-columns:22px 44px;justify-content:end;align-items:center;gap:6px}
+.micro-path-target>span{position:absolute;bottom:100%;left:28px;transform:translateX(-50%);margin-bottom:7px;color:var(--blue-deep);text-align:center;font-size:13px;line-height:1.4;white-space:nowrap}
 .micro-path-target>i{color:var(--blue-deep);font-style:normal;font-size:22px}
 .micro-path-target .micro-state{width:44px;height:44px;font-size:27px}
 .micro-tokens{display:flex;align-items:center;gap:8px;margin-top:12px}
@@ -225,7 +231,7 @@ html[lang="en"] .section-heading h2{font-size:clamp(32px,3.7vw,52px);letter-spac
 .sm6-definitions p{font-size:15px;line-height:1.8}
 .sm6-definitions .equation{white-space:normal;overflow-wrap:anywhere}
 .sm6-direction{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}
-@media(max-width:650px){.micro-path-flow{grid-template-columns:1fr;margin-top:14px;gap:10px}.micro-path-target{justify-self:end}.micro-path-target>i{transform:none}.sm6-direction{display:block}.sm6-direction>span{display:block}}
+@media(max-width:650px){.micro-path-flow{grid-template-columns:1fr;margin-top:34px;gap:10px}.micro-path-target{justify-self:end;padding-top:20px}.micro-path-target>span{top:0;bottom:auto;margin:0}.micro-path-target>i{transform:none}.sm6-direction{display:block}.sm6-direction>span{display:block}}
 
 /* Chapter directory: number, title and a consistent line icon only. */
 .directory-grid>a{display:grid;grid-template-columns:minmax(0,1fr) 48px;grid-template-rows:auto auto;gap:8px 12px;align-items:center;min-height:110px}

@@ -126,7 +126,7 @@ export function PhysicsDirectory({
               aria-label={text.enter}
             >
               <img
-                src="/detailed-balance/assets/figs/ideasearchfitter-landscape-3d.png"
+                src="/detailed-balance/assets/figs/ideasearchfitter-landscape-3d-square.png"
                 alt={text.imageAlt}
                 className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.015]"
               />
