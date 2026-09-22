@@ -50,10 +50,13 @@ const englishText = {
   '固定输入 f，把所有通向 g 的序列权重加起来，再取负对数，就是 F(g|f)。它描述转移中的整体能量差。':'For fixed input f, sum the weights of all sequences reaching g and take the negative logarithm: this is F(g|f), the aggregate energy difference of the transition.',
   'F 与 𝒯：相差一个归一化项':'F and 𝒯: separated by a normalization term','对同一个输入 f，F(g|f) 越低，转移到 g 的概率越高。但 F 并非直接等同于 −log𝒯，还要计入输入对应的归一化项。':'For the same input f, a lower F(g|f) means a higher probability of reaching g. But F is not simply −log𝒯; the input-dependent normalization term must also be included.',
   'F 与 V：局部方向差由全局势组织':'F and V: local directional differences organized by a global potential','在细致平衡成立时，正逆通道的条件自由能之差满足：':'When detailed balance holds, the conditional free-energy difference of forward and reverse channels obeys:',
+  '非度量 MDS。':'Non-metric MDS.','我们先在转移图上计算状态间的图距离，再只保留这些距离的':'We first compute graph distances between states and retain only their','排序关系':'rank ordering','，把状态嵌入二维坐标；坐标本身不是原始物理量。':' to embed the states in two dimensions; the coordinates are not raw physical quantities.','其中 δ':'Here δ',' 是转移图距离，φ 是保持排序的单调变换。因而图上相邻较近的状态，意味着它们之间的转移概率较大（图距离较短）。':' is the graph distance, and φ is the monotonic rank-preserving transform. Nearby states therefore have larger transition probabilities (shorter graph distances).',
+  '如何读 landscape。':'How to read the landscape.','彩色表面是拟合势能 V 的平滑摘要。梯度大，表示状态转移的方向性强，适合描述确定性任务；梯度小，表示多个方向都容易到达，更适合探索。':'The colored surface is a smoothed summary of fitted potential V. A steep gradient indicates strongly directional transitions and suits deterministic tasks; a shallow gradient means multiple directions are accessible and suits exploration.',
+  '粗糙度与尺度。':'Roughness and scale.','峰谷起伏的粗糙度决定 agent 运行时的特征长度：粗糙度高对应更短、更局部的变化尺度，粗糙度低对应更长、更平滑的变化尺度。表面是宏观可视化摘要，不是额外测量。':'The roughness of the peaks and valleys sets the agent’s characteristic operating length: high roughness gives shorter, more local variation; low roughness gives longer, smoother variation. The surface is a macroscopic visualization summary, not an extra measurement.',
   '右侧是同一个状态函数 βV+log Z θ 在 f、g 两点的差。这表明当条件自由能F满足 exact 1-form 时，存在一个全局有效势 V，可以用来描述系统的局部行为。这就是所假设条件的微观含义。':'The right-hand side is the difference of one state function, βV + log Zθ, evaluated at f and g. When the conditional free energy F is an exact 1-form, a global effective potential V exists to describe local behavior. This is the microscopic meaning of the assumption.',
   '让真实的边，':'Let real edges','决定势能的排序。':'determine the potential ordering.',
   '从排序算法中抽象出一个目标：寻找让转移更倾向于“向下”的势能排列。最小作用量把这个目标变成可优化的量。保留真实数据中的局部转移通道，让状态逐渐找到对应全局有效势，看作用量如何随之下降。':'Abstract a target from sorting algorithms: find a potential ordering that makes transitions preferentially move downhill. The minimum action turns this target into an optimizable quantity. Keep the measured local channels, let states discover a global effective potential, and watch the action decrease.',
-  '只更新 V，不改动任何转移计数':'Update V only; do not change any transition counts','在真实通道上寻找势能':'Find the potential on real channels','开始优化 ↗︎':'Play optimization ↗︎','重置':'Reset','可视化势能':'Visualize potential','排序转移矩阵':'Order transition matrix','检验细致平衡':'Test detailed balance',
+  '只更新 V，不改动任何转移计数':'Update V only; do not change any transition counts','在真实通道上寻找势能':'Find the potential on real channels','开始优化 ↗︎':'Play optimization ↗︎','重置':'Reset','可视化势能':'Visualize potential','排序转移矩阵':'Order transition matrix','检验细致平衡 + 看势能形状':'Test detailed balance + inspect potential shape',
   '沿同一批真实状态与转移边更新势能；点沿势能方向移动，代表转移中势能下降的绿色边增多，作用量下降。':'Update the potential on the same measured states and transition edges. Points move along the potential direction; more green downhill edges indicate a decreasing action.',
   '下降 V(g)<V(f)':'Downhill V(g)<V(f)','上升 V(g)>V(f)':'Uphill V(g)>V(f)','箭头指向下一状态 · 线宽 ∝𝒯':'Arrows point to the next state · width ∝ 𝒯','点击节点查看状态表达式、采样数和势能。':'Click a node to inspect its state expression, sample count, and potential.','作用量随迭代下降':'Action decreases with iteration','迭代':'Iteration','全图作用量 𝒮':'Global action 𝒮','下降边 / 总边数':'Downhill edges / total edges','显示状态 / 拟合总状态':'Displayed states / fitted states',
   '行是目标 f，列是源 g。按势能重新排列状态，深色表示更强的转移，上三角对应向低势能流动。观察转移的方向性在热图中显现。':'Rows are target f and columns are source g. Reorder states by potential; darker cells are stronger transitions, and the upper triangle corresponds to downhill flow.',
@@ -615,8 +618,12 @@ function drawCrossTask(){
     const legendY=43;
     ctx.save();ctx.strokeStyle=palette.deep;ctx.lineWidth=1.7;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(p.l,legendY);ctx.lineTo(p.l+23,legendY);ctx.stroke();ctx.restore();
     ctx.font='11px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(u.crossPrediction,p.l+31,legendY+4);
-    const dotX=w<500?p.l:Math.min(w-190,Math.max(p.l+190,w*.52));
-    const dotY=w<500?63:legendY;
+    // Use measured label widths, not a viewport breakpoint: English labels
+    // are wider, and the canvas may only occupy half of a wide viewport.
+    const nextLegendX=p.l+31+ctx.measureText(u.crossPrediction).width+28;
+    const legendsFit=nextLegendX+11+ctx.measureText(u.crossMeasured).width<=w-p.r;
+    const dotX=legendsFit?nextLegendX:p.l;
+    const dotY=legendsFit?legendY:66;
     ctx.beginPath();ctx.arc(dotX,dotY-1,3.5,0,Math.PI*2);ctx.fillStyle='rgba(47,119,173,.7)';ctx.fill();
     ctx.fillStyle='#58758e';ctx.fillText(u.crossMeasured,dotX+11,dotY+4);
     ctx.save();ctx.translate(17,(p.t+h-p.b)/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(u.crossAxisY,0,0);ctx.restore();

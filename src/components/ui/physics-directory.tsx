@@ -23,7 +23,7 @@ const copy = {
     collapseAbstract: "Collapse abstract",
     article: "Read the article",
     enter: "Enter the website",
-    imageAlt: "Detailed balance unit transition channel",
+    imageAlt: "Measured IdeaSearchFitter three-dimensional potential landscape",
   },
   cn: {
     subtitle: "智能的物理原理。",
@@ -38,7 +38,7 @@ const copy = {
     collapseAbstract: "收起摘要",
     article: "阅读文章",
     enter: "进入网页",
-    imageAlt: "细致平衡单元转移通道",
+    imageAlt: "真实 IdeaSearchFitter 三维势能 landscape",
   },
 } as const;
 
@@ -126,7 +126,7 @@ export function PhysicsDirectory({
               aria-label={text.enter}
             >
               <img
-                src="/detailed-balance/assets/figs/unit-sketch-square.png"
+                src="/detailed-balance/assets/figs/ideasearchfitter-landscape-3d.png"
                 alt={text.imageAlt}
                 className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.015]"
               />

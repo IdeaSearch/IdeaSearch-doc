@@ -152,6 +152,24 @@ html[lang="en"] .section-heading h2{font-size:clamp(32px,3.7vw,52px);letter-spac
 .unit-framework-image{display:block;width:100%;height:100%;margin:0;object-fit:contain}
 .bias-readout{grid-template-columns:repeat(2,minmax(0,1fr))}
 .bias-readout span{font:13px var(--sans)}
+.hero .unit-card{aspect-ratio:2099 / 1613;padding:0;overflow:hidden;background:transparent;border-radius:18px}
+.hero .unit-framework-image{width:100%;height:100%;object-fit:cover;object-position:center}
+.landscape-preview-card{margin:24px 0 0;padding:28px}
+.landscape-preview-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.75fr);gap:28px;align-items:center;margin-top:20px}
+.landscape-preview-figure{margin:0;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:transparent}
+.landscape-preview-figure iframe{display:block;width:100%;height:clamp(360px,34vw,560px);border:0;background:transparent}
+.landscape-preview-figure img{width:100%;height:auto;display:block}
+.landscape-preview-figure figcaption{padding:10px 14px;background:#eef3f6;text-align:right;font-size:13px}
+.landscape-preview-figure figcaption a{color:var(--blue-deep);font-weight:600;text-decoration:none}
+.landscape-preview-figure figcaption a:hover{text-decoration:underline}
+.landscape-preview-copy{display:grid;gap:16px;color:var(--muted);font-size:15px;line-height:1.85;min-width:0}
+.landscape-preview-copy>p{margin:0}
+.landscape-preview-copy>p strong{color:var(--deep)}
+.landscape-preview-copy p{margin:0}
+.landscape-preview-copy p strong{color:var(--deep)}
+.landscape-equation{padding:8px 0;color:var(--deep);font:600 17px var(--serif);letter-spacing:.01em;white-space:normal}
+@media(max-width:900px){.landscape-preview-layout{grid-template-columns:1fr;gap:20px}}
+@media(max-width:650px){.landscape-preview-card{padding:18px}.landscape-preview-copy{font-size:14px}.landscape-equation{font-size:15px}}
 /* Keep the article's editorial serif and mono layers, but share the
    IdeaSearch brand sans-serif with the directory page. */
 :root{--sans:"Inter","Noto Sans SC",system-ui,sans-serif}
@@ -185,10 +203,10 @@ html[lang="en"] .section-heading h2{font-size:clamp(32px,3.7vw,52px);letter-spac
 .micro-path{padding:14px;border:1px solid rgba(47,119,173,.2);border-radius:10px;background:#fff;min-width:0}
 .micro-path-heading{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 12px;color:var(--deep);font-size:16px}
 .micro-path-heading>span{font:15px var(--serif);white-space:nowrap}
-.micro-path-flow{display:grid;grid-template-columns:minmax(0,1fr) 78px;align-items:center;gap:12px;margin-top:30px}
+.micro-path-flow{display:grid;grid-template-columns:minmax(0,1fr) 190px;align-items:center;gap:12px;margin-top:16px}
 .micro-path-flow .micro-tokens{margin-top:0}
-.micro-path-target{position:relative;display:grid;grid-template-columns:22px 44px;align-items:center;gap:6px}
-.micro-path-target>span{position:absolute;bottom:100%;left:0;width:100%;margin-bottom:6px;color:var(--blue-deep);text-align:center;font-size:13px}
+.micro-path-target{display:flex;justify-content:flex-end;align-items:center;gap:8px;white-space:nowrap}
+.micro-path-target>span{color:var(--blue-deep);text-align:right;font-size:13px;line-height:1.4;white-space:nowrap}
 .micro-path-target>i{color:var(--blue-deep);font-style:normal;font-size:22px}
 .micro-path-target .micro-state{width:44px;height:44px;font-size:27px}
 .micro-tokens{display:flex;align-items:center;gap:8px;margin-top:12px}
@@ -207,7 +225,7 @@ html[lang="en"] .section-heading h2{font-size:clamp(32px,3.7vw,52px);letter-spac
 .sm6-definitions p{font-size:15px;line-height:1.8}
 .sm6-definitions .equation{white-space:normal;overflow-wrap:anywhere}
 .sm6-direction{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}
-@media(max-width:650px){.micro-path-flow{grid-template-columns:1fr;margin-top:14px;gap:10px}.micro-path-target{justify-self:end;grid-template-columns:auto 22px 44px}.micro-path-target>span{position:static;width:auto;margin:0}.micro-path-target>i{transform:rotate(90deg)}.sm6-direction{display:block}.sm6-direction>span{display:block}}
+@media(max-width:650px){.micro-path-flow{grid-template-columns:1fr;margin-top:14px;gap:10px}.micro-path-target{justify-self:end}.micro-path-target>i{transform:none}.sm6-direction{display:block}.sm6-direction>span{display:block}}
 
 /* Chapter directory: number, title and a consistent line icon only. */
 .directory-grid>a{display:grid;grid-template-columns:minmax(0,1fr) 48px;grid-template-rows:auto auto;gap:8px 12px;align-items:center;min-height:110px}
