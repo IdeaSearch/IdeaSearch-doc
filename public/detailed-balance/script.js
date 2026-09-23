@@ -57,6 +57,7 @@ const englishText = {
   '的 stress：':'stress:',
   '非度量 MDS 只保留图距离 δᵢⱼ 的排序，把状态嵌入一维坐标 y：':'Non-metric MDS keeps only the rank order of graph distances δᵢⱼ and embeds the states on one coordinate y:',
   '其中':'Here',
+  '其中 σ(z)=1/(1+e^(−z)) 是 logistic sigmoid。':'Here σ(z)=1/(1+e^(−z)) is the logistic sigmoid.',
   '因此状态相邻时 δ 较小。梯度大表示转移方向性强，适合确定性任务；梯度小则更适合探索。粗糙度表示 agent 的特运行周期：越粗糙，运行周期越长。':'Thus neighboring states have smaller δ. Steep gradients indicate strongly directional transitions and suit deterministic tasks; shallow gradients suit exploration. Roughness represents the agent’s characteristic operating cycle: the rougher the landscape, the longer the operating cycle.',
   '用MDS度量势能景观':'Measure the potential landscape with MDS','打开可交互三维图 ↗︎':'Open the interactive 3D plot ↗︎',
   '是拟合势能；选择任务后显示该任务自己的状态点和显示用平滑曲线。每个任务只使用最大的一个连通分支。Sum=100 与 Sum÷10 已移除；4-Digit Div7 的一维 MDS 未收敛，因此不显示。':'is the fitted potential V. Selecting a task shows its states and a display-only smoothed guide. Each task uses only its largest connected component. Sum=100 and Sum÷10 are removed; 4-Digit Div7 is not shown because its one-dimensional MDS did not converge.',

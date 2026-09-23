@@ -378,6 +378,7 @@ Chinese wording below is this page's translation, not a cited published translat
 <p class="landscape-equation">min<sub>y, φ</sub> Σ<sub>i&lt;j</sub> [φ(δ<sub>ij</sub>) − |y<sub>i</sub> − y<sub>j</sub>|]<sup>2</sup>, &nbsp;φ 单调</p>
 <p>其中</p>
 <p class="landscape-equation">δ<sub>ij</sub> = min<sub>p:i→j</sub> Σ<sub>(u,v)∈p</sub> [−log A<sub>uv</sub>], &nbsp;A<sub>uv</sub> = [𝒯(v←u)σ(V<sub>v</sub>−V<sub>u</sub>) + 𝒯(u←v)σ(V<sub>u</sub>−V<sub>v</sub>)]/2</p>
+<p>其中 σ(z)=1/(1+e^(−z)) 是 logistic sigmoid。</p>
 <p>因此状态相邻时 δ 较小。梯度大表示转移方向性强，适合确定性任务；梯度小则更适合探索。粗糙度表示 agent 的特运行周期：越粗糙，运行周期越长。</p>
 </div>
 </div>
