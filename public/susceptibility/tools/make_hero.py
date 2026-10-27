@@ -79,7 +79,7 @@ svg = f'''<svg class="hero-svg" viewBox="0 0 640 480" role="img" aria-labelledby
 <text x="{X1 + 14:.1f}" y="{Y0 + 26}" class="h-axis" text-anchor="end">ℬ</text>
 <text x="{X0 - 14}" y="{Y0 - H - 16}" class="h-axis" text-anchor="middle">J</text>
 <rect x="146" y="395" width="348" height="60" rx="14" class="h-bound-frame" fill="none"/>
-<text x="{(X0 + X1) / 2:.1f}" y="{Y0 + 75}" class="h-bound" text-anchor="middle">χ′ ≤ χ,  ℬ → 0</text>
+<text x="{(X0 + X1) / 2:.1f}" y="{Y0 + 75}" class="h-bound" text-anchor="middle">χ′ ≤ χ,  ℬ → ∞</text>
 </svg>'''
 open(OUT, 'w').write(svg)
 print('crossover at', round(xc, 3), 'bytes', len(svg))

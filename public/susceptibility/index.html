@@ -84,7 +84,7 @@
 <text x="594.0" y="386" class="h-axis" text-anchor="end">ℬ</text>
 <text x="46" y="44" class="h-axis" text-anchor="middle">J</text>
 <rect x="146" y="395" width="348" height="60" rx="14" class="h-bound-frame" fill="none"/>
-<text x="320.0" y="435" class="h-bound" text-anchor="middle">χ′ ≤ χ,  ℬ → 0</text>
+<text x="320.0" y="435" class="h-bound" text-anchor="middle">χ′ ≤ χ,  ℬ → ∞</text>
 </svg>
 </figure>
 </section>
@@ -425,11 +425,14 @@
 <div class="chart-grid">
 <canvas id="phyChart" class="chart" role="img" aria-label="四个模型的衰减率 d 及其区间与合并估计"></canvas>
 <div class="side-note">
-<p class="zh">d &gt; 0 即正确率随链长下降；四个模型的估计均为正。</p>
-<p class="en">d &gt; 0 means accuracy falls with chain length; all four models give a positive estimate.</p>
+<p class="zh">四个模型在 PHYBench 上使用不同题目的 TTS 估计。</p>
+<p class="en">TTS estimates for four models using different PHYBench questions.</p>
 <p class="caveat zh">观察性关联。</p>
 <p class="caveat en">An observational association.</p>
 </div>
+</div>
+<div class="source-links">
+<a href="https://openreview.net/forum?id=brG8FPq1cf" target="_blank" rel="noopener noreferrer"><span class="zh">相关研究 · PHYBench ↗︎</span><span class="en">Related research · PHYBench ↗︎</span></a>
 </div>
 </article>
 
@@ -478,8 +481,8 @@
 <span class="discussion-number">03</span>
 <div><span class="panel-kicker">SELF-EVOLUTION</span><h3 id="d3Title"><span class="zh">嵌套越过上界时，能力自我加速</span><span class="en">Past the bound, capability accelerates itself</span></h3></div>
 </header>
-<p class="discussion-intro zh">能力为 b 的模型生成训练数据，其质量为 p(b)；用这批数据训练后，模型的输出质量 l 升至数据的水平，能力随之更新，如此往复。p 与 l 谁增长更快，决定这条阶梯的去向。</p>
-<p class="discussion-intro en">A model of capability b generates training data of quality p(b); after training on it, the model's output quality l rises to match the data, and its capability moves to a new b. Then it repeats. Whether p or l rises faster decides where the staircase goes.</p>
+<p class="discussion-intro zh">假设能力为 b 的模型生成训练数据，其质量为 p(b)；用这批数据训练后，模型的输出质量 l 升至数据的水平，能力随之更新，如此往复。p 与 l 谁增长更快，决定这条阶梯的去向。</p>
+<p class="discussion-intro en">Assume that a model of capability b generates training data of quality p(b); after training on it, the model's output quality l rises to match the data, and its capability moves to a new b. Then it repeats. Whether p or l rises faster decides where the staircase goes.</p>
 <div class="tabs" role="tablist" aria-label="三种情形" id="cwTabs">
 <button class="tab is-active" role="tab" aria-selected="true" data-cw="evolve"><span class="zh">自我演化</span><span class="en">Self-evolution</span></button>
 <button class="tab" role="tab" aria-selected="false" data-cw="collapse"><span class="zh">塌缩</span><span class="en">Collapse</span></button>
