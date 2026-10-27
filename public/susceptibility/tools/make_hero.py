@@ -50,7 +50,7 @@ tS, eS = tangent(JS, 0.72, 96, '#1d5f9c', 'hS')
 tL, eL = tangent(JL, 0.72, 96, '#a8730e', 'hL')
 pS, _ = path(JS); pL, _ = path(JL)
 xcp, ycp = X(xc), Y(JS(xc))
-svg = f'''<svg class="hero-svg" viewBox="0 0 640 410" role="img" aria-labelledby="hTitle hDesc">
+svg = f'''<svg class="hero-svg" viewBox="0 0 640 458" role="img" aria-labelledby="hTitle hDesc">
 <title id="hTitle">响应率示意</title>
 <desc id="hDesc">示意：LLM 曲线起点更高但逐渐走平，固定策略曲线更陡，在交叉点后领先。切线箭头表示两者的响应率 χ′ 与 χ。</desc>
 <defs>
@@ -78,6 +78,7 @@ svg = f'''<svg class="hero-svg" viewBox="0 0 640 410" role="img" aria-labelledby
 <text x="{X(1) + 4:.1f}" y="{Y(JS(1)) - 14:.1f}" class="h-name h-blue" text-anchor="end"><tspan class="zh">固定策略</tspan><tspan class="en">fixed strategy</tspan></text>
 <text x="{X1 + 14:.1f}" y="{Y0 + 26}" class="h-axis" text-anchor="end">ℬ</text>
 <text x="{X0 - 14}" y="{Y0 - H - 16}" class="h-axis" text-anchor="middle">J</text>
+<text x="{(X0 + X1) / 2:.1f}" y="{Y0 + 72}" class="h-bound" text-anchor="middle">χ′ ≤ χ,  ℬ → 0</text>
 </svg>'''
 open(OUT, 'w').write(svg)
 print('crossover at', round(xc, 3), 'bytes', len(svg))

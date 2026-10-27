@@ -50,6 +50,37 @@ const copy = {
   },
 } as const;
 
+function ProjectAbstract({
+  id,
+  children,
+  expandLabel,
+  collapseLabel,
+}: {
+  id: string;
+  children: string;
+  expandLabel: string;
+  collapseLabel: string;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="physics-card-abstract-wrap">
+      <p id={id} className={"physics-card-abstract" + (open ? " is-expanded" : "")}>
+        {children}
+      </p>
+      <button
+        type="button"
+        className="physics-card-abstract-toggle"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen((value) => !value)}
+      >
+        {open ? collapseLabel : expandLabel}
+      </button>
+    </div>
+  );
+}
+
 export function PhysicsDirectory({
   lang,
 }: {
@@ -59,7 +90,6 @@ export function PhysicsDirectory({
   const text = copy[locale];
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [abstractOpen, setAbstractOpen] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 1600, height: 1000 });
   const detailHref =
     locale === "cn" ? "/detailed-balance?lang=zh" : "/detailed-balance";
@@ -144,19 +174,13 @@ export function PhysicsDirectory({
               <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
                 {text.title}
               </h2>
-              <div className="physics-card-abstract-wrap">
-                <p className={`physics-card-abstract${abstractOpen ? " is-expanded" : ""}`}>
-                  {text.abstract}
-                </p>
-                <button
-                  type="button"
-                  className="physics-card-abstract-toggle"
-                  aria-expanded={abstractOpen}
-                  onClick={() => setAbstractOpen((open) => !open)}
-                >
-                  {abstractOpen ? text.collapseAbstract : text.expandAbstract}
-                </button>
-              </div>
+              <ProjectAbstract
+                id="detailed-balance-abstract"
+                expandLabel={text.expandAbstract}
+                collapseLabel={text.collapseAbstract}
+              >
+                {text.abstract}
+              </ProjectAbstract>
               <div className="mt-auto flex flex-nowrap gap-2 pt-6">
                 <a
                   href="https://link.aps.org/doi/10.1103/kwx6-clqd"
@@ -191,7 +215,13 @@ export function PhysicsDirectory({
             </a>
             <div className="physics-project-card-body flex flex-col p-6 sm:p-7">
               <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">{text.susceptibilityTitle}</h2>
-              <p className="physics-card-abstract mt-4">{text.susceptibilityAbstract}</p>
+              <ProjectAbstract
+                id="susceptibility-abstract"
+                expandLabel={text.expandAbstract}
+                collapseLabel={text.collapseAbstract}
+              >
+                {text.susceptibilityAbstract}
+              </ProjectAbstract>
               <div className="mt-auto flex flex-nowrap gap-2 pt-6">
                 <a
                   href="https://arxiv.org/abs/2603.23626"
