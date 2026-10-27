@@ -17,6 +17,10 @@ const config = {
         source: "/detailed-balance",
         destination: "/detailed-balance/index.html",
       },
+      {
+        source: "/susceptibility",
+        destination: "/susceptibility/index.html",
+      },
     ];
   },
 };

@@ -24,6 +24,10 @@ const copy = {
     article: "Read the article",
     enter: "Enter the website",
     imageAlt: "Measured IdeaSearchFitter three-dimensional potential landscape",
+    susceptibilityTitle: "Information susceptibility in LLM agents",
+    susceptibilityAbstract:
+      "We treat a fixed LLM as a linear-response channel: world knowledge gives a head start, while hallucination limits the marginal return as the budget grows.",
+    susceptibilityImageAlt: "Linear-response curves for information susceptibility in LLM agents",
   },
   cn: {
     subtitle: "智能的物理原理。",
@@ -39,6 +43,10 @@ const copy = {
     article: "阅读文章",
     enter: "进入网页",
     imageAlt: "真实 IdeaSearchFitter 三维势能 landscape",
+    susceptibilityTitle: "LLM 智能体的信息响应率",
+    susceptibilityAbstract:
+      "把固定 LLM 看作线性响应通道：世界知识带来先发优势，而幻觉限制预算增加后的边际收益。",
+    susceptibilityImageAlt: "LLM 智能体信息响应率的线性响应曲线",
   },
 } as const;
 
@@ -55,6 +63,7 @@ export function PhysicsDirectory({
   const [dimensions, setDimensions] = useState({ width: 1600, height: 1000 });
   const detailHref =
     locale === "cn" ? "/detailed-balance?lang=zh" : "/detailed-balance";
+  const susceptibilityHref = "/susceptibility";
 
   useEffect(() => {
     setMounted(true);
@@ -168,18 +177,29 @@ export function PhysicsDirectory({
               </div>
             </div>
           </article>
-          <article className="physics-project-card w-full max-w-[26rem] justify-self-start overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/10" aria-label={text.moreTitle}>
-            <div className="physics-more-image relative flex aspect-square items-center justify-center bg-slate-100 dark:bg-slate-900">
-              <img src="/favicon.svg" alt="" className="h-1/2 w-1/2 object-contain opacity-75" />
-              <span className="physics-more-card-label absolute left-5 top-5">{text.moreLabel}</span>
-            </div>
+          <article className="physics-project-card w-full max-w-[26rem] justify-self-start overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/10">
+            <Link
+              href={susceptibilityHref}
+              className="group relative block aspect-square bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2 dark:bg-slate-900"
+              aria-label={text.enter}
+            >
+              <img
+                src="/susceptibility/assets/hero-square.png"
+                alt={text.susceptibilityImageAlt}
+                className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.015]"
+              />
+            </Link>
             <div className="physics-project-card-body flex flex-col p-6 sm:p-7">
-              <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">{text.moreTitle}</h2>
-              <p className="physics-card-abstract mt-4">{text.moreDescription}</p>
+              <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">{text.susceptibilityTitle}</h2>
+              <p className="physics-card-abstract mt-4">{text.susceptibilityAbstract}</p>
               <div className="mt-auto flex flex-nowrap gap-2 pt-6">
-                <button type="button" disabled className="physics-placeholder-button inline-flex min-h-11 w-full min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-foreground px-3 py-3 text-[11px] font-semibold text-background sm:px-5 sm:text-xs">
-                  {text.moreArticle}
-                </button>
+                <Link
+                  href={susceptibilityHref}
+                  className="inline-flex min-h-11 w-full min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-foreground px-3 py-3 text-[11px] font-semibold text-background transition hover:-translate-y-0.5 sm:px-5 sm:text-xs"
+                >
+                  {text.enter}
+                  <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
+                </Link>
               </div>
             </div>
           </article>
