@@ -326,8 +326,6 @@
 <div class="side-note">
 <p class="zh">嵌套从最低处出发，到 Qwen3-Max 时追平多数投票，斜率在所有配置中最陡。</p>
 <p class="en">Nesting starts lowest and reaches majority vote at Qwen3-Max: the steepest slope of all configurations.</p>
-<p class="caveat zh">方向与预言一致，尚未达到统计显著。</p>
-<p class="caveat en">The direction matches the prediction; it is not yet statistically significant.</p>
 </div>
 </div>
 </figure>
@@ -336,7 +334,7 @@
 <article class="discussion-block" aria-labelledby="a2Title">
 <header class="discussion-block-heading">
 <span class="discussion-number">02</span>
-<div><span class="panel-kicker">TOOLS AND TURNS · PRBENCH DMRG</span><h3 id="a2Title"><span class="zh">工具并非越多越好：甜点真实存在</span><span class="en">More tools is not better: the sweet spot is real</span></h3></div>
+<div><span class="panel-kicker">TOOLS AND TURNS · PRBENCH DMRG</span><h3 id="a2Title"><span class="zh">工具并非越多越好</span><span class="en">More tools is not better</span></h3></div>
 </header>
 <p class="discussion-intro zh">PRBench 的 DMRG 论文复现任务中，agent 同时消耗两种预算：可用工具数 t 与交互轮次 i。</p>
 <p class="discussion-intro en">In the PRBench DMRG paper-reproduction task, the agent spends two budgets at once: the number of available tools t and the number of turns i.</p>
@@ -351,6 +349,16 @@
 <canvas id="m1Bars" class="chart chart-bars" role="img" aria-label="所选模型在当前轮次下各工具数的实测平均分"></canvas>
 <figcaption class="zh">柱为同一轮次下各工具数的实测平均分；轨迹提前结束时沿用其最后得分。把每一轮的柱叠起来，便得到一张响应曲面 J(t, i)。</figcaption>
 <figcaption class="en">Bars are the measured mean score for each tool count at the same turn; a trajectory that ends early keeps its last score. Stacking the bars of every turn gives a response surface J(t, i).</figcaption>
+</figure>
+<figure class="bars-card terrain-card">
+<h4 class="fig-title zh">响应地形：工具数与轮次共同决定收益</h4>
+<h4 class="fig-title en">Response landscape: tools and turns jointly determine the return</h4>
+<p class="step-def zh">响应曲面 J(t, i) 由所选模型的 15 条轨迹检查点平滑拟合。白线标出各轮次拟合评分最高的工具数；金色虚线跟随上方轮次控件。</p>
+<p class="step-def en">The response surface J(t, i) is a smooth fit to checkpoints from the selected model's 15 trajectories. The white line marks the tool count with the highest fitted score at each turn; the gold dashed line follows the turn control above.</p>
+<canvas id="m1Surface" class="chart chart-surface" role="img" aria-label="所选模型的拟合响应地形：横轴工具数，纵轴轮次，颜色为评分"></canvas>
+<div class="scale-legend" aria-hidden="true"><span>J</span><i></i><span id="m1Scale">—</span><b class="frontier-key"></b><span class="zh">每轮拟合最优工具数</span><span class="en">best fitted tool count per turn</span></div>
+<figcaption class="zh">上图保留逐轮实测均值，本图展示平滑拟合地形；两图使用同一模型和轮次，拟合值与实测值可能不同。</figcaption>
+<figcaption class="en">The bars above retain the measured per-turn means; this map shows the smooth fitted landscape. Both views share the model and turn controls, and fitted values can differ from measurements.</figcaption>
 </figure>
 <p class="bridge zh">要紧的不是最优点落在何处，而是曲面的形状：每条预算通道的边际响应终将趋零或转负，且仅凭黑箱观测即可测得。</p>
 <p class="bridge en">What matters is not where the sweet spot sits but the shape of the surface: every channel's marginal response eventually flattens or turns negative, and this is measurable from black-box observations alone.</p>
@@ -394,8 +402,6 @@
 <figcaption class="zh">柱长为优化器每百万 token 产出的合格题数，相对随机分配的倍数；虚线为随机分配。</figcaption>
 <figcaption class="en">Bar length is the optimizer's good outputs per million tokens, as a multiple of random allocation; the dashed line is random allocation.</figcaption>
 </figure>
-<p class="caveat zh">优化器尚未开源，此处只介绍原理与结果。</p>
-<p class="caveat en">The optimizer is not yet open source; only its principle and results are shown.</p>
 </article>
 </section>
 
@@ -463,8 +469,6 @@
 <p class="en">The comparison changes when signals are heterogeneous. When multimodal observations must be combined into one physical or engineering inference, conventional code may have no way to combine them, so its response to the joint signal comes only from the channel it can process.</p>
 <p class="zh">此时 LLM 虽逐通道有损，仍能利用代码无法利用的信息；在极端或开放环境中，agent 可能胜过代码。</p>
 <p class="en">A lossy LLM can then still use information the code cannot; in extreme or open-ended environments, the agent may outperform the code.</p>
-<p class="caveat zh">有待同时改变多个通道的实验检验。</p>
-<p class="caveat en">Pending experiments that vary several channels jointly.</p>
 </div>
 </div>
 </article>
@@ -495,8 +499,6 @@
 <div class="cw-legend"><span><i class="cw-p"></i><span class="zh">p(b)：生成数据的质量</span><span class="en">p(b): quality of generated data</span></span><span><i class="cw-l"></i><span class="zh">l(b)：模型输出的质量</span><span class="en">l(b): quality of the model's output</span></span><span><i class="cw-s"></i><span class="zh">迭代：生成 ↑，训练 →</span><span class="en">iteration: generate ↑, train →</span></span></div>
 </div>
 </div>
-<p class="caveat zh">示意。</p>
-<p class="caveat en">Schematic.</p>
 </article>
 
 <p class="closing zh">固定的 LLM 追不上固定策略的斜率；<br>唯有随预算一同成长，才能越过这条线。</p>

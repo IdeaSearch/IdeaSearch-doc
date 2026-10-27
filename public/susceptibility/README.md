@@ -37,7 +37,7 @@
 | 03 预言一：排序、AIME（样本数 k）、Tetris | HuggingFace `Nondegeneracy/LLM-Susceptibility-theory`（CC BY 4.0）；AIME 配对差值按 60 道题聚类 |
 | 03 预言二：20 个固定配置与嵌套配置的 α | 同上；斜率对 log₂ℬ（AIME 对 log₁₀ 参数量）拟合，区间为误差传递的 ±1.96 SE |
 | 04 嵌套 vs 固定（AIME） | 同上 |
-| 04 PRBench DMRG 工具比较 | Milestone 1 运行记录的逐轨迹检查点：每个模型、每个工具数在每一轮的实测平均分（轨迹提前结束时沿用最后得分）；页面展示 6 个模型 |
+| 04 PRBench DMRG 工具比较与响应地形 | Milestone 1 运行记录的逐轨迹检查点：柱图为各工具数的逐轮实测平均分（轨迹提前结束时沿用最后得分）；地形图为原版归档中的逐模型平滑拟合曲面。两图共用模型和轮次控件，页面展示 6 个模型 |
 | 04 可观测轨迹优化器 | 优化器基准索引 `real_benchmark_index_20260914.csv`（五篇 PRL）：每百万 token 合格题数，优化器相对随机分配的倍数；warm 处于维护中，未列入。只展示原理与结果，不涉及实现 |
 | 05 思维链衰减率 d | follow-up 归档 `PHYBench_TTS`，四个非推理模型，由原始记录重新分箱和拟合 |
 | 首屏立体图、01 黑箱响应示意、04 嵌套架构与优化器闭环示意、05 异质通道、自我演化迭代阶梯（动画：自进化 / 塌缩 / 收敛） | 示意图，不是实验数据 |
@@ -54,6 +54,7 @@ python3 tools/aggregate_applications.py <M1 运行目录> <优化器 benchmark C
 python3 tools/make_hero.py hero.svg   # 首屏一维示意图
 python3 tools/make_hero_svg.py hero2d.svg wave.svg   # 其中 wave.svg 为动机章的黑箱示意
 python3 tools/aggregate_dmrg_turns.py <M1 运行目录> turns.json   # DMRG 逐轮实测分数，写入 data.js 的 m1 字段
+python3 tools/aggregate_m1_surface.py <M1 运行目录> surface.json   # 原版拟合曲面，按模型写入 m1.perModel[模型].surface；保留 m1.perTurn
 ```
 
 再把 core.json 中的 tetris、ranking、aime，evidence.json（phybench 只保留非推理模型）与 apps.json 合并写成 `assets/data/data.js`（`window.SUS_DATA = {...}`）。只用 Python 标准库。

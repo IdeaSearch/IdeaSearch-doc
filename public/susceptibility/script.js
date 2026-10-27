@@ -249,7 +249,7 @@
       ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(X(t), pad.t); ctx.lineTo(X(t), h - pad.b); ctx.stroke();
       ctx.fillStyle = C.muted; ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillText(String(t), X(t), h - pad.b + 6);
     });
-    ctx.fillStyle = C.deep; ctx.fillText(f.title, pad.l + pw / 2, h - pad.b + 24);
+    ctx.fillStyle = C.deep; ctx.fillText(w < 600 && f.shortTitle ? f.shortTitle : f.title, pad.l + pw / 2, h - pad.b + 24);
     f.refs.forEach((r) => { ctx.save(); ctx.setLineDash([6, 5]); ctx.strokeStyle = r.color; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(X(r.x), pad.t - 4); ctx.lineTo(X(r.x), h - pad.b); ctx.stroke(); ctx.restore(); });
     f.rows.forEach((r, i) => {
       const y = Yr(i);
@@ -288,7 +288,12 @@
       rows.push({ label: nested ? L("生成器 = 选择器", "generator = selector") : r[1].replace("cot", "CoT"), v: r[3], se: r[4],
         color: C.goldDeep, filled: nested || below, strong: nested, diamond: nested });
     });
-    return { rows, min: -0.5, max: 3.5, ticks: [0, 0.5, 1, 2, 3], title: L("传递系数 α（LLM 斜率 ÷ 固定策略斜率）", "transfer coefficient α (LLM slope ÷ fixed-strategy slope)"),
+    // Limits follow point estimates; out-of-range intervals keep their arrowheads.
+    const estimates = rows.filter((r) => Number.isFinite(r.v)).map((r) => r.v);
+    const lo = Math.min(0, ...estimates), hi = Math.max(1, ...estimates), margin = (hi - lo) * 0.06;
+    const min = Math.floor((lo - margin) * 10) / 10, max = Math.ceil((hi + margin) * 10) / 10;
+    const ticks = Array.from({ length: Math.floor(max / 0.25) - Math.ceil(min / 0.25) + 1 }, (_, k) => (Math.ceil(min / 0.25) + k) * 0.25);
+    return { rows, min, max, ticks, shortTitle: L("传递系数 α", "transfer coefficient α"), title: L("传递系数 α（LLM 斜率 ÷ 固定策略斜率）", "transfer coefficient α (LLM slope ÷ fixed-strategy slope)"),
       refs: [{ x: 1, color: C.blue }, { x: 0, color: "#c3d2df" }] };
   });
   function forestMetrics() {
@@ -340,10 +345,70 @@
     ctx.fillStyle = C.deep; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.fillText(L("可用工具数 t", "tools available t"), pad.l + pw / 2, h - 6);
   };
   const m1Bars = new Bars(document.getElementById("m1Bars"), () => { const top = yTop(); return { vals: barVals(), max: top, ticks: Array.from({ length: Math.round(top * 10) + 1 }, (_, k) => k / 10).filter((_, k) => k % 2 === 0) }; });
+  // Original fitted terrain, restored without changing the measured per-turn bars.
+  const surfaceTop = () => Math.max(0.5, Math.ceil(Math.max(...D.m1.perModel[m1Model].surface.z.flat()) * 10 + 0.3) / 10);
+  const RAMP = [[247, 251, 255], [214, 234, 250], [150, 199, 238], [77, 150, 210], [35, 94, 150], [18, 52, 92]];
+  const ramp = (u) => {
+    const t = Math.min(Math.max(u, 0), 1) * (RAMP.length - 1), k = Math.min(Math.floor(t), RAMP.length - 2), f = t - k;
+    return `rgb(${RAMP[k].map((c, n) => Math.round(c + (RAMP[k + 1][n] - c) * f)).join(",")})`;
+  };
+  const surfOf = () => {
+    const s = D.m1.perModel[m1Model].surface, flat = s.z.flat();
+    const frontier = s.z.map((row) => s.tool[row.indexOf(Math.max(...row))]);
+    return { T: s.tool, I: s.it, z: s.z, zMin: Math.min(...flat), zMax: Math.max(...flat), frontier };
+  };
+  function SurfaceChart(canvas) { this.canvas = canvas; this.ctx = canvas.getContext("2d"); new ResizeObserver(() => this.draw()).observe(canvas); charts.push(this); }
+  SurfaceChart.prototype.draw = function () {
+    const cv = this.canvas, ctx = this.ctx, w = cv.clientWidth, h = cv.clientHeight;
+    if (!w || !h) return;
+    const S = surfOf(), T = S.T, I = S.I, nt = T.length, ni = I.length;
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+    const pad = { l: 46, r: 12, t: 12, b: 44 }, pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
+    const X = (t) => pad.l + (t - T[0]) / (T[nt - 1] - T[0]) * pw, Y = (i) => pad.t + (1 - (i - I[0]) / (I[ni - 1] - I[0])) * ph;
+    const U = (z) => z / surfaceTop();
+    for (let a = 0; a < ni; a++) for (let b = 0; b < nt; b++) {
+      const x0 = X(b ? (T[b - 1] + T[b]) / 2 : T[0]), x1 = X(b < nt - 1 ? (T[b] + T[b + 1]) / 2 : T[nt - 1]);
+      const y0 = Y(a < ni - 1 ? (I[a] + I[a + 1]) / 2 : I[ni - 1]), y1 = Y(a ? (I[a - 1] + I[a]) / 2 : I[0]);
+      ctx.fillStyle = ramp(U(S.z[a][b])); ctx.fillRect(x0, y0, x1 - x0 + 0.7, y1 - y0 + 0.7);
+    }
+    // contours at quarter levels of this model's range (marching squares)
+    ctx.lineWidth = 1; ctx.strokeStyle = "rgba(255,255,255,.5)";
+    [0.25, 0.5, 0.75, 0.9].map((q) => S.zMin + q * (S.zMax - S.zMin)).forEach((lv) => {
+      ctx.beginPath();
+      for (let a = 0; a < ni - 1; a++) for (let b = 0; b < nt - 1; b++) {
+        const c = [[a, b], [a, b + 1], [a + 1, b + 1], [a + 1, b]], v = c.map(([p, q]) => S.z[p][q]), pts = [];
+        for (let e = 0; e < 4; e++) {
+          const [p1, q1] = c[e], [p2, q2] = c[(e + 1) % 4], v1 = v[e], v2 = v[(e + 1) % 4];
+          if ((v1 - lv) * (v2 - lv) < 0) { const f = (lv - v1) / (v2 - v1); pts.push([X(T[q1] + (T[q2] - T[q1]) * f), Y(I[p1] + (I[p2] - I[p1]) * f)]); }
+        }
+        if (pts.length >= 2) { ctx.moveTo(pts[0][0], pts[0][1]); ctx.lineTo(pts[1][0], pts[1][1]); if (pts.length === 4) { ctx.moveTo(pts[2][0], pts[2][1]); ctx.lineTo(pts[3][0], pts[3][1]); } }
+      }
+      ctx.stroke();
+    });
+    // frontier from turn 5 (below it the surface is nearly flat in t and the argmax is noise)
+    const fr = S.frontier.map((t, k) => [t, I[k]]).filter((p) => p[1] >= 5);
+    ctx.save(); ctx.lineJoin = "round";
+    ctx.strokeStyle = "rgba(16,41,68,.55)"; ctx.lineWidth = 5; ctx.beginPath(); fr.forEach(([t, i], k) => (k ? ctx.lineTo(X(t), Y(i)) : ctx.moveTo(X(t), Y(i)))); ctx.stroke();
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 2.6; ctx.beginPath(); fr.forEach(([t, i], k) => (k ? ctx.lineTo(X(t), Y(i)) : ctx.moveTo(X(t), Y(i)))); ctx.stroke(); ctx.restore();
+    // the turn currently shown in the bar chart
+    ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = C.goldDeep; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(pad.l, Y(m1Turn)); ctx.lineTo(pad.l + pw, Y(m1Turn)); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = C.goldDeep; ctx.font = `600 11px "DM Mono", ui-monospace, "Noto Sans SC", sans-serif`; ctx.textAlign = "right"; ctx.textBaseline = m1Turn > 55 ? "top" : "bottom";
+    ctx.fillText(L(`当前第 ${Math.round(m1Turn)} 轮`, `current turn ${Math.round(m1Turn)}`), pad.l + pw - 4, Y(m1Turn) + (m1Turn > 55 ? 5 : -3));
+    ctx.strokeStyle = C.axis; ctx.lineWidth = 1; ctx.strokeRect(pad.l, pad.t, pw, ph);
+    ctx.font = `11px "DM Mono", ui-monospace, monospace`; ctx.fillStyle = C.muted;
+    ctx.textAlign = "center"; ctx.textBaseline = "top"; TOOLS.forEach((t) => ctx.fillText(String(t), X(t), pad.t + ph + 6));
+    ctx.textAlign = "right"; ctx.textBaseline = "middle"; [1, 20, 40, 60].forEach((i) => ctx.fillText(String(i), pad.l - 6, Y(i)));
+    ctx.fillStyle = C.deep; ctx.font = `11.5px "DM Mono", ui-monospace, "Noto Sans SC", sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.fillText(L("可用工具数 t", "tools available t"), pad.l + pw / 2, h - 6);
+    ctx.save(); ctx.translate(13, pad.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = "top"; ctx.fillText(L("轮次 i", "turn i"), 0, 0); ctx.restore();
+    document.getElementById("m1Scale").textContent = `0 – ${fmt(surfaceTop(), 1)}`;
+  };
+  const m1Surf = new SurfaceChart(document.getElementById("m1Surface"));
   const range = document.getElementById("m1TurnRange"), out = document.getElementById("m1TurnOut"), playBtn = document.getElementById("m1Play"), resetBtn = document.getElementById("m1Reset");
   let playing = false, lastT = 0;
   const label = () => { playBtn.textContent = playing ? L("暂停", "Pause") : L("播放 ↗︎", "Play ↗︎"); };
-  const setTurn = (t) => { m1Turn = t; range.value = String(t); out.textContent = `${Math.round(t)} / 60`; m1Bars.draw(); };
+  const setTurn = (t) => { m1Turn = t; range.value = String(t); out.textContent = `${Math.round(t)} / 60`; m1Bars.draw(); m1Surf.draw(); };
   const setPlaying = (p) => { playing = p; label(); if (p) { lastT = 0; requestAnimationFrame(tick); } };
   function tick(now) {
     if (!playing) return;
