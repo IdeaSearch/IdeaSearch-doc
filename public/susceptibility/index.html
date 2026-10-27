@@ -282,8 +282,8 @@
 <span class="discussion-number">01</span>
 <div><span class="panel-kicker">NESTED ARCHITECTURE</span><h3 id="a1Title"><span class="zh">嵌套：选择器与生成器一同扩大</span><span class="en">Nesting: let the selector grow with the generator</span></h3></div>
 </header>
-<p class="discussion-intro zh">生成–选择架构中，固定的选择器无论生成器多强都不变，受上界约束。让选择器与生成器使用同一个模型、一起变大，LLM 本身就随预算增长，上界不再适用。</p>
-<p class="discussion-intro en">In a generate-then-select architecture, a fixed selector stays the same however strong the generator gets, and it obeys the bound. Make the selector the same model as the generator so they grow together, and the LLM itself scales with budget; the bound no longer applies.</p>
+<p class="discussion-intro zh">一种常见的回答问题方法是先生成多个选项，然后从中选择最好的一个。保持选择器不变，逐步提升生成器的能力，就能考察更强的生成器对最终答案正确率的影响；此时固定选择器仍受响应率上界约束。如果让选择器与生成器使用同一个模型、一起变大，选择器本身就随预算增长，上界不再适用。</p>
+<p class="discussion-intro en">A common way to answer a question is to generate several candidate answers, then select the best one. Keeping the selector fixed while increasing the capability of the generator shows how a stronger generator affects the accuracy of the final answer. The fixed selector still obeys the susceptibility bound. If the selector and generator use the same model and grow together, the selector itself grows with the budget, so the bound no longer applies.</p>
 <div class="nest-schematic">
 <svg viewBox="0 0 680 230" role="img" aria-labelledby="nestTitle">
 <title id="nestTitle">示意：固定架构中，生成器变大而选择器不变；嵌套架构中，生成器与选择器是同一个模型，一起变大</title>
@@ -336,8 +336,8 @@
 <span class="discussion-number">02</span>
 <div><span class="panel-kicker">TOOLS AND TURNS · PRBENCH DMRG</span><h3 id="a2Title"><span class="zh">工具并非越多越好</span><span class="en">More tools is not better</span></h3></div>
 </header>
-<p class="discussion-intro zh">PRBench 的 DMRG 论文复现任务中，agent 同时消耗两种预算：可用工具数 t 与交互轮次 i。</p>
-<p class="discussion-intro en">In the PRBench DMRG paper-reproduction task, the agent spends two budgets at once: the number of available tools t and the number of turns i.</p>
+<p class="discussion-intro zh">在一个真实的 agent 任务中，agent 面对二维的选择：用多少工具，交互多少轮。在这个二维空间中，响应率决定了任务得分随着选择变化的整体规律。</p>
+<p class="discussion-intro en">In a real agent task, the agent must choose along two dimensions: how many tools to use and how many turns to take. In this two-dimensional space, susceptibility determines the overall pattern of how the task score changes with these choices.</p>
 <div class="chips" id="m1ModelChips" aria-label="选择模型"></div>
 <figure class="bars-card">
 <div class="application-controls">
@@ -369,8 +369,8 @@
 <span class="discussion-number">03</span>
 <div><span class="panel-kicker">ONLINE BUDGET ALLOCATION</span><h3 id="a3Title"><span class="zh">把预算投向仍有响应的地方</span><span class="en">Spend where the response is still positive</span></h3></div>
 </header>
-<p class="discussion-intro zh">优化器在运行中做同一件事：以各轨迹的检查点在线估计响应曲面及其不确定度，把后续预算投向边际响应最高处，响应已趋零的方向不再投入。它只读取黑箱观测。</p>
-<p class="discussion-intro en">The optimizer does the same thing while it runs: from the checkpoints of all trajectories it estimates the response surface and its uncertainty online, sends further budget where the marginal response is highest, and none where it has flattened. It reads only black-box observables.</p>
+<p class="discussion-intro zh">为此，可以设计一个外置优化器。优化器在运行中做同一件事：以各轨迹的检查点在线估计响应曲面及其不确定度，把后续预算投向边际响应最高处，响应已趋零的方向不再投入。它只读取黑箱观测。</p>
+<p class="discussion-intro en">For this purpose, we can design an external optimizer. The optimizer does the same thing while it runs: from the checkpoints of all trajectories it estimates the response surface and its uncertainty online, sends further budget where the marginal response is highest, and none where it has flattened. It reads only black-box observables.</p>
 <div class="loop-wrap">
 <div class="loop-diagram">
 <svg viewBox="0 0 420 300" role="img" aria-labelledby="loopTitle">
