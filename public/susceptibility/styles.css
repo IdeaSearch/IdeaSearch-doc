@@ -219,7 +219,7 @@ figcaption{display:block;margin-top:14px;color:var(--muted);font-size:14px;line-
 
 
 /* ---------- hero illustration (static, transparent) ---------- */
-.hero-art{margin:0;min-width:0}
+.hero-art{margin:0;min-width:0;border:1px solid var(--line);border-radius:18px;background:transparent;box-shadow:var(--shadow);overflow:hidden}
 .hero-svg{display:block;width:100%;height:auto;overflow:visible}
 .hero-svg .hg-t{font:600 13px var(--mono)}
 .hero-svg .hg-tg{fill:#b78018}.hero-svg .hg-tb{fill:#2f77ad}
@@ -393,7 +393,7 @@ figcaption{display:block;margin-top:14px;color:var(--muted);font-size:14px;line-
 .hero-svg .h-chi{font:600 24px var(--serif)}
 .hero-svg .h-name{font:600 26px var(--serif)}
 .hero-svg .h-gold{fill:#a8730e}.hero-svg .h-blue{fill:#1d5f9c}
-.hero-svg .h-axis{fill:var(--muted);font:16px var(--mono)}
+.hero-svg .h-axis{fill:var(--muted);font:700 20px var(--mono)}
 
 .schem-cap{margin:6px 0 0;color:#8a9bad;font:11.5px var(--mono);text-align:center}
 .phase-controls{grid-template-columns:auto auto auto;justify-content:start;margin:8px 0 4px}

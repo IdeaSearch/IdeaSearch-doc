@@ -58,11 +58,11 @@ svg = f'''<svg class="hero-svg" viewBox="0 0 640 410" role="img" aria-labelledby
 <linearGradient id="hBlue" x1="0" x2="1"><stop offset="0" stop-color="#5da8e8" stop-opacity=".08"/><stop offset="1" stop-color="#5da8e8" stop-opacity=".34"/></linearGradient>
 <marker id="hS" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L11 6 L1 11 Z" fill="#1d5f9c"/></marker>
 <marker id="hL" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L11 6 L1 11 Z" fill="#a8730e"/></marker>
-<marker id="hA" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L11 6 L1 11 Z" fill="#9fb6c9"/></marker>
+<marker id="hA" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L11 6 L1 11 Z" fill="#68809a"/></marker>
 <radialGradient id="hHalo"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
 </defs>
-<path d="M{X0} {Y0} H{X1 + 18}" stroke="#9fb6c9" stroke-width="1.5" marker-end="url(#hA)"/>
-<path d="M{X0} {Y0} V{Y0 - H - 24}" stroke="#9fb6c9" stroke-width="1.5" marker-end="url(#hA)"/>
+<path d="M{X0} {Y0} H{X1 + 18}" stroke="#68809a" stroke-width="2.8" stroke-linecap="round" marker-end="url(#hA)"/>
+<path d="M{X0} {Y0} V{Y0 - H - 24}" stroke="#68809a" stroke-width="2.8" stroke-linecap="round" marker-end="url(#hA)"/>
 <path d="{band(JL, JS, 0, xc)}" fill="url(#hGold)"/>
 <path d="{band(JS, JL, xc, 1)}" fill="url(#hBlue)"/>
 <path d="M{pL}" fill="none" stroke="rgba(239,184,62,.28)" stroke-width="12" stroke-linecap="round"/>
