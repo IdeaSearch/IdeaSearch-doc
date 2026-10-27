@@ -39,7 +39,7 @@
 | 04 嵌套 vs 固定（AIME） | 同上 |
 | 04 PRBench DMRG 工具比较与响应地形 | Milestone 1 运行记录的逐轨迹检查点：柱图为各工具数的逐轮实测平均分（轨迹提前结束时沿用最后得分）；地形图为原版归档中的逐模型平滑拟合曲面。两图共用模型和轮次控件，页面展示 6 个模型 |
 | 04 可观测轨迹优化器 | 优化器基准索引 `real_benchmark_index_20260914.csv`（五篇 PRL）：每百万 token 合格题数，优化器相对随机分配的倍数；warm 处于维护中，未列入。只展示原理与结果，不涉及实现 |
-| 05 思维链衰减率 d | follow-up 归档 `PHYBench_TTS`，四个非推理模型，由原始记录重新分箱和拟合 |
+| 05 思维链长度与正确率 | follow-up 归档 PHYBench_TTS：四个非推理模型，按 plot_median_control.py 的逐题中位数归一化、8 个分位数分箱和加权指数拟合重绘；淡色首箱不参与拟合，误差棒采用题目数计算的标准误，阴影为 1σ 拟合带。页面以 HTML canvas 绘制，不嵌入原图 |
 | 首屏立体图、01 黑箱响应示意、04 嵌套架构与优化器闭环示意、05 异质通道、自我演化迭代阶梯（动画：自进化 / 塌缩 / 收敛） | 示意图，不是实验数据 |
 
 未入选的数据：0/1 背包（α 的标准误约为 5，无区分度）。
@@ -58,3 +58,5 @@ python3 tools/aggregate_m1_surface.py <M1 运行目录> surface.json   # 原版�
 ```
 
 再把 core.json 中的 tetris、ranking、aime，evidence.json（phybench 只保留非推理模型）与 apps.json 合并写成 `assets/data/data.js`（`window.SUS_DATA = {...}`）。只用 Python 标准库。
+
+PHYBench 的 fit_cov 为 log(p) = c - d x 中 (d, c) 的绝对加权协方差，由 aggregate_phybench.py 与分箱一起生成。网页保留归档中基于逐题模型评分的正确性判定；这些跨题观测不构成逐次续写干预的因果估计。

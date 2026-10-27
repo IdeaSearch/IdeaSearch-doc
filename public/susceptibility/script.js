@@ -92,6 +92,7 @@
     const small = w < 460 || cfg.compact;
     const pad = cfg.compact ? { l: 44, r: 16, t: 26, b: 40 } : { l: small ? 46 : 58, r: 14, t: 14, b: small ? 64 : 54 };
     if (cfg.legendRight) pad.r = 14;
+    if (cfg.y.padLeft) pad.l = cfg.y.padLeft;
     const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
     const xt = cfg.x.transform || ((v) => v);
     const xs = cfg.x.ticks.map(xt);
@@ -151,6 +152,14 @@
         }
       }
     }
+    (cfg.confidenceBands || []).forEach((band) => {
+      if (!band.points.length) return;
+      ctx.save(); ctx.fillStyle = band.color; ctx.globalAlpha = band.alpha === undefined ? 0.12 : band.alpha;
+      ctx.beginPath();
+      band.points.forEach((p, i) => (i ? ctx.lineTo(X(p[0]), Y(p[2])) : ctx.moveTo(X(p[0]), Y(p[2]))));
+      band.points.slice().reverse().forEach((p) => ctx.lineTo(X(p[0]), Y(p[1])));
+      ctx.closePath(); ctx.fill(); ctx.restore();
+    });
     cfg.series.forEach((s) => {
       const pts = s.points.filter((p) => p && Number.isFinite(p[1]));
       ctx.globalAlpha = s.alpha === undefined ? 1 : s.alpha;
@@ -160,7 +169,7 @@
       ctx.setLineDash([]);
       if (s.err !== false) pts.forEach((p) => {
         if (!p[2]) return;
-        const x = X(p[0]), lo = Y(p[1] - p[2]), hi = Y(p[1] + p[2]);
+        const x = X(p[0]), lo = Y(p[1] - p[2]), hi = Y(p[1] + (p[3] === undefined ? p[2] : p[3]));
         ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x, lo); ctx.lineTo(x, hi);
         ctx.moveTo(x - 3, lo); ctx.lineTo(x + 3, lo); ctx.moveTo(x - 3, hi); ctx.lineTo(x + 3, hi); ctx.stroke();
       });
@@ -469,15 +478,34 @@
   }
 
 
-  /* ---------- 05 PHYBench decay rates (non-reasoning models) ---------- */
+  /* ---------- 05 PHYBench: median-normalized chain length and accuracy ---------- */
   const P = D.phybench;
-  const pool = (ms) => { const w = ms.map((m) => 1 / m.d_se ** 2), W = w.reduce((a, b) => a + b, 0); return { v: ms.reduce((s, m, i) => s + w[i] * m.d, 0) / W, se: 1 / Math.sqrt(W) }; };
-  const pN = pool(P);
-  new Forest(document.getElementById("phyChart"), () => ({
-    rows: [...P.map((m) => ({ label: m.name, v: m.d, se: m.d_se, color: C.goldDeep, filled: false })), { label: L("合并", "pooled"), v: pN.v, se: pN.se, color: C.goldDeep, filled: true, strong: true, diamond: true }],
-    min: -2, max: 4, ticks: [-2, -1, 0, 1, 2, 3, 4], title: L("衰减率 d = 1/L₀（d > 0：随链长下降）", "decay rate d = 1/L₀ (d > 0: falls with length)"),
-    refs: [{ x: 0, color: C.blue }]
-  }));
+  P.forEach((model, index) => {
+    const bins = model.bins.map(([x, p, se]) => {
+      const logError = se / p;
+      return [x, p, p * (1 - Math.exp(-logError)), p * (Math.exp(logError) - 1)];
+    });
+    const x0 = bins[0][0], x1 = bins[bins.length - 1][0];
+    const fit = Array.from({ length: 200 }, (_, k) => {
+      const x = x0 + (x1 - x0) * k / 199;
+      return [x, Math.exp(model.c - model.d * x)];
+    });
+    const cov = model.fit_cov;
+    const band = fit.map(([x, p]) => {
+      const sigma = Math.sqrt(Math.max(0, x * x * cov[0][0] - 2 * x * cov[0][1] + cov[1][1]));
+      return [x, p * Math.exp(-sigma), p * Math.exp(sigma)];
+    });
+    new Chart(document.getElementById("phyCurve" + index), () => ({
+      x: { min: 0.5, max: 1.8, ticks: [0.5, 1, 1.5], title: L("归一化链长 L / median(L)", "normalized length L / median(L)") },
+      y: { min: 0.01, max: 0.32, ticks: [0.01, 0.02, 0.05, 0.1, 0.2], transform: log10, padLeft: 58, title: L("正确率", "accuracy") },
+      confidenceBands: [{ points: band, color: C.blue, alpha: 0.13 }],
+      series: [
+        { points: fit, color: C.blue, width: 2.4, marker: "none", err: false },
+        { points: bins.slice(0, 1), color: C.blue, width: 0, alpha: 0.35, r: 4 },
+        { points: bins.slice(1), color: C.blue, width: 0, r: 4 }
+      ]
+    }));
+  });
   function phyReadout() {}
 
 

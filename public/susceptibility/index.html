@@ -338,27 +338,29 @@
 <p class="discussion-intro zh">在一个真实的 agent 任务中，agent 面对二维的选择：用多少工具，交互多少轮。在这个二维空间中，响应率决定了任务得分随着选择变化的整体规律。</p>
 <p class="discussion-intro en">In a real agent task, the agent must choose along two dimensions: how many tools to use and how many turns to take. In this two-dimensional space, susceptibility determines the overall pattern of how the task score changes with these choices.</p>
 <div class="chips" id="m1ModelChips" aria-label="选择模型"></div>
-<figure class="bars-card">
 <div class="application-controls">
 <label for="m1TurnRange"><span class="zh">轮次</span><span class="en">Turn</span> <output id="m1TurnOut">1 / 60</output></label>
 <input id="m1TurnRange" type="range" min="1" max="60" step="0.25" value="1" aria-label="拖动查看第 1 到第 60 轮">
 <button id="m1Play" class="button button-primary" type="button">—</button>
 <button id="m1Reset" class="button button-quiet" type="button"><span class="zh">重置</span><span class="en">Reset</span></button>
 </div>
+<div class="two-col dmrg-grid">
+<figure class="bars-card">
+<h4 class="fig-title"><span class="zh">当前轮次的实测得分</span><span class="en">Measured scores at the selected turn</span></h4>
 <canvas id="m1Bars" class="chart chart-bars" role="img" aria-label="所选模型在当前轮次下各工具数的实测平均分"></canvas>
 <figcaption class="zh">柱为同一轮次下各工具数的实测平均分；轨迹提前结束时沿用其最后得分。把每一轮的柱叠起来，便得到一张响应曲面 J(t, i)。</figcaption>
 <figcaption class="en">Bars are the measured mean score for each tool count at the same turn; a trajectory that ends early keeps its last score. Stacking the bars of every turn gives a response surface J(t, i).</figcaption>
 </figure>
 <figure class="bars-card terrain-card">
-<h4 class="fig-title zh">响应地形：工具数与轮次共同决定收益</h4>
-<h4 class="fig-title en">Response landscape: tools and turns jointly determine the return</h4>
-<p class="step-def zh">响应曲面 J(t, i) 由所选模型的 15 条轨迹检查点平滑拟合。白线标出各轮次拟合评分最高的工具数；金色虚线跟随上方轮次控件。</p>
-<p class="step-def en">The response surface J(t, i) is a smooth fit to checkpoints from the selected model's 15 trajectories. The white line marks the tool count with the highest fitted score at each turn; the gold dashed line follows the turn control above.</p>
+<h4 class="fig-title"><span class="zh">工具数 × 轮次：响应地形</span><span class="en">Response landscape: tools × turns</span></h4>
 <canvas id="m1Surface" class="chart chart-surface" role="img" aria-label="所选模型的拟合响应地形：横轴工具数，纵轴轮次，颜色为评分"></canvas>
 <div class="scale-legend" aria-hidden="true"><span>J</span><i></i><span id="m1Scale">—</span><b class="frontier-key"></b><span class="zh">每轮拟合最优工具数</span><span class="en">best fitted tool count per turn</span></div>
-<figcaption class="zh">上图保留逐轮实测均值，本图展示平滑拟合地形；两图使用同一模型和轮次，拟合值与实测值可能不同。</figcaption>
-<figcaption class="en">The bars above retain the measured per-turn means; this map shows the smooth fitted landscape. Both views share the model and turn controls, and fitted values can differ from measurements.</figcaption>
+<p class="step-def zh">响应曲面 J(t, i) 由所选模型的 15 条轨迹检查点平滑拟合。白线标出各轮次拟合评分最高的工具数；金色虚线跟随轮次控件。</p>
+<p class="step-def en">The response surface J(t, i) is a smooth fit to checkpoints from the selected model's 15 trajectories. The white line marks the tool count with the highest fitted score at each turn; the gold dashed line follows the turn control.</p>
+<figcaption class="zh">柱图保留逐轮实测均值，本图展示平滑拟合地形；两图使用同一模型和轮次，拟合值与实测值可能不同。</figcaption>
+<figcaption class="en">The bars retain the measured per-turn means; this map shows the smooth fitted landscape. Both views share the model and turn controls, and fitted values can differ from measurements.</figcaption>
 </figure>
+</div>
 <p class="bridge zh">要紧的不是最优点落在何处，而是曲面的形状：每条预算通道的边际响应终将趋零或转负，且仅凭黑箱观测即可测得。</p>
 <p class="bridge en">What matters is not where the sweet spot sits but the shape of the surface: every channel's marginal response eventually flattens or turns negative, and this is measurable from black-box observations alone.</p>
 </article>
@@ -371,9 +373,7 @@
 <span class="discussion-number">03</span>
 <div><span class="panel-kicker">ONLINE BUDGET ALLOCATION</span><h3 id="a3Title"><span class="zh">把预算投向仍有响应的地方</span><span class="en">Spend where the response is still positive</span></h3></div>
 </header>
-<p class="discussion-intro zh">为此，可以设计一个外置优化器。优化器在运行中做同一件事：以各轨迹的检查点在线估计响应曲面及其不确定度，把后续预算投向边际响应最高处，响应已趋零的方向不再投入。它只读取黑箱观测。</p>
-<p class="discussion-intro en">For this purpose, we can design an external optimizer. The optimizer does the same thing while it runs: from the checkpoints of all trajectories it estimates the response surface and its uncertainty online, sends further budget where the marginal response is highest, and none where it has flattened. It reads only black-box observables.</p>
-<div class="loop-wrap">
+<div class="two-col optimizer-intro">
 <div class="loop-diagram">
 <svg viewBox="0 0 420 300" role="img" aria-labelledby="loopTitle">
 <title id="loopTitle">闭环：流水线只向外暴露观测，响应曲面由观测估计，决策只作用于预算分配</title>
@@ -396,6 +396,9 @@
 </svg>
 <p class="schem-cap zh">示意</p><p class="schem-cap en">Schematic</p>
 </div>
+<div class="side-note">
+<p class="discussion-intro zh">为此，可以设计一个外置优化器。优化器在运行中做同一件事：以各轨迹的检查点在线估计响应曲面及其不确定度，把后续预算投向边际响应最高处，响应已趋零的方向不再投入。它只读取黑箱观测。</p>
+<p class="discussion-intro en">For this purpose, we can design an external optimizer. The optimizer does the same thing while it runs: from the checkpoints of all trajectories it estimates the response surface and its uncertainty online, sends further budget where the marginal response is highest, and none where it has flattened. It reads only black-box observables.</p>
 </div>
 </div>
 <figure class="opt-figure">
@@ -424,15 +427,28 @@
 </header>
 <p class="discussion-intro zh">每一步续写都是固定 LLM 作用于已有生成；对照是原样返回输入、响应率为零的处理器。上界因此预言：链足够长后，正确率随链长下降。</p>
 <p class="discussion-intro en">Each continuation step is a fixed LLM acting on the generation so far; the reference is a processor that returns its input, with zero susceptibility. The bound therefore predicts that accuracy falls with chain length once chains are long enough.</p>
-<div class="chart-grid">
-<canvas id="phyChart" class="chart" role="img" aria-label="四个模型的衰减率 d 及其区间与合并估计"></canvas>
-<div class="side-note">
-<p class="zh">四个模型在 PHYBench 上使用不同题目的 TTS 估计。</p>
-<p class="en">TTS estimates for four models using different PHYBench questions.</p>
+<div class="two-col phy-curves">
+<figure class="bars-card phy-curve-card">
+<h4 class="fig-title">GPT-4.1</h4>
+<canvas id="phyCurve0" class="chart chart-phy" role="img" aria-label="GPT-4.1：归一化链长与正确率的分箱估计、指数拟合及不确定度"></canvas>
+</figure>
+<figure class="bars-card phy-curve-card">
+<h4 class="fig-title">GPT-4o</h4>
+<canvas id="phyCurve1" class="chart chart-phy" role="img" aria-label="GPT-4o：归一化链长与正确率的分箱估计、指数拟合及不确定度"></canvas>
+</figure>
+<figure class="bars-card phy-curve-card">
+<h4 class="fig-title">DeepSeek-V3</h4>
+<canvas id="phyCurve2" class="chart chart-phy" role="img" aria-label="DeepSeek-V3：归一化链长与正确率的分箱估计、指数拟合及不确定度"></canvas>
+</figure>
+<figure class="bars-card phy-curve-card">
+<h4 class="fig-title">Qwen2.5-Max</h4>
+<canvas id="phyCurve3" class="chart chart-phy" role="img" aria-label="Qwen2.5-Max：归一化链长与正确率的分箱估计、指数拟合及不确定度"></canvas>
+</figure>
+</div>
+<p class="step-def zh">四个模型在 PHYBench 上使用不同题目的 TTS 估计。链长除以同一模型在该题上的中位链长，正确率采用对数刻度。点为分箱估计，线为指数拟合，阴影为 1σ 拟合带；最短区间的淡色点不参与拟合。</p>
+<p class="step-def en">TTS estimates for four models using different PHYBench questions. Chain length is divided by the median length for the same model and question. Accuracy uses a logarithmic scale. Points show bin estimates, lines show exponential fits, and shading shows the 1σ fit band. The pale point in the shortest interval is excluded from the fit.</p>
 <p class="caveat zh">观察性关联。</p>
 <p class="caveat en">An observational association.</p>
-</div>
-</div>
 </article>
 <div class="source-links">
 <a href="https://openreview.net/forum?id=brG8FPq1cf" target="_blank" rel="noopener noreferrer"><span class="zh">相关研究 · PHYBench ↗︎</span><span class="en">Related research · PHYBench ↗︎</span></a>

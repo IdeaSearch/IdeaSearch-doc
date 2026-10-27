@@ -59,9 +59,12 @@ for api, disp, col, reasoning in MODELS:
     W = sum(w); mx = sum(a * b for a, b in zip(w, x)) / W; my = sum(a * b for a, b in zip(w, y)) / W
     slope = sum(a * (b - mx) * (c - my) for a, b, c in zip(w, x, y)) / sum(a * (b - mx) ** 2 for a, b in zip(w, x))
     icpt = my - slope * mx; d = -slope
+    # Covariance of (d, c) for log(p) = -d*x + c, with absolute log-space errors.
+    sxx = sum(a * (b - mx) ** 2 for a, b in zip(w, x))
+    fit_cov = [[1 / sxx, mx / sxx], [mx / sxx, 1 / W + mx * mx / sxx]]
     pred = [icpt + slope * a for a in x]; ym = sum(y) / len(y)
     r = math.sqrt(max(1 - sum((a - b) ** 2 for a, b in zip(y, pred)) / sum((a - ym) ** 2 for a in y), 0))
     gm = int(st.median([d2['completion_tokens'] for d2 in para if d2['model'] == api and d2.get('completion_tokens') and d2['completion_tokens'] > 100]))
-    out.append({'name': disp, 'reasoning': reasoning, 'median': gm, 'bins': [[round(a, 4), round(b, 5), round(c, 5)] for a, b, c in bins], 'L0': round(1 / d, 2), 'c': round(icpt, 4), 'd': round(d, 5), 'r': round(r, 2), 'n': len(pts)})
+    out.append({'name': disp, 'reasoning': reasoning, 'median': gm, 'bins': [[round(a, 4), round(b, 5), round(c, 5)] for a, b, c in bins], 'L0': round(1 / d, 2), 'c': round(icpt, 4), 'd': round(d, 5), 'fit_cov': [[round(v, 10) for v in row] for row in fit_cov], 'r': round(r, 2), 'n': len(pts)})
     print(disp, 'L0', round(1 / d, 2), 'r', round(r, 2), 'n', len(pts), 'median', gm)
 json.dump(out, open(OUT, 'w'))
