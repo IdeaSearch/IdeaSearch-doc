@@ -439,34 +439,58 @@
   }
   function m1Read() {}
 
-  /* ---------- 04 application: optimizer benchmark (dumbbell, log axis) ---------- */
+  /* ---------- 04 application: optimizer benchmark (relative yield) ---------- */
   const O = D.optimizer;
-  const ART = { spatial_2010: "spatial 2010", spatial_2022: "spatial 2022", walk_revival_2015: "walk revival 2015", percolation_walk_2012: "percolation 2012", photonic_povm_2015: "photonic POVM 2015" };
+  // Paper identities follow run_real_optimizer_round1_v2.py. The legacy
+  // spatial_2010 key points to PRL 116, 100501 (2016); keep the data key.
+  const ART = {
+    spatial_2010: ["量子空间搜索 · 2016", "Quantum spatial search · 2016"],
+    spatial_2022: ["空间搜索加速 · 2022", "Spatial-search speedup · 2022"],
+    walk_revival_2015: ["量子行走复苏 · 2015", "Quantum-walk revival · 2015"],
+    percolation_walk_2012: ["渗流图上的行走 · 2012", "Percolation-graph walks · 2012"],
+    photonic_povm_2015: ["光子广义测量 · 2015", "Photonic measurements · 2015"]
+  };
   function MultBars(canvas) { this.canvas = canvas; this.ctx = canvas.getContext("2d"); new ResizeObserver(() => this.draw()).observe(canvas); charts.push(this); }
   MultBars.prototype.draw = function () {
-    const cv = this.canvas, ctx = this.ctx, w = cv.clientWidth, h = cv.clientHeight;
-    if (!w || !h) return;
+    const cv = this.canvas, ctx = this.ctx, w = cv.clientWidth;
+    if (!w) return;
+    const mobile = w < 640;
+    const h = mobile ? (O.articles.length + 1) * 90 + 58 : 360;
+    cv.style.height = h + "px";
     const dpr = window.devicePixelRatio || 1;
     cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
-    const narrow = w < 560, pad = { l: narrow ? 108 : 150, r: narrow ? 92 : 130, t: 30, b: 30 }, pw = w - pad.l - pad.r;
     const perM = (d, p) => d[p].good / d[p].tokens * 1e6;
-    const rows = [...O.articles.map((a) => ({ name: ART[a] || a, d: O.rows[a] })), { name: L("合并", "pooled"), d: O.pooled, pooled: true }];
+    const rows = [...O.articles.map((a) => ({ name: ART[a] ? L(...ART[a]) : a, d: O.rows[a] })), { name: L("合并", "pooled"), d: O.pooled, pooled: true }];
+    ctx.font = '12.5px "DM Sans", "Noto Sans SC", sans-serif';
+    const nameWidth = Math.ceil(Math.max(...rows.map((r) => ctx.measureText(r.name).width))) + 24;
+    const pad = mobile ? { l: 8, r: 64, t: 34, b: 24 } : { l: Math.max(200, nameWidth), r: 150, t: 36, b: 30 }, pw = w - pad.l - pad.r;
     const rowH = (h - pad.t - pad.b) / rows.length, XM = 2.4, X = (v) => pad.l + v / XM * pw;
-    ctx.save(); ctx.setLineDash([5, 4]); ctx.strokeStyle = C.blue; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(X(1), pad.t - 12); ctx.lineTo(X(1), h - pad.b + 4); ctx.stroke(); ctx.restore();
+    const baseline = (x1, y1, x2, y2) => {
+      ctx.save(); ctx.setLineDash([5, 4]); ctx.strokeStyle = C.blue; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.restore();
+    };
+    if (mobile) baseline(8, 14, 28, 14);
+    else baseline(X(1), pad.t - 12, X(1), h - pad.b + 4);
     ctx.font = `11px "DM Mono", ui-monospace, "Noto Sans SC", sans-serif`; ctx.fillStyle = C.blue; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
-    ctx.fillText(L("随机分配 ×1", "random ×1"), X(1), pad.t - 14);
-    ctx.fillStyle = C.muted; ctx.textAlign = "right"; ctx.fillText(L("题 / 百万 token", "good / M tokens"), w - 4, pad.t - 14);
+    ctx.textAlign = mobile ? "left" : "center";
+    ctx.fillText(L("随机分配 ×1", "random ×1"), mobile ? 34 : X(1), mobile ? 20 : pad.t - 14);
+    if (!mobile) { ctx.fillStyle = C.muted; ctx.textAlign = "right"; ctx.fillText(L("题 / 百万 token", "good / M tokens"), w - 4, pad.t - 14); }
     [0, 1, 2].forEach((t) => { ctx.fillStyle = C.muted; ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillText("×" + t, X(t), h - pad.b + 8); });
     rows.forEach((r, i) => {
-      const y = pad.t + rowH * (i + 0.5), a = perM(r.d, "random"), b = perM(r.d, "cold"), m = b / a, bh = Math.min(22, rowH * 0.56);
+      const rowTop = pad.t + rowH * i;
+      const y = mobile ? rowTop + 40 : rowTop + rowH / 2, a = perM(r.d, "random"), b = perM(r.d, "cold"), m = b / a, bh = mobile ? 18 : Math.min(22, rowH * 0.56);
       if (r.pooled) { ctx.strokeStyle = C.axis; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(8, y - rowH / 2); ctx.lineTo(w - 4, y - rowH / 2); ctx.stroke(); }
       ctx.fillStyle = "#e9b64a"; ctx.beginPath();
       if (ctx.roundRect) ctx.roundRect(X(0), y - bh / 2, X(m) - X(0), bh, 6); else ctx.rect(X(0), y - bh / 2, X(m) - X(0), bh);
       ctx.fill();
-      ctx.font = `${r.pooled ? 600 : 400} 12.5px "DM Sans", "Noto Sans SC", sans-serif`; ctx.fillStyle = C.deep; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(r.name, 8, y);
+      if (mobile) baseline(X(1), y - 14, X(1), y + 14);
+      ctx.font = `${r.pooled ? 600 : 400} 12.5px "DM Sans", "Noto Sans SC", sans-serif`; ctx.fillStyle = C.deep; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(r.name, 8, mobile ? rowTop + 10 : y);
       ctx.font = `600 12.5px "DM Mono", ui-monospace, monospace`; ctx.fillStyle = C.deep; ctx.fillText("×" + m.toFixed(2), X(m) + 8, y);
       ctx.font = `11.5px "DM Mono", ui-monospace, monospace`; ctx.fillStyle = C.muted; ctx.textAlign = "right";
-      ctx.fillText(`${a.toFixed(a < 0.1 ? 3 : 2)} → ${b.toFixed(b < 0.1 ? 3 : 2)}`, w - 4, y);
+      if (mobile) {
+        ctx.textAlign = "left";
+        ctx.fillText(a.toFixed(a < 0.1 ? 3 : 2) + " → " + b.toFixed(b < 0.1 ? 3 : 2) + L(" 题 / 百万 token", " good / M tokens"), 8, rowTop + 66);
+      } else {ctx.fillText(`${a.toFixed(a < 0.1 ? 3 : 2)} → ${b.toFixed(b < 0.1 ? 3 : 2)}`, w - 4, y); }
     });
   };
   new MultBars(document.getElementById("optChart"));
