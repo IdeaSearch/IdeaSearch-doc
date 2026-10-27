@@ -357,8 +357,8 @@
 <div class="scale-legend" aria-hidden="true"><span>J</span><i></i><span id="m1Scale">—</span><b class="frontier-key"></b><span class="zh">每轮拟合最优工具数</span><span class="en">best fitted tool count per turn</span></div>
 <p class="step-def zh">响应曲面 J(t, i) 由所选模型的 15 条轨迹检查点平滑拟合。白线标出各轮次拟合评分最高的工具数；金色虚线跟随轮次控件。</p>
 <p class="step-def en">The response surface J(t, i) is a smooth fit to checkpoints from the selected model's 15 trajectories. The white line marks the tool count with the highest fitted score at each turn; the gold dashed line follows the turn control.</p>
-<figcaption class="zh">柱图保留逐轮实测均值，本图展示平滑拟合地形；两图使用同一模型和轮次，拟合值与实测值可能不同。</figcaption>
-<figcaption class="en">The bars retain the measured per-turn means; this map shows the smooth fitted landscape. Both views share the model and turn controls, and fitted values can differ from measurements.</figcaption>
+<figcaption class="zh">柱图保留逐轮实测均值，本图展示平滑拟合地形。</figcaption>
+<figcaption class="en">The bars retain the measured per-turn means; this map shows the smooth fitted landscape.</figcaption>
 </figure>
 </div>
 <p class="bridge zh">要紧的不是最优点落在何处，而是曲面的形状：每条预算通道的边际响应终将趋零或转负，且仅凭黑箱观测即可测得。</p>
@@ -427,7 +427,7 @@
 </header>
 <p class="discussion-intro zh">每一步续写都是固定 LLM 作用于已有生成；对照是原样返回输入、响应率为零的处理器。上界因此预言：链足够长后，正确率随链长下降。</p>
 <p class="discussion-intro en">Each continuation step is a fixed LLM acting on the generation so far; the reference is a processor that returns its input, with zero susceptibility. The bound therefore predicts that accuracy falls with chain length once chains are long enough.</p>
-<div class="two-col phy-curves">
+<div class="multiples multiples-4 phy-curves">
 <figure class="bars-card phy-curve-card">
 <h4 class="fig-title">GPT-4.1</h4>
 <canvas id="phyCurve0" class="chart chart-phy" role="img" aria-label="GPT-4.1：归一化链长与正确率的分箱估计、指数拟合及不确定度"></canvas>

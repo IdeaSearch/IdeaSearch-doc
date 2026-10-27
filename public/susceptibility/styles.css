@@ -434,6 +434,7 @@ figcaption{margin-top:16px}
 }
 
 .phy-curves{margin:22px 0 18px}
-.phy-curves .bars-card{margin:0;min-width:0}
+.phy-curves .bars-card{margin:0;min-width:0;padding:18px 10px 14px}
 .phy-curves .fig-title{margin:0 0 12px}
-.phy-curves .chart-phy{height:290px}
+.phy-curves .chart-phy{height:250px}
+@media (max-width:760px){.phy-curves{grid-template-columns:1fr}}

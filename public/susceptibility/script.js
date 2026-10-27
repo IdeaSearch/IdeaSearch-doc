@@ -496,7 +496,7 @@
       return [x, p * Math.exp(-sigma), p * Math.exp(sigma)];
     });
     new Chart(document.getElementById("phyCurve" + index), () => ({
-      x: { min: 0.5, max: 1.8, ticks: [0.5, 1, 1.5], title: L("归一化链长 L / median(L)", "normalized length L / median(L)") },
+      x: { min: 0.5, max: 1.8, ticks: [0.5, 1, 1.5], title: "L / median(L)" },
       y: { min: 0.01, max: 0.32, ticks: [0.01, 0.02, 0.05, 0.1, 0.2], transform: log10, padLeft: 58, title: L("正确率", "accuracy") },
       confidenceBands: [{ points: band, color: C.blue, alpha: 0.13 }],
       series: [
