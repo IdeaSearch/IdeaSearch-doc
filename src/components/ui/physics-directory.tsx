@@ -159,7 +159,7 @@ export function PhysicsDirectory({
               </div>
               <div className="mt-auto flex flex-nowrap gap-2 pt-6">
                 <a
-                  href="https://arxiv.org/abs/2512.10047"
+                  href="https://link.aps.org/doi/10.1103/kwx6-clqd"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-foreground px-3 py-3 text-[11px] font-semibold text-background transition hover:-translate-y-0.5 sm:px-5 sm:text-xs"
@@ -194,8 +194,17 @@ export function PhysicsDirectory({
               <p className="physics-card-abstract mt-4">{text.susceptibilityAbstract}</p>
               <div className="mt-auto flex flex-nowrap gap-2 pt-6">
                 <a
+                  href="https://arxiv.org/abs/2603.23626"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-foreground px-3 py-3 text-[11px] font-semibold text-background transition hover:-translate-y-0.5 sm:px-5 sm:text-xs"
+                >
+                  {text.article}
+                  <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
+                </a>
+                <a
                   href={susceptibilityHref}
-                  className="inline-flex min-h-11 w-full min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-foreground px-3 py-3 text-[11px] font-semibold text-background transition hover:-translate-y-0.5 sm:px-5 sm:text-xs"
+                  className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-foreground/20 bg-white/35 px-3 py-3 text-[11px] font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20 sm:px-5 sm:text-xs"
                 >
                   {text.enter}
                   <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
