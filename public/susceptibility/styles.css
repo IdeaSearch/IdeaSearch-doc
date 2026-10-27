@@ -394,7 +394,8 @@ figcaption{display:block;margin-top:14px;color:var(--muted);font-size:14px;line-
 .hero-svg .h-name{font:600 26px var(--serif)}
 .hero-svg .h-gold{fill:#a8730e}.hero-svg .h-blue{fill:#1d5f9c}
 .hero-svg .h-axis{fill:var(--muted);font:700 20px var(--mono)}
-.hero-svg .h-bound{fill:var(--deep);font:600 26px var(--serif)}
+.hero-svg .h-bound-frame{stroke:rgba(63,119,168,.24);stroke-width:1.4}
+.hero-svg .h-bound{fill:var(--deep);font:600 34px var(--serif)}
 
 .schem-cap{margin:6px 0 0;color:#8a9bad;font:11.5px var(--mono);text-align:center}
 .phase-controls{grid-template-columns:auto auto auto;justify-content:start;margin:8px 0 4px}
