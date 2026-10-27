@@ -72,8 +72,8 @@ svg = f'''<svg class="hero-svg" viewBox="0 0 640 410" role="img" aria-labelledby
 <circle cx="{xcp:.1f}" cy="{ycp:.1f}" r="26" fill="url(#hHalo)"/>
 <circle cx="{xcp:.1f}" cy="{ycp:.1f}" r="7" fill="#fff" stroke="#173b62" stroke-width="2.8"/>
 {tS}{tL}
-<text x="{eS[0] - 4:.1f}" y="{eS[1] - 14:.1f}" class="h-chi h-blue">χ</text>
-<text x="{eL[0] + 10:.1f}" y="{eL[1] + 8:.1f}" class="h-chi h-gold">χ′</text>
+<text x="{eS[0] + 10:.1f}" y="{eS[1] + 31:.1f}" class="h-chi h-blue">χ</text>
+<text x="{eL[0] + 10:.1f}" y="{eL[1] + 34:.1f}" class="h-chi h-gold">χ′</text>
 <text x="{X(0.02):.1f}" y="{Y(JL(0.02)) - 22:.1f}" class="h-name h-gold">LLM</text>
 <text x="{X(1) + 4:.1f}" y="{Y(JS(1)) - 14:.1f}" class="h-name h-blue" text-anchor="end"><tspan class="zh">固定策略</tspan><tspan class="en">fixed strategy</tspan></text>
 <text x="{X1 + 14:.1f}" y="{Y0 + 26}" class="h-axis" text-anchor="end">ℬ</text>
