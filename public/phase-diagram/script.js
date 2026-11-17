@@ -34,6 +34,7 @@
 
   /* ---------- helpers ---------- */
   const fillRange = el => { if (el) el.style.setProperty('--p', (100 * (el.value - el.min) / (el.max - el.min)).toFixed(1) + '%'); };
+  const btnState = (btn, playing, done) => { btn.textContent = playing ? '❚❚' : done ? '↺' : '▶'; btn.setAttribute('aria-label', playing ? 'Pause' : done ? 'Replay' : 'Play'); };
   const tex = el => { if (el && window.renderMathInElement) window.renderMathInElement(el, { delimiters: [{ left: '$', right: '$', display: false }], throwOnError: false }); };
   const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   const mix = (a, b, t) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',')})`; };
@@ -207,9 +208,9 @@
     depthOne('depthU', 'u', [-1.36, 0.32], 'u', false); depthOne('depthD', 'dC', [0.86, 2.42], 'd_C', true); drawPlane();
     document.getElementById('depthOut').textContent = L('相对深度 ', 'depth ') + dep.s.toFixed(2); const dr = document.getElementById('depthRange'); dr.value = Math.round(dep.s * 1000); fillRange(dr);
   }
-  document.getElementById('depthRange').addEventListener('input', e => { depSet(false); dep.s = e.target.value / 1000; drawDepth(); });
+  document.getElementById('depthRange').addEventListener('input', e => { dep.s = e.target.value / 1000; depSet(false); drawDepth(); });
   const depBtn = document.getElementById('depthPlay'); let depPlaying = false, depRaf = 0, depLast = 0;
-  function depSet(on) { depPlaying = on; depBtn.textContent = on ? '❚❚' : '▶'; if (on) { if (dep.s >= 1) dep.s = 0; depLast = performance.now(); depRaf = requestAnimationFrame(depTick); } else cancelAnimationFrame(depRaf); }
+  function depSet(on) { depPlaying = on; btnState(depBtn, on, dep.s >= 1); if (on) { if (dep.s >= 1) dep.s = 0; depLast = performance.now(); depRaf = requestAnimationFrame(depTick); } else cancelAnimationFrame(depRaf); }
   function depTick(now) { if (!depPlaying) return; const dt = (now - depLast) / 1000; depLast = now; dep.s = Math.min(1, dep.s + dt / (reduced ? 1.5 : 6)); drawDepth(); if (dep.s >= 1) { depSet(false); return; } depRaf = requestAnimationFrame(depTick); }
   depBtn.addEventListener('click', () => depSet(!depPlaying));
 
@@ -349,10 +350,10 @@
   tabs('flowTabs', 'show', v => { fs.show = v; fs.hover = null; tip.classList.remove('on'); drawFlow(); });
   const kinBtn = document.getElementById('kinPlay'), kinRange = document.getElementById('kinRange');
   let kinPlaying = false, kinRaf = 0, kinLast = 0;
-  function kinSet(on) { kinPlaying = on; kinBtn.textContent = on ? '❚❚' : '▶'; kinBtn.setAttribute('aria-label', on ? 'Pause' : 'Play'); if (on) { fs.hover = null; tip.classList.remove('on'); if (fs.s >= 1) fs.s = 0; kinLast = performance.now(); kinRaf = requestAnimationFrame(kinTick); } else cancelAnimationFrame(kinRaf); }
+  function kinSet(on) { kinPlaying = on; btnState(kinBtn, on, fs.s >= 1); if (on) { fs.hover = null; tip.classList.remove('on'); if (fs.s >= 1) fs.s = 0; kinLast = performance.now(); kinRaf = requestAnimationFrame(kinTick); } else cancelAnimationFrame(kinRaf); }
   function kinTick(now) { if (!kinPlaying) return; const dt = (now - kinLast) / 1000; kinLast = now; fs.s = Math.min(1, fs.s + dt / (reduced ? 1.5 : 8)); drawFlow(); if (fs.s >= 1) { kinSet(false); return; } kinRaf = requestAnimationFrame(kinTick); }
   kinBtn.addEventListener('click', () => kinSet(!kinPlaying));
-  kinRange.addEventListener('input', () => { kinSet(false); fs.s = kinRange.value / 1000; drawFlow(); });
+  kinRange.addEventListener('input', () => { fs.s = kinRange.value / 1000; kinSet(false); drawFlow(); });
 
   /* ---------- 02: schematic conversation in the three states ---------- */
   const CHAT = {
@@ -443,13 +444,13 @@
     document.getElementById('dynOut').textContent = (lang === 'en' ? 'layer ' : '第 ') + Math.round(dyn.t) + (lang === 'en' ? '' : ' 层');
     document.getElementById('dynRange').value = Math.round(dyn.t); fillRange(document.getElementById('dynRange'));
   }
-  tabs('dynTabs', 'group', v => { dyn.group = v; drawForce(); });
+  tabs('dynTabs', 'group', v => { if (dyn.group === v) return; dynSet(false); dyn.group = v; dyn.t = 0; btnState(dynBtn, false, false); drawForce(); });
   const dynBtn = document.getElementById('dynPlay'), dynRange = document.getElementById('dynRange');
   let dynPlaying = false, dynRaf = 0, dynLast = 0;
-  function dynSet(on) { dynPlaying = on; dynBtn.textContent = on ? '❚❚' : '▶'; dynBtn.setAttribute('aria-label', on ? 'Pause' : 'Play'); if (on) { if (dyn.t >= dyn.T) dyn.t = 0; dynLast = performance.now(); dynRaf = requestAnimationFrame(dynTick); } else cancelAnimationFrame(dynRaf); }
+  function dynSet(on) { dynPlaying = on; btnState(dynBtn, on, dyn.t >= dyn.T); if (on) { if (dyn.t >= dyn.T) dyn.t = 0; dynLast = performance.now(); dynRaf = requestAnimationFrame(dynTick); } else cancelAnimationFrame(dynRaf); }
   function dynTick(now) { if (!dynPlaying) return; const dt = (now - dynLast) / 1000; dynLast = now; dyn.t = Math.min(dyn.T, dyn.t + dt * (reduced ? 48 : 12)); drawForce(); if (dyn.t >= dyn.T) { dynSet(false); return; } dynRaf = requestAnimationFrame(dynTick); }
   dynBtn.addEventListener('click', () => dynSet(!dynPlaying));
-  dynRange.addEventListener('input', () => { dynSet(false); dyn.t = +dynRange.value; drawForce(); });
+  dynRange.addEventListener('input', () => { dyn.t = +dynRange.value; dynSet(false); drawForce(); });
 
   /* ---------- 04: Pythia training player ---------- */
   const PY = PD.pythia, TR = PD.training, NCK = PY.length, pos = { t: 0 };
@@ -540,7 +541,7 @@
     badge.textContent = wk ? L('工作相', 'working phase') : s === 0 ? L('漂移相 · 路过工作相', 'drifting · passing through') : L('漂移相', 'drifting phase');
   }
   let playing = false, raf = 0, last = 0;
-  function setPlay(on) { playing = on; playBtn.textContent = on ? '❚❚' : '▶'; playBtn.setAttribute('aria-label', on ? 'Pause' : 'Play'); if (on) { if (pos.t >= NCK - 1) pos.t = 0; last = performance.now(); raf = requestAnimationFrame(tick); } else cancelAnimationFrame(raf); }
+  function setPlay(on) { playing = on; btnState(playBtn, on, pos.t >= NCK - 1); if (on) { if (pos.t >= NCK - 1) pos.t = 0; last = performance.now(); raf = requestAnimationFrame(tick); } else cancelAnimationFrame(raf); }
   function tick(now) {
     if (!playing) return; const dt = (now - last) / 1000; last = now;
     if (reduced) { if (dt < 0.7) { last = now - dt * 1000; raf = requestAnimationFrame(tick); return; } pos.t = Math.min(NCK - 1, Math.floor(pos.t) + 1); }
@@ -548,7 +549,7 @@
     drawTraining(); if (pos.t >= NCK - 1) { setPlay(false); return; } raf = requestAnimationFrame(tick);
   }
   playBtn.addEventListener('click', () => setPlay(!playing));
-  range.addEventListener('input', () => { setPlay(false); const t = range.value / 1000 * (NCK - 1), r = Math.round(t); pos.t = Math.abs(t - r) < 0.12 ? r : t; drawTraining(); });
+  range.addEventListener('input', () => { const t = range.value / 1000 * (NCK - 1), r = Math.round(t); pos.t = Math.abs(t - r) < 0.12 ? r : t; setPlay(false); drawTraining(); });
 
   /* ---------- boot ---------- */
   function drawAll() { drawDepth(); drawChat(); drawProbe(); drawFlow(); drawForce(); drawTraining(); drawTable(); }

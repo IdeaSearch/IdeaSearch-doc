@@ -1,4 +1,4 @@
-# A phase diagram for training and inference in language models · 网页（v12.0）
+# A phase diagram for training and inference in language models · 网页（v12.1）
 
 静态网站，不需要构建。入口是 `index.html`。本地预览：`python3 -m http.server 8000`。
 
