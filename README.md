@@ -26,6 +26,19 @@ For one-off tasks already handled by a general-purpose model or agent, a direct 
 
 The site is built with Next.js and Fumadocs.
 
+## Research Pages
+
+`public/detailed-balance/` and `public/susceptibility/` serve the two research
+pages at `/detailed-balance` and `/susceptibility` on `physics.ideasearch.cn`.
+The 2026-11-15 delivery adds local KaTeX assets and the Detailed Balance content
+revision. The susceptibility page retains the newer PRBench response landscape,
+PHYBench curves, experiment data, and published-paper links.
+
+Edit formulas and page content in each site's `index.src.html`. Run
+`bun run build:papers` to regenerate `index.html`; `bun run build` also runs this
+step automatically. The math renderers use the bundled KaTeX without a network
+request. The Detailed Balance renderer also refreshes `MANIFEST.sha256`.
+
 ## Editing Documentation
 
 1. Edit the English and Chinese page pair under `content/docs/`.

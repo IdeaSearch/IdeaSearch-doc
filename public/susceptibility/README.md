@@ -4,7 +4,7 @@
 
 ## 查看与部署
 
-- 纯静态页面，没有构建步骤。把整个目录上传到任意静态托管（GitHub Pages、Nginx、对象存储等）即可。
+- 纯静态页面，部署时不需要构建（公式已预渲染，修改公式的方法见文末“公式渲染”）。把整个目录上传到任意静态托管（GitHub Pages、Nginx、对象存储等）即可。
 - 数据以 `assets/data/data.js` 的形式内嵌，直接双击 `index.html` 也能离线查看全部图表。
 - 默认语言跟随浏览器（中文环境显示中文），右上角可切换；选择会记在浏览器本地。
 
@@ -60,3 +60,10 @@ python3 tools/aggregate_m1_surface.py <M1 运行目录> surface.json   # 原版�
 再把 core.json 中的 tetris、ranking、aime，evidence.json（phybench 只保留非推理模型）与 apps.json 合并写成 `assets/data/data.js`（`window.SUS_DATA = {...}`）。只用 Python 标准库。
 
 PHYBench 的 fit_cov 为 log(p) = c - d x 中 (d, c) 的绝对加权协方差，由 aggregate_phybench.py 与分箱一起生成。网页保留归档中基于逐题模型评分的正确性判定；这些跨题观测不构成逐次续写干预的因果估计。
+
+## 公式渲染（KaTeX，2026-11-15）
+
+- 网页里的公式统一由 KaTeX 0.16.11 排版，随包放在 `assets/katex/`（`katex.min.css`、`katex.min.js`、woff2 字体、MIT `LICENSE`），完全离线。
+- **改公式请改 `index.src.html`，不要直接改 `index.html`。** 源文件中行内公式写作 `\( ... \)`，行间公式写作 `\[ ... \]`。改完在站点根目录运行 `node tools/render_math.mjs`，它会把公式预渲染成静态 HTML 并写入 `index.html`；只需要 Node，不需要联网或安装依赖。
+- 运行时生成的读数（如点击图表后的数值）用同一份 `katex.min.js` 渲染。
+- canvas 和 SVG 里的数学标签无法使用 KaTeX，改用 KaTeX 自带字体排出：变量用 KaTeX_Math 斜体，花体字母用 KaTeX_Caligraphic，数字和运算符用 KaTeX_Main。

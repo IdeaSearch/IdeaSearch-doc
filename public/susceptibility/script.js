@@ -1,5 +1,59 @@
 /* Information Susceptibility — language switch, navigation and canvas charts.
    All plotted numbers come from window.SUS_DATA (assets/data/data.js). */
+// Canvas cannot run KaTeX, so math labels in charts are set in KaTeX's own fonts:
+// single-letter variables and lower-case Greek in KaTeX_Math (italic), 𝒯/𝒮 in
+// KaTeX_Caligraphic, operators, digits and log in KaTeX_Main; other words keep the page font.
+const MATH_WORDS=new Set(['log','exp','min','max']);
+function mathRuns(str){
+  const ch=Array.from(str),runs=[];
+  const isL=c=>/^[A-Za-z]$/.test(c||'');
+  for(let i=0;i<ch.length;i++){
+    let c=ch[i],f=null;
+    if(c==='𝒯'){c='T';f='KaTeX_Caligraphic';}
+    else if(c==='ℬ'){c='B';f='KaTeX_Caligraphic';}
+    else if(c==='𝒮'){c='S';f='KaTeX_Caligraphic';}
+    else if(isL(c)){
+      let a=i,b=i;while(isL(ch[a-1]))a--;while(isL(ch[b+1]))b++;
+      const word=ch.slice(a,b+1).join('');
+      if(word.length===1)f='KaTeX_Math';else if(MATH_WORDS.has(word))f='KaTeX_Main';
+      if(word.length>1){runs.push({t:word,f});i=b;continue;}
+    }
+    else if(/[αβγδεθλμπρσφχψω]/.test(c))f='KaTeX_Math';
+    else if(/[ΔΣΠΦΨΩ0-9().\[\]=+−←→\/|<>∝≈↑·-]/.test(c))f='KaTeX_Main';
+    if(f==='KaTeX_Main'&&/[=←→≤≥≈∝]/.test(c)&&ch[i-1]!==' '&&ch[i+1]!==' ')c='\u2009'+c+'\u2009';
+    runs.push({t:c,f});
+  }
+  const merged=[];runs.forEach(r=>{const last=merged[merged.length-1];if(last&&last.f===r.f)last.t+=r.t;else merged.push({...r});});
+  return merged;
+}
+function mtext(ctx,str,x,y){
+  const runs=mathRuns(String(str));
+  if(!runs.some(r=>r.f&&r.f!=='KaTeX_Main'))return ctx.fillText(str,x,y);
+  const base=ctx.font,m=base.match(/([\d.]+)px/),size=m?+m[1]:12;
+  const fontOf=r=>r.f?`${(size*1.12).toFixed(1)}px ${r.f}`:base;
+  const widths=runs.map(r=>{ctx.font=fontOf(r);return ctx.measureText(r.t).width;}),total=widths.reduce((a,b)=>a+b,0);
+  const align=ctx.textAlign;let x0=x;
+  if(align==='center')x0=x-total/2;else if(align==='right'||align==='end')x0=x-total;
+  ctx.textAlign='left';
+  runs.forEach((r,i)=>{ctx.font=fontOf(r);ctx.fillText(r.t,x0,y);x0+=widths[i];});
+  ctx.textAlign=align;ctx.font=base;
+}
+function mwidth(ctx,str){
+  const runs=mathRuns(String(str)),base=ctx.font,m=base.match(/([\d.]+)px/),size=m?+m[1]:12;
+  if(!runs.some(r=>r.f&&r.f!=='KaTeX_Main'))return ctx.measureText(str).width;
+  let w=0;runs.forEach(r=>{ctx.font=r.f?`${(size*1.12).toFixed(1)}px ${r.f}`:base;w+=ctx.measureText(r.t).width;});ctx.font=base;return w;
+}
+
+function mathHTML(s){
+  const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s).split(/(\\\([\s\S]+?\\\))/).map(part=>{
+    const m=part.match(/^\\\(([\s\S]+)\\\)$/);
+    if(!m)return esc(part);
+    try{return window.katex?katex.renderToString(m[1],{throwOnError:false}):esc(m[1]);}catch(e){return esc(m[1]);}
+  }).join('');
+}
+function setMath(el,s){if(el)el.innerHTML=mathHTML(s);}
+
 (function () {
   "use strict";
   const D = window.SUS_DATA;
@@ -109,29 +163,29 @@
     yt.forEach((v) => {
       const y = Y(v);
       ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + pw, y); ctx.stroke();
-      ctx.fillStyle = C.muted; ctx.textAlign = "right"; ctx.fillText(cfg.y.fmt ? cfg.y.fmt(v) : String(v), pad.l - 8, y);
+      ctx.fillStyle = C.muted; ctx.textAlign = "right"; mtext(ctx, cfg.y.fmt ? cfg.y.fmt(v) : String(v), pad.l - 8, y);
     });
     // x ticks
     ctx.textAlign = "center"; ctx.textBaseline = "top";
     cfg.x.ticks.forEach((v, i) => {
       const x = X(v);
       ctx.strokeStyle = C.axis; ctx.beginPath(); ctx.moveTo(x, pad.t + ph); ctx.lineTo(x, pad.t + ph + 4); ctx.stroke();
-      ctx.fillStyle = C.muted; ctx.fillText(cfg.x.labels ? cfg.x.labels[i] : String(v), x, pad.t + ph + 8);
+      ctx.fillStyle = C.muted; mtext(ctx, cfg.x.labels ? cfg.x.labels[i] : String(v), x, pad.t + ph + 8);
     });
     ctx.strokeStyle = C.axis; ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + ph); ctx.lineTo(pad.l + pw, pad.t + ph); ctx.stroke();
     // axis titles
     ctx.fillStyle = C.deep; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-    ctx.fillText(cfg.x.title, pad.l + pw / 2, h - 8);
-    if (cfg.y.title) { ctx.save(); ctx.translate(3, pad.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = "top"; ctx.fillText(cfg.y.title, 0, 0); ctx.restore(); }
-    if (cfg.title) { ctx.fillStyle = C.deep; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.font = `600 13px "DM Sans", "Noto Sans SC", sans-serif`; ctx.fillText(cfg.title, pad.l, 16); }
-    if (cfg.note) { ctx.fillStyle = cfg.noteColor || C.muted; ctx.textAlign = "right"; ctx.textBaseline = "alphabetic"; ctx.font = `11px "DM Mono", ui-monospace, monospace`; ctx.fillText(cfg.note, pad.l + pw, 16); }
+    mtext(ctx, cfg.x.title, pad.l + pw / 2, h - 8);
+    if (cfg.y.title) { ctx.save(); ctx.translate(3, pad.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = "top"; mtext(ctx, cfg.y.title, 0, 0); ctx.restore(); }
+    if (cfg.title) { ctx.fillStyle = C.deep; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.font = `600 13px "DM Sans", "Noto Sans SC", sans-serif`; mtext(ctx, cfg.title, pad.l, 16); }
+    if (cfg.note) { ctx.fillStyle = cfg.noteColor || C.muted; ctx.textAlign = "right"; ctx.textBaseline = "alphabetic"; ctx.font = `11px "DM Mono", ui-monospace, monospace`; mtext(ctx, cfg.note, pad.l + pw, 16); }
     ctx.font = `${small ? 10.5 : 11.5}px "DM Mono", ui-monospace, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
     // reference lines
     (cfg.hlines || []).forEach((hl) => {
       const y = Y(hl.y);
       ctx.save(); ctx.setLineDash([6, 5]); ctx.strokeStyle = hl.color || C.goldDeep; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + pw, y); ctx.stroke(); ctx.restore();
-      if (hl.label) { ctx.fillStyle = hl.color || C.goldDeep; ctx.textAlign = "right"; ctx.textBaseline = "bottom"; ctx.fillText(hl.label, pad.l + pw - 4, y - 4); }
+      if (hl.label) { ctx.fillStyle = hl.color || C.goldDeep; ctx.textAlign = "right"; ctx.textBaseline = "bottom"; mtext(ctx, hl.label, pad.l + pw - 4, y - 4); }
     });
     // series
     ctx.save(); ctx.beginPath(); ctx.rect(pad.l - 6, pad.t - 6, pw + 12, ph + 12); ctx.clip();
@@ -204,7 +258,7 @@
         ctx.globalAlpha = s.alpha === undefined ? 1 : Math.max(s.alpha, .6);
         ctx.strokeStyle = s.color; ctx.lineWidth = 3; ctx.setLineDash(s.dash || []);
         ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + 20, ly); ctx.stroke(); ctx.setLineDash([]);
-        ctx.globalAlpha = 1; ctx.fillStyle = C.deep; ctx.fillText(s.legend, lx + 26, ly);
+        ctx.globalAlpha = 1; ctx.fillStyle = C.deep; mtext(ctx, s.legend, lx + 26, ly);
         lx += tw + 8;
       });
     }
@@ -256,18 +310,18 @@
     ctx.font = `11px "DM Mono", ui-monospace, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
     f.ticks.forEach((t) => {
       ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(X(t), pad.t); ctx.lineTo(X(t), h - pad.b); ctx.stroke();
-      ctx.fillStyle = C.muted; ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillText(String(t), X(t), h - pad.b + 6);
+      ctx.fillStyle = C.muted; ctx.textAlign = "center"; ctx.textBaseline = "top"; mtext(ctx, String(t), X(t), h - pad.b + 6);
     });
-    ctx.fillStyle = C.deep; ctx.fillText(w < 600 && f.shortTitle ? f.shortTitle : f.title, pad.l + pw / 2, h - pad.b + 24);
+    ctx.fillStyle = C.deep; mtext(ctx, w < 600 && f.shortTitle ? f.shortTitle : f.title, pad.l + pw / 2, h - pad.b + 24);
     f.refs.forEach((r) => { ctx.save(); ctx.setLineDash([6, 5]); ctx.strokeStyle = r.color; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(X(r.x), pad.t - 4); ctx.lineTo(X(r.x), h - pad.b); ctx.stroke(); ctx.restore(); });
     f.rows.forEach((r, i) => {
       const y = Yr(i);
       if (r.header) {
         ctx.fillStyle = C.blue; ctx.font = `600 11px "DM Mono", ui-monospace, "Noto Sans SC", sans-serif`; ctx.textAlign = "left"; ctx.textBaseline = "middle";
-        ctx.fillText(r.header, 4, y + 2); return;
+        mtext(ctx, r.header, 4, y + 2); return;
       }
       ctx.font = `12px "DM Sans", "Noto Sans SC", sans-serif`; ctx.fillStyle = C.deep; ctx.textAlign = "left"; ctx.textBaseline = "middle";
-      ctx.fillText(r.label, 16, y);
+      mtext(ctx, r.label, 16, y);
       const lo = r.v - 1.96 * r.se, hi = r.v + 1.96 * r.se;
       ctx.strokeStyle = r.color; ctx.lineWidth = r.strong ? 2.6 : 1.8; ctx.beginPath(); ctx.moveTo(X(lo), y); ctx.lineTo(X(hi), y); ctx.stroke();
       if (hi > f.max) { ctx.beginPath(); ctx.moveTo(X(f.max) - 6, y - 4); ctx.lineTo(X(f.max), y); ctx.lineTo(X(f.max) - 6, y + 4); ctx.stroke(); }
@@ -340,18 +394,18 @@
     const pad = { l: 44, r: 12, t: 24, b: 42 }, pw = w - pad.l - pad.r, ph = h - pad.t - pad.b, n = b.vals.length, bw = pw / n;
     const Y = (v) => pad.t + (1 - v / b.max) * ph;
     ctx.font = `11px "DM Mono", ui-monospace, monospace`;
-    b.ticks.forEach((t) => { ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad.l, Y(t)); ctx.lineTo(pad.l + pw, Y(t)); ctx.stroke(); ctx.fillStyle = C.muted; ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(t.toFixed(1), pad.l - 6, Y(t)); });
+    b.ticks.forEach((t) => { ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad.l, Y(t)); ctx.lineTo(pad.l + pw, Y(t)); ctx.stroke(); ctx.fillStyle = C.muted; ctx.textAlign = "right"; ctx.textBaseline = "middle"; mtext(ctx, t.toFixed(1), pad.l - 6, Y(t)); });
     b.vals.forEach((v, i) => {
       const x = pad.l + bw * i + bw * 0.22, ww = bw * 0.56;
       ctx.fillStyle = "#e9b64a"; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, Y(v), ww, Y(0) - Y(v), [7, 7, 0, 0]); else ctx.rect(x, Y(v), ww, Y(0) - Y(v)); ctx.fill();
-      ctx.fillStyle = C.deep; ctx.textAlign = "center"; ctx.textBaseline = "bottom"; ctx.font = `600 12px "DM Mono", ui-monospace, monospace`; ctx.fillText(v.toFixed(2), x + ww / 2, Y(v) - 6);
-      ctx.fillStyle = C.muted; ctx.textBaseline = "top"; ctx.font = `12px "DM Mono", ui-monospace, monospace`; ctx.fillText(String(TOOLS[i]), x + ww / 2, pad.t + ph + 7);
+      ctx.fillStyle = C.deep; ctx.textAlign = "center"; ctx.textBaseline = "bottom"; ctx.font = `600 12px "DM Mono", ui-monospace, monospace`; mtext(ctx, v.toFixed(2), x + ww / 2, Y(v) - 6);
+      ctx.fillStyle = C.muted; ctx.textBaseline = "top"; ctx.font = `12px "DM Mono", ui-monospace, monospace`; mtext(ctx, String(TOOLS[i]), x + ww / 2, pad.t + ph + 7);
     });
     ctx.strokeStyle = C.axis; ctx.beginPath(); ctx.moveTo(pad.l, pad.t + ph); ctx.lineTo(pad.l + pw, pad.t + ph); ctx.stroke();
     const mx = Math.max(...b.vals);
     ctx.save(); ctx.setLineDash([6, 4]); ctx.strokeStyle = C.deep; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(pad.l, Y(mx)); ctx.lineTo(pad.l + pw, Y(mx)); ctx.stroke(); ctx.restore();
-    ctx.fillStyle = C.deep; ctx.font = `11px "DM Mono", ui-monospace, "Noto Sans SC", sans-serif`; ctx.textAlign = "left"; ctx.textBaseline = "bottom"; ctx.fillText(L("当前最高", "current best"), pad.l + 4, Y(mx) - 3);
-    ctx.fillStyle = C.deep; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.fillText(L("可用工具数 t", "tools available t"), pad.l + pw / 2, h - 6);
+    ctx.fillStyle = C.deep; ctx.font = `11px "DM Mono", ui-monospace, "Noto Sans SC", sans-serif`; ctx.textAlign = "left"; ctx.textBaseline = "bottom"; mtext(ctx, L("当前最高", "current best"), pad.l + 4, Y(mx) - 3);
+    ctx.fillStyle = C.deep; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; mtext(ctx, L("可用工具数 t", "tools available t"), pad.l + pw / 2, h - 6);
   };
   const m1Bars = new Bars(document.getElementById("m1Bars"), () => { const top = yTop(); return { vals: barVals(), max: top, ticks: Array.from({ length: Math.round(top * 10) + 1 }, (_, k) => k / 10).filter((_, k) => k % 2 === 0) }; });
   // Original fitted terrain, restored without changing the measured per-turn bars.
@@ -403,14 +457,14 @@
     // the turn currently shown in the bar chart
     ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = C.goldDeep; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(pad.l, Y(m1Turn)); ctx.lineTo(pad.l + pw, Y(m1Turn)); ctx.stroke(); ctx.restore();
     ctx.fillStyle = C.goldDeep; ctx.font = `600 11px "DM Mono", ui-monospace, "Noto Sans SC", sans-serif`; ctx.textAlign = "right"; ctx.textBaseline = m1Turn > 55 ? "top" : "bottom";
-    ctx.fillText(L(`当前第 ${Math.round(m1Turn)} 轮`, `current turn ${Math.round(m1Turn)}`), pad.l + pw - 4, Y(m1Turn) + (m1Turn > 55 ? 5 : -3));
+    mtext(ctx, L(`当前第 ${Math.round(m1Turn)} 轮`, `current turn ${Math.round(m1Turn)}`), pad.l + pw - 4, Y(m1Turn) + (m1Turn > 55 ? 5 : -3));
     ctx.strokeStyle = C.axis; ctx.lineWidth = 1; ctx.strokeRect(pad.l, pad.t, pw, ph);
     ctx.font = `11px "DM Mono", ui-monospace, monospace`; ctx.fillStyle = C.muted;
-    ctx.textAlign = "center"; ctx.textBaseline = "top"; TOOLS.forEach((t) => ctx.fillText(String(t), X(t), pad.t + ph + 6));
-    ctx.textAlign = "right"; ctx.textBaseline = "middle"; [1, 20, 40, 60].forEach((i) => ctx.fillText(String(i), pad.l - 6, Y(i)));
+    ctx.textAlign = "center"; ctx.textBaseline = "top"; TOOLS.forEach((t) => mtext(ctx, String(t), X(t), pad.t + ph + 6));
+    ctx.textAlign = "right"; ctx.textBaseline = "middle"; [1, 20, 40, 60].forEach((i) => mtext(ctx, String(i), pad.l - 6, Y(i)));
     ctx.fillStyle = C.deep; ctx.font = `11.5px "DM Mono", ui-monospace, "Noto Sans SC", sans-serif`;
-    ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.fillText(L("可用工具数 t", "tools available t"), pad.l + pw / 2, h - 6);
-    ctx.save(); ctx.translate(13, pad.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = "top"; ctx.fillText(L("轮次 i", "turn i"), 0, 0); ctx.restore();
+    ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; mtext(ctx, L("可用工具数 t", "tools available t"), pad.l + pw / 2, h - 6);
+    ctx.save(); ctx.translate(13, pad.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = "top"; mtext(ctx, L("轮次 i", "turn i"), 0, 0); ctx.restore();
     document.getElementById("m1Scale").textContent = `0 – ${fmt(surfaceTop(), 1)}`;
   };
   const m1Surf = new SurfaceChart(document.getElementById("m1Surface"));
@@ -473,9 +527,9 @@
     else baseline(X(1), pad.t - 12, X(1), h - pad.b + 4);
     ctx.font = `11px "DM Mono", ui-monospace, "Noto Sans SC", sans-serif`; ctx.fillStyle = C.blue; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
     ctx.textAlign = mobile ? "left" : "center";
-    ctx.fillText(L("随机分配 ×1", "random ×1"), mobile ? 34 : X(1), mobile ? 20 : pad.t - 14);
-    if (!mobile) { ctx.fillStyle = C.muted; ctx.textAlign = "right"; ctx.fillText(L("题 / 百万 token", "good / M tokens"), w - 4, pad.t - 14); }
-    [0, 1, 2].forEach((t) => { ctx.fillStyle = C.muted; ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillText("×" + t, X(t), h - pad.b + 8); });
+    mtext(ctx, L("随机分配 ×1", "random ×1"), mobile ? 34 : X(1), mobile ? 20 : pad.t - 14);
+    if (!mobile) { ctx.fillStyle = C.muted; ctx.textAlign = "right"; mtext(ctx, L("题 / 百万 token", "good / M tokens"), w - 4, pad.t - 14); }
+    [0, 1, 2].forEach((t) => { ctx.fillStyle = C.muted; ctx.textAlign = "center"; ctx.textBaseline = "top"; mtext(ctx, "×" + t, X(t), h - pad.b + 8); });
     rows.forEach((r, i) => {
       const rowTop = pad.t + rowH * i;
       const y = mobile ? rowTop + 40 : rowTop + rowH / 2, a = perM(r.d, "random"), b = perM(r.d, "cold"), m = b / a, bh = mobile ? 18 : Math.min(22, rowH * 0.56);
@@ -484,13 +538,13 @@
       if (ctx.roundRect) ctx.roundRect(X(0), y - bh / 2, X(m) - X(0), bh, 6); else ctx.rect(X(0), y - bh / 2, X(m) - X(0), bh);
       ctx.fill();
       if (mobile) baseline(X(1), y - 14, X(1), y + 14);
-      ctx.font = `${r.pooled ? 600 : 400} 12.5px "DM Sans", "Noto Sans SC", sans-serif`; ctx.fillStyle = C.deep; ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(r.name, 8, mobile ? rowTop + 10 : y);
-      ctx.font = `600 12.5px "DM Mono", ui-monospace, monospace`; ctx.fillStyle = C.deep; ctx.fillText("×" + m.toFixed(2), X(m) + 8, y);
+      ctx.font = `${r.pooled ? 600 : 400} 12.5px "DM Sans", "Noto Sans SC", sans-serif`; ctx.fillStyle = C.deep; ctx.textAlign = "left"; ctx.textBaseline = "middle"; mtext(ctx, r.name, 8, mobile ? rowTop + 10 : y);
+      ctx.font = `600 12.5px "DM Mono", ui-monospace, monospace`; ctx.fillStyle = C.deep; mtext(ctx, "×" + m.toFixed(2), X(m) + 8, y);
       ctx.font = `11.5px "DM Mono", ui-monospace, monospace`; ctx.fillStyle = C.muted; ctx.textAlign = "right";
       if (mobile) {
         ctx.textAlign = "left";
-        ctx.fillText(a.toFixed(a < 0.1 ? 3 : 2) + " → " + b.toFixed(b < 0.1 ? 3 : 2) + L(" 题 / 百万 token", " good / M tokens"), 8, rowTop + 66);
-      } else {ctx.fillText(`${a.toFixed(a < 0.1 ? 3 : 2)} → ${b.toFixed(b < 0.1 ? 3 : 2)}`, w - 4, y); }
+        mtext(ctx, a.toFixed(a < 0.1 ? 3 : 2) + " → " + b.toFixed(b < 0.1 ? 3 : 2) + L(" 题 / 百万 token", " good / M tokens"), 8, rowTop + 66);
+      } else {mtext(ctx, `${a.toFixed(a < 0.1 ? 3 : 2)} → ${b.toFixed(b < 0.1 ? 3 : 2)}`, w - 4, y); }
     });
   };
   new MultBars(document.getElementById("optChart"));
@@ -534,6 +588,8 @@
 
 
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => charts.forEach((c) => c.draw()));
+  // KaTeX fonts are loaded on demand; redraw once they arrive so chart math labels use them.
+  if (document.fonts && document.fonts.load) Promise.all(["KaTeX_Math", "KaTeX_Main", "KaTeX_Caligraphic"].map((f) => document.fonts.load(`16px ${f}`).catch(() => null))).then(() => charts.forEach((c) => c.draw()));
 
 
 
@@ -583,10 +639,10 @@
     ctx.beginPath(); ctx.arc(X(bs), Y(c.l(bs)), 6, 0, Math.PI * 2); ctx.fillStyle = cwCase === "converge" ? C.deep : "#fff"; ctx.fill(); ctx.lineWidth = 2.2; ctx.strokeStyle = C.deep; ctx.stroke();
     ctx.strokeStyle = C.axis; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + ph); ctx.lineTo(pad.l + pw, pad.t + ph); ctx.stroke();
     ctx.font = `12px "DM Mono", ui-monospace, "Noto Sans SC", sans-serif`; ctx.fillStyle = C.muted; ctx.textAlign = "center"; ctx.textBaseline = "top";
-    ctx.fillText("b*", X(bs), pad.t + ph + 6); ctx.fillStyle = C.deep; ctx.fillText(L("模型能力 b →", "capability b →"), pad.l + pw / 2, pad.t + ph + 22);
-    ctx.save(); ctx.translate(14, pad.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = "top"; ctx.fillText(L("质量", "quality"), 0, 0); ctx.restore();
+    mtext(ctx, "b*", X(bs), pad.t + ph + 6); ctx.fillStyle = C.deep; mtext(ctx, L("模型能力 b →", "capability b →"), pad.l + pw / 2, pad.t + ph + 22);
+    ctx.save(); ctx.translate(14, pad.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = "top"; mtext(ctx, L("质量", "quality"), 0, 0); ctx.restore();
     ctx.font = `600 13px "DM Mono", ui-monospace, monospace`; ctx.textAlign = "right"; ctx.textBaseline = "bottom";
-    ctx.fillStyle = C.goldDeep; ctx.fillText("p(b)", X(0.98), Y(c.p(0.98)) - 6); ctx.fillStyle = C.deep; ctx.fillText("l(b)", X(0.98), Y(c.l(0.98)) - 6);
+    ctx.fillStyle = C.goldDeep; mtext(ctx, "p(b)", X(0.98), Y(c.p(0.98)) - 6); ctx.fillStyle = C.deep; mtext(ctx, "l(b)", X(0.98), Y(c.l(0.98)) - 6);
   };
   const cobweb = new Cobweb(document.getElementById("cobweb"));
   const cwBtn = document.getElementById("cwPlay"), cwReset = document.getElementById("cwReset");
@@ -609,12 +665,12 @@
   });
   cwReset.addEventListener("click", () => { cwRun = false; cwProg = 0; cwLabel(); cobweb.draw(); cwCount(); });
   const CW_TEXT = {
-    evolve: ["p 比 l 增长更快，起点在 b* 之上：每一轮生成的数据都好于模型自身，能力一路抬升。这是嵌套架构对应的情形。", "p rises faster than l and the start lies above b*: each round's data beats the model's own output, and capability keeps climbing. This is the nested case."],
-    collapse: ["同样是 p 比 l 增长更快，起点却在 b* 之下：生成的数据不如模型自身，训练反而拉低能力，能力逐轮下降。", "p still rises faster than l, but the start lies below b*: the data are worse than the model's own output, so training drags capability down, round after round."],
-    converge: ["l 比 p 增长更快：无论从哪里出发，阶梯都收拢到 b*。改进有界，这是固定架构对应的情形。", "l rises faster than p: from any start the staircase closes in on b*. Improvement is bounded; this is the fixed case."]
+    evolve: ["\\(p\\) 比 \\(l\\) 增长更快，起点在 \\(b^*\\) 之上：每一轮生成的数据都好于模型自身，能力一路抬升。这是嵌套架构对应的情形。", "\\(p\\) rises faster than \\(l\\) and the start lies above \\(b^*\\): each round's data beats the model's own output, and capability keeps climbing. This is the nested case."],
+    collapse: ["同样是 \\(p\\) 比 \\(l\\) 增长更快，起点却在 \\(b^*\\) 之下：生成的数据不如模型自身，训练反而拉低能力，能力逐轮下降。", "\\(p\\) still rises faster than \\(l\\), but the start lies below \\(b^*\\): the data are worse than the model's own output, so training drags capability down, round after round."],
+    converge: ["\\(l\\) 比 \\(p\\) 增长更快：无论从哪里出发，阶梯都收拢到 \\(b^*\\)。改进有界，这是固定架构对应的情形。", "\\(l\\) rises faster than \\(p\\): from any start the staircase closes in on \\(b^*\\). Improvement is bounded; this is the fixed case."]
   };
   function cwCount() { const segs = cwSteps().length - 1, n = Math.floor(cwProg * segs / 2 + 1e-6), N = Math.floor(segs / 2); const o = document.getElementById("cwOut"); if (o) o.textContent = `${n} / ${N}`; }
-  function cwTextUpdate() { const t = CW_TEXT[cwCase]; document.getElementById("cwText").textContent = L(t[0], t[1]); cwCount(); }
+  function cwTextUpdate() { const t = CW_TEXT[cwCase]; document.getElementById("cwText").innerHTML = mathHTML(L(t[0], t[1])); cwCount(); }
   document.querySelectorAll("[data-cw]").forEach((b) => b.addEventListener("click", () => {
     cwCase = b.dataset.cw; cwRun = false; cwProg = 0;
     document.querySelectorAll("[data-cw]").forEach((t) => { t.classList.toggle("is-active", t === b); t.setAttribute("aria-selected", String(t === b)); });

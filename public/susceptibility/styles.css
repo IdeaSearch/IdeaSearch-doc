@@ -108,7 +108,7 @@ figcaption{display:block;margin-top:14px;color:var(--muted);font-size:14px;line-
 .motivation-strip article{display:grid;gap:4px;align-content:start;padding:13px 15px;border-radius:11px;background:#f7fbff;border:1px solid rgba(93,168,232,.18);min-width:0}
 .motivation-strip article:nth-of-type(2){background:#fffaf0}
 .motivation-strip article:nth-of-type(3){background:#f5f1ff}
-.motivation-strip span{color:var(--blue-deep);font:10px var(--mono);letter-spacing:.08em}
+.motivation-strip article>span{color:var(--blue-deep);font:10px var(--mono);letter-spacing:.08em}
 .motivation-strip strong{color:var(--deep);font:600 20px var(--serif)}
 .motivation-strip b{color:var(--deep);font:600 16px var(--mono)}
 .motivation-strip p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
@@ -438,3 +438,23 @@ figcaption{margin-top:16px}
 .phy-curves .fig-title{margin:0 0 12px}
 .phy-curves .chart-phy{height:250px}
 @media (max-width:760px){.phy-curves{grid-template-columns:1fr}}
+
+
+/* KaTeX: formulas are pre-rendered from index.src.html (tools/render_math.mjs). */
+.katex{font-size:1.08em;line-height:1.2;white-space:nowrap;position:relative}
+.bound-big .katex{font-size:1em}
+.katex-display{margin:.2em 0;overflow-x:auto;overflow-y:hidden;position:relative;max-width:100%}
+.panel-kicker .katex{font-size:1.15em}
+/* SVG math labels in KaTeX's fonts (SVG cannot host KaTeX HTML). */
+.h-chi,.wv-eq,.wv-a,.ns-eq,.dia-label{font-family:KaTeX_Math,KaTeX_Main,serif;font-weight:400}
+.h-axis{font-family:KaTeX_Main,serif}
+.cal{font-family:KaTeX_Caligraphic,serif;font-style:normal}
+.dia-label tspan[font-style="italic"]{font-style:normal}
+.dia-label,.dia-label tspan[font-style="italic"],.hero-svg .h-chi,.nest-schematic .ns-eq,.nest-schematic .ns-eq-g,.ns-eq,.wave-svg .wv-a,.wave-svg .wv-eq,.wv-a,.wv-eq{font-family:KaTeX_Math,KaTeX_Main,serif;font-weight:400}
+.h-axis,.hero-svg .h-axis{font-family:KaTeX_Main,serif}
+.prime{font-family:KaTeX_Main,serif;font-size:.62em;font-style:normal}
+.hero-svg .h-axis,.h-axis{font-family:KaTeX_Math,KaTeX_Main,serif}
+.dia-label.dia-word{font-family:KaTeX_Main,serif}
+.m{font-family:KaTeX_Math,serif;font-style:normal}.up{font-family:KaTeX_Main,serif;font-style:normal}
+.nest-schematic .ns-eq.ns-eq-g{font-family:var(--mono);font-weight:600}
+.lbl .m,.lbl .up{font-weight:400}

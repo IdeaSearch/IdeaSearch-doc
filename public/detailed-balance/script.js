@@ -19,6 +19,66 @@ links?.querySelectorAll('a').forEach(link => link.addEventListener('click', () =
 // The article page is bilingual.  These translations follow the paper's
 // terminology: agent, semantic state, transition channel, conditional free
 // energy, exact 1-form, effective potential, and detailed balance.
+
+// ---- Math typesetting -------------------------------------------------------
+// Static formulas are pre-rendered with KaTeX (tools/render_math.mjs). Readouts that
+// change at run time use the same KaTeX build: \( ... \) segments become KaTeX HTML.
+function mathHTML(s){
+  const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s).split(/(\\\([\s\S]+?\\\))/).map(part=>{
+    const m=part.match(/^\\\(([\s\S]+)\\\)$/);
+    if(!m)return esc(part);
+    try{return window.katex?katex.renderToString(m[1],{throwOnError:false}):esc(m[1]);}catch(e){return esc(m[1]);}
+  }).join('');
+}
+function setMath(el,s){if(el)el.innerHTML=mathHTML(s);}
+// Canvas cannot run KaTeX, so math labels in charts are set in KaTeX's own fonts:
+// single-letter variables and lower-case Greek in KaTeX_Math (italic), 𝒯/𝒮 in
+// KaTeX_Caligraphic, operators, digits and log in KaTeX_Main; other words keep the page font.
+const MATH_WORDS=new Set(['log','exp','min','max']);
+function mathRuns(str){
+  const ch=Array.from(str),runs=[];
+  const isL=c=>/^[A-Za-z]$/.test(c||'');
+  for(let i=0;i<ch.length;i++){
+    let c=ch[i],f=null;
+    if(c==='𝒯'){c='T';f='KaTeX_Caligraphic';}
+    else if(c==='𝒮'){c='S';f='KaTeX_Caligraphic';}
+    else if(isL(c)){
+      let a=i,b=i;while(isL(ch[a-1]))a--;while(isL(ch[b+1]))b++;
+      const word=ch.slice(a,b+1).join('');
+      if(word.length===1)f='KaTeX_Math';else if(MATH_WORDS.has(word))f='KaTeX_Main';
+      if(word.length>1){runs.push({t:word,f});i=b;continue;}
+    }
+    else if(/[αβγδεθλμπρσφχψω]/.test(c))f='KaTeX_Math';
+    else if(/[ΔΣΠΦΨΩ0-9().\[\]=+−←→\/|<>∝≈↑·-]/.test(c))f='KaTeX_Main';
+    if(f==='KaTeX_Main'&&/[=←→≤≥≈∝]/.test(c)&&ch[i-1]!==' '&&ch[i+1]!==' ')c='\u2009'+c+'\u2009';
+    runs.push({t:c,f});
+  }
+  const merged=[];runs.forEach(r=>{const last=merged[merged.length-1];if(last&&last.f===r.f)last.t+=r.t;else merged.push({...r});});
+  return merged;
+}
+function mtext(ctx,str,x,y){
+  const runs=mathRuns(String(str));
+  if(!runs.some(r=>r.f&&r.f!=='KaTeX_Main'))return ctx.fillText(str,x,y);
+  const base=ctx.font,m=base.match(/([\d.]+)px/),size=m?+m[1]:12;
+  const fontOf=r=>r.f?`${(size*1.12).toFixed(1)}px ${r.f}`:base;
+  const widths=runs.map(r=>{ctx.font=fontOf(r);return ctx.measureText(r.t).width;}),total=widths.reduce((a,b)=>a+b,0);
+  const align=ctx.textAlign;let x0=x;
+  if(align==='center')x0=x-total/2;else if(align==='right'||align==='end')x0=x-total;
+  ctx.textAlign='left';
+  runs.forEach((r,i)=>{ctx.font=fontOf(r);ctx.fillText(r.t,x0,y);x0+=widths[i];});
+  ctx.textAlign=align;ctx.font=base;
+}
+function mwidth(ctx,str){
+  const runs=mathRuns(String(str)),base=ctx.font,m=base.match(/([\d.]+)px/),size=m?+m[1]:12;
+  if(!runs.some(r=>r.f&&r.f!=='KaTeX_Main'))return ctx.measureText(str).width;
+  let w=0;runs.forEach(r=>{ctx.font=r.f?`${(size*1.12).toFixed(1)}px ${r.f}`:base;w+=ctx.measureText(r.t).width;});ctx.font=base;return w;
+}
+function redrawCharts(){if(typeof graphData!=='undefined'&&graphData){drawDag();drawTheoryMatrix();drawMatrix();drawSort();drawAction();drawScatter();drawCrossTask();drawBias();}}
+if(document.fonts&&document.fonts.load){
+  Promise.all(['KaTeX_Math','KaTeX_Main','KaTeX_Caligraphic'].map(f=>document.fonts.load(`italic 16px ${f}`).catch(()=>null).then(()=>document.fonts.load(`16px ${f}`).catch(()=>null)))).then(redrawCharts);
+}
+
 const englishText = {
   '动机':'Motivation','理论':'Theory','实验':'Experiment','应用':'Application','讨论':'Discussion',
   '当生成变成一种':'When generation becomes','可测的动力学':'a measurable dynamics',
@@ -36,16 +96,16 @@ const englishText = {
   '轨迹 y⁽¹⁾':'Trajectory y⁽¹⁾','轨迹 y⁽²⁾':'Trajectory y⁽²⁾','语义提取':'Semantic extraction',
   '许多不同轨迹，同一个语义状态':'Many trajectories, one semantic state','把所有通向 g 的轨迹概率相加':'Sum the probabilities of all trajectories reaching g',
   '沿一条轨迹：条件概率相乘':'Along one trajectory: multiply conditional probabilities','由所有能够实现 g 的轨迹推出':'Collect all trajectories that realize g',
-  '找出唯一主导通路，':'Find the unique dominant path,','再让低概率边显现。':'then reveal low-probability return edges.',
-  '先取一个可控极限：可达两态之间只有一条主导路径。再为每条转移加入微弱返回，让有序骨架获得可返回的概率。正逆概率的强弱比，成为有效描述的入口。':'First take a controlled limit: at most one dominant path connects any reachable pair. Add a weak return edge to every transition so the ordered backbone remains probabilistic. The forward–reverse ratio is the entry point for an effective description.',
-  '假设 A：任意可达 f → g，路径至多一条':'Assumption A: at most one path connects any reachable f → g',
+  '方向由终点组织，':'Let destinations organize direction,','再让低概率边显现。':'then reveal low-probability return edges.',
+
+  '假设 A：方向只看终点，与路径无关':'Assumption A: direction depends on the destination, not the path',
   '美丽的贝加尔湖有许多儿子，':'Beautiful Lake Baikal has many sons,','却只有一个女儿。':'but only one daughter.',
-  '假设训练在模型中塑造的是一个势函数，而不只是一份规则清单。在这个极限中，竞争路径在训练中被压低，只留下一条主导通路，同一祖先不能经两条路抵达同一叶子。':'Assume that training shapes a potential function, not merely a list of rules. In this limit, competing paths are suppressed and one dominant route remains: the same ancestor cannot reach the same leaf by two routes.',
+
   '假设 B：每条路径都带着概率返回边':'Assumption B: every path carries a probabilistic return edge',
   '我们所有探索的终点，':'The end of all our exploring','将是回到出发的地方。':'will be to arrive where we started.',
-  '语言模型不是逻辑推理而是概率预测，因此有主导方向，不应该代表绝不返回。概率采样与语义的不确定性，启发我们为每条主导转移加入微弱回边。在这项假设下，正逆概率比由有效势差组织。':'An LLM is a probabilistic predictor, not a deductive logic engine. A dominant direction therefore does not mean an impossible return. Sampling and semantic uncertainty motivate a weak return edge for every dominant transition. Under this assumption, forward–reverse ratios are organized by effective potential differences.',
-  '从真实转移中剪出唯一通路骨架':'Prune a unique-path backbone from real transitions','真实数据结构':'Real data structure','主导路径':'Dominant path','概率返回边':'Probabilistic return edge','状态编号对应一个实测状态':'Each state index denotes a measured state',
-  '唯一通路骨架 + 概率返回边':'Unique-path backbone + probabilistic return edges','同一组通道的 𝒯(f←g) · 按势能排序':'𝒯(f←g) for the same channels · ordered by potential','蓝色主导通路与金色返回边来自同一组真实观测；右侧矩阵按势能排序。':'The blue dominant paths and gold return edges come from the same observations; the matrix on the right is ordered by potential.',
+
+  '从真实转移中取出主导方向骨架':'Extract the dominant-direction backbone from real transitions','真实数据结构':'Real data structure','主导路径':'Dominant path','概率返回边':'Probabilistic return edge','状态编号对应一个实测状态':'Each state index denotes a measured state',
+  '主导方向骨架 + 概率返回边':'Dominant-direction backbone + probabilistic return edges','同一组通道的 𝒯(g←f) · 按势能排序':'𝒯(g←f) for the same channels · ordered by potential','蓝色主导方向与金色返回边来自同一组真实观测。为便于阅读只画出骨架，真实数据中两态之间往往有多条路径。右侧矩阵按势能排序。':'The blue dominant directions and gold return edges come from the same observations. Only the backbone is drawn for readability; in the real data two states are often joined by several paths. The matrix on the right is ordered by potential.',
   'F：一整束轨迹的条件自由能':'F: conditional free energy of a trajectory bundle','把序列 y 的概率写成下面的能量形式。E θ 描述这条序列的有效能量，Z θ (x f ) 是所有可能输出的权重总和，用于归一化。':'Write the probability of sequence y in the energy form below. Eθ is the effective energy of the sequence; Zθ(xf) is the total weight of all possible outputs and normalizes the distribution.',
   '固定输入 f，把所有通向 g 的序列权重加起来，再取负对数，就是 F(g|f)。它描述转移中的整体能量差。':'For fixed input f, sum the weights of all sequences reaching g and take the negative logarithm: this is F(g|f), the aggregate energy difference of the transition.',
   'F 与 𝒯：相差一个归一化项':'F and 𝒯: separated by a normalization term','对同一个输入 f，F(g|f) 越低，转移到 g 的概率越高。但 F 并非直接等同于 −log𝒯，还要计入输入对应的归一化项。':'For the same input f, a lower F(g|f) means a higher probability of reaching g. But F is not simply −log𝒯; the input-dependent normalization term must also be included.',
@@ -69,19 +129,19 @@ const englishText = {
   '只更新 V，不改动任何转移计数':'Update V only; do not change any transition counts','在真实通道上寻找势能':'Find the potential on real channels','开始优化 ↗︎':'Play optimization ↗︎','重置':'Reset','可视化势能':'Visualize potential','排序转移矩阵':'Order transition matrix','检验细致平衡 + 看势能形状':'Test detailed balance + inspect potential shape',
   '沿同一批真实状态与转移边更新势能；点沿势能方向移动，代表转移中势能下降的绿色边增多，作用量下降。':'Update the potential on the same measured states and transition edges. Points move along the potential direction; more green downhill edges indicate a decreasing action.',
   '下降 V(g)<V(f)':'Downhill V(g)<V(f)','上升 V(g)>V(f)':'Uphill V(g)>V(f)','箭头指向下一状态 · 线宽 ∝𝒯':'Arrows point to the next state · width ∝ 𝒯','点击节点查看状态表达式、采样数和势能。':'Click a node to inspect its state expression, sample count, and potential.','作用量随迭代下降':'Action decreases with iteration','迭代':'Iteration','全图作用量 𝒮':'Global action 𝒮','下降边 / 总边数':'Downhill edges / total edges','显示状态 / 拟合总状态':'Displayed states / fitted states',
-  '行是目标 f，列是源 g。按势能重新排列状态，深色表示更强的转移，上三角对应向低势能流动。观察转移的方向性在热图中显现。':'Rows are target f and columns are source g. Reorder states by potential; darker cells are stronger transitions, and the upper triangle corresponds to downhill flow.',
-  '点击格子查看转移概率 𝒯(f←g)。':'Click a cell to inspect the transition probability 𝒯(f←g).','每个点连接一对状态的势差与实测正逆概率比。优化只改变势差，观察点云如何向对角线靠拢。':'Each point pairs a state-potential difference with a measured forward–reverse probability ratio. Optimization changes only the potential difference; watch the cloud approach the diagonal.','点击点查看势差与实测正逆概率比。':'Click a point to inspect the potential difference and measured forward–reverse ratio.',
-  '跨越任务和时间检验理论':'Test the theory across tasks and time','跨任务检验':'Across tasks','跨模型检验':'Across models','从表达式到单词与数字，切换任务，看同一条势差关系如何出现在不同的生成空间中。每个任务的 Pearson r 都在该任务的全部合格双向状态对上计算。不同任务上模型均表现出向细致平衡的趋势。':'Switch from expressions to words and numbers to see the same potential-difference relation across generation spaces. Pearson r is computed on every qualified bidirectional state pair in each task. The trend toward detailed balance appears across tasks.','选择任务':'Choose a task','沿时间比较同一任务池中的模型版本。这里先对每个任务的合格双向状态对计算 r t （比较 log[T(g←f)/T(f←g)] 与 ΔV），再按该任务的双向对数量 n t 加权计算皮尔逊相关系数： R = Σ n t r t / Σ n t 。横轴按版本先后排列，快照于 2026-08-14 09:38（北京时间）冻结。随着模型迭代，细致平衡的趋势逐渐增强。':'Compare model versions on the same task pool over time. First compute rₜ for qualified bidirectional pairs in each task, comparing log[T(g←f)/T(f←g)] with ΔV; then compute the Pearson coefficient weighted by the number nₜ of bidirectional pairs: R = Σ nₜrₜ / Σ nₜ. Versions are ordered chronologically; the snapshot was frozen on 2026-08-14 09:38 Beijing time. The trend toward detailed balance strengthens across model iterations.',
+  '行是目标 g，列是源 f。按势能重新排列状态，深色表示更强的转移，上三角对应向低势能流动。观察转移的方向性在热图中显现。':'Rows are target g and columns are source f. Reorder states by potential; darker cells are stronger transitions, and the upper triangle corresponds to downhill flow.',
+  '点击格子查看转移概率 𝒯(g←f)。':'Click a cell to inspect the transition probability 𝒯(g←f).','每个点连接一对状态的势差与实测正逆概率比。优化只改变势差，观察点云如何向对角线靠拢。':'Each point pairs a state-potential difference with a measured forward–reverse probability ratio. Optimization changes only the potential difference; watch the cloud approach the diagonal.','点击点查看势差与实测正逆概率比。':'Click a point to inspect the potential difference and measured forward–reverse ratio.',
+  '跨越任务和时间检验理论':'Test the theory across tasks and time','跨任务检验':'Across tasks','跨模型检验':'Across models','从表达式到单词与数字，切换任务，看同一条势差关系如何出现在不同的生成空间中。每个任务的 Pearson r 都在该任务的全部合格双向状态对上计算。不同任务上模型均表现出向细致平衡的趋势。':'Switch from expressions to words and numbers to see the same potential-difference relation across generation spaces. Pearson r is computed on every qualified bidirectional state pair in each task. The trend toward detailed balance appears across tasks.','选择任务':'Choose a task','沿时间比较同一任务池中的模型版本。这里先对每个任务的合格双向状态对计算 r t （比较 log[T(g←f)/T(f←g)] 与 ΔV），再按该任务的双向对数量 n t 加权平均各任务的皮尔逊相关系数： R = Σ n t r t / Σ n t 。横轴按版本先后排列，快照于 2026-08-14 09:38（北京时间）冻结。随着模型迭代，细致平衡的趋势逐渐增强。':'Compare model versions on the same task pool over time. First compute rₜ for qualified bidirectional pairs in each task, comparing log[𝒯(g←f)/𝒯(f←g)] with ΔV; then average the per-task Pearson coefficients weighted by the number nₜ of bidirectional pairs: R = Σ nₜrₜ / Σ nₜ. Versions are ordered chronologically; the snapshot was frozen on 2026-08-14 09:38 Beijing time. The trend toward detailed balance strengthens across model iterations.',
   '论文与补充材料 ↗︎':'Paper and Supplemental Material ↗︎',
   '视频讲解 ↗︎':'Video walkthrough ↗︎','在 bilibili 观看这项工作的完整讲解':'Watch the full walkthrough of this work on bilibili','公开数据 · CC BY 4.0 ↗︎':'Public data · CC BY 4.0 ↗︎','分析代码· MIT Licence ↗︎':'Analysis code · MIT Licence ↗︎',
   '从描述行为，':'From describing behavior,','走向设计行为。':'to designing behavior.','模型容易到达的地方，未必是任务需要的地方。若有效势描述满足稳态收敛条件，π(f)∝e −βV(f) 。通过加入目标偏置重塑稳态，可以让搜索更多地到达目标区域。':'Where a model easily goes is not necessarily where the task requires. When the effective-potential description admits a stationary limit, π(f)∝e−βV(f). An external target bias reshapes the stationary distribution and can steer search toward the target region.',
   '识别原有偏好':'Identify the existing preference','改变外部偏置':'Change the external bias','引导模型行为':'Steer model behavior','外部偏置如何把随机轨迹推向目标区域？':'How does an external bias steer random trajectories toward a target region?','真实状态空间演示':'Measured state-space demonstration','在给定的状态空间中，逐渐增加偏置的大小，观察一个迭代智能体在状态空间上游走的轨迹如何从原本的方向向外部偏置鼓励的方向漂移。':'In a fixed state space, gradually increase the bias and observe how an iterated agent drifts from its original direction toward the direction favored by the external bias.','外部偏置 β':'External bias β','增加偏置 ↗︎':'Increase bias ↗︎','最低势能所在的 MSE':'MSE at the lowest potential','全图最低 MSE':'Lowest MSE in the full graph','当前偏置下轨迹可达的最低 MSE':'Lowest MSE reachable by the current biased trajectory','探索阶段':'Exploration regime','当前轨迹的最低 MSE':'Lowest MSE on the current trajectory',
   '费曼积分约化 ↗︎':'Feynman-integral reduction ↗︎','搜索 priority function，确定性优化 IBP 约化算法':'Search for a priority function and deterministically optimize IBP reduction','量子线路初态制备 ↗︎':'Quantum-circuit initial-state preparation ↗︎','生成式搜索发现高效的线路结构':'Generative search discovers efficient circuit structures','迭代式符号回归 ↗︎':'Iterated symbolic regression ↗︎','在表达式状态空间中持续搜索':'Continue searching in an expression state space',
-  '若干讨论，':'Three discussions:','非平衡效应、方法论和意义。':'nonequilibrium effects, methodology, and meaning.','一个势能，不必穷尽生成的全部细节。它的价值在于：明确主要结构，并说明如何修正。它把不同视角的研究连接起来。':'A potential need not exhaust every detail of generation. Its value is to make the dominant structure explicit and show how to correct it. It connects several levels of description.',
-  '转移路径有环时的平衡态':'Equilibrium when transition paths form cycles','主导转移':'Dominant transition','弱返回':'Weak return','现实的多路径结构会构成双向闭环，为细致平衡的描述能力画出边界。':'Multiple paths in reality form bidirectional cycles, marking the boundary of a detailed-balance description.','定义势差时，正向与返回通道已经同时存在。现实中，同一祖先可能经不同路径抵达同一后继，此时，':'When defining a potential difference, forward and return channels already coexist. In reality, the same ancestor may reach the same successor by different paths; then,','就是待检验的零假设，其中正向一周的概率乘积 P₊ ，逆向为 P₋。即：这些环上的正逆概率比，能否仍由同一个势能统一描述？':'is the null hypothesis to test. The forward cycle has probability product P₊ and the reverse cycle P₋. Can the forward–reverse ratio around these cycles still be unified by one potential?','正文闭环检验':'Main-text cycle test','在当前采样误差内，':'Within current sampling error,','尚不能拒绝正逆对称。':'forward–reverse symmetry cannot be rejected.','若检测到可靠的非零环流，单一势能才不足以描述全部方向性，需要进一步引入非平衡修正。':'Only a reliable nonzero circulation would show that one potential is insufficient for all directional structure and that a nonequilibrium correction is needed.',
-  '微扰论的应用':'Applying perturbation theory','不必先给复杂现实找到一条精确规律。先提取主导结构，把它推进到可解的极限，再用数据判断这个极限是否能够描述现实。':'We need not first find an exact law for a complex reality. Extract the dominant structure, push it to a solvable limit, and use data to test whether that limit describes reality.','识别主导结构':'Identify the dominant structure','从转移中看见结构':'Read structure from transitions','语言模型的生成有倾向性，生成通道稀疏。':'LLM generation is directional and its transition channels are sparse.','建立自洽描述':'Build a self-consistent description','由正逆概率比定义势':'Define a potential from forward–reverse ratios','基于概率模型的本质给出最小描述。':'The probability model itself supplies the minimal description.','检验现实情况':'Test the real system','在实际通道上检验势':'Test the potential on real channels','比较绕现实中多路径的正逆概率乘积，检验势能描述。':'Compare forward and reverse probability products around real multistep paths to test the potential description.',
-  '向微观追溯，向宏观预测':'Trace the microscopic, predict the macroscopic','如同热力学不必追踪每个粒子，势能表示把完整输出的 token 序列构成的系综压缩为可测的宏观状态关系：向下可以追溯生成过程的 token 动力学，向上可以组织稳态、响应与搜索的设计。':'As thermodynamics need not track every particle, the potential representation compresses the ensemble of complete token sequences into measurable macroscopic state relations: downward it traces token dynamics; upward it organizes stationary behavior, response, and search design.','微观生成':'Microscopic generation','许多 token 轨迹':'Many token trajectories','研究生成过程中 token 的微观动力学':'Study token-level microscopic dynamics during generation','桥梁':'Bridge','用全局势能表示组织局部状态转移':'Use a global potential to organize local state transitions','宏观行为':'Macroscopic behavior','少数可检验的量':'A few measurable quantities','稳态 π':'Stationary π','响应 χ':'Response χ','研究真实 agent 的宏观行为模式':'Study macroscopic patterns of real agents'
-  ,'02 / 通向同一个 g 的微观轨迹':'02 / Microscopic trajectories reaching the same g','03 / 汇总这些轨迹的概率':'03 / Aggregate the probabilities of these trajectories','——俄罗斯传说 贝加尔湖与安加拉河':'— Russian legend: Lake Baikal and the Angara River','从 f 经中介状态 h₁ 或 h₂ 到达 g：保留蓝色主导路径 f→h₁→g，压低灰色竞争路径 f→h₂→g':'From f to g through intermediate h₁ or h₂: retain the blue dominant path f→h₁→g and suppress the gray competing path f→h₂→g','唯一主导路径':'Unique dominant path','竞争路径被压低':'Competing path suppressed','——艾略特《四个四重奏 · 小吉丁》':'— T. S. Eliot, Four Quartets: Little Gidding','两个状态 f 与 g：蓝色粗箭头从 f 指向 g，金色细箭头从 g 返回 f':'Two states f and g: a thick blue arrow goes from f to g; a thin gold arrow returns from g to f','弱概率返回':'Weak-probability return','条件自由能 F 和有效势 V':'Conditional free energy F and effective potential V','把序列 y 的概率写成下面的能量形式。E':'Write the probability of sequence y in the energy form below. E','描述这条序列的有效能量，Z':' is the effective energy of the sequence; Z',') 是所有可能输出的权重总和，用于归一化。':') is the total weight of all possible outputs and normalizes the distribution.','右侧是同一个状态函数 βV+log Z':'The right-hand side is one state function, βV + log Z','在 f、g 两点的差。这表明当条件自由能F满足 exact 1-form 时，存在一个全局有效势 V，可以用来描述系统的局部行为。这就是所假设条件的微观含义。':' evaluated at f and g. When the conditional free energy F is an exact 1-form, a global effective potential V exists to describe local behavior. This is the microscopic meaning of the assumption.','沿时间比较同一任务池中的模型版本。这里先对每个任务的合格双向状态对计算':'Compare model versions on the same task pool over time. First compute','（比较 log[T(g←f)/T(f←g)] 与 ΔV），再按该任务的双向对数量':'(comparing log[T(g←f)/T(f←g)] with ΔV), then weight by the number','加权计算皮尔逊相关系数：':'of bidirectional pairs to compute the Pearson coefficient:','。横轴按版本先后排列，快照于 2026-08-14 09:38（北京时间）冻结。随着模型迭代，细致平衡的趋势逐渐增强。':'. Versions are ordered chronologically; the snapshot was frozen on 2026-08-14 09:38 Beijing time. The trend toward detailed balance strengthens across model iterations.','模型容易到达的地方，未必是任务需要的地方。若有效势描述满足稳态收敛条件，π(f)∝e':'Where a model easily goes is not necessarily where the task requires. When the effective-potential description admits a stationary limit, π(f)∝e','。通过加入目标偏置重塑稳态，可以让搜索更多地到达目标区域。':'. An external target bias reshapes the stationary distribution and can steer search toward the target region.','原有偏好':'existing preference','同一祖先经两条路径抵达同一后继':'the same ancestor reaches the same successor by two paths','定义概率势能的基准模型已经包含正向与返回通道。现实中额外存在不同中介路径，图中 f 经 h₁ 或 h₂ 到 g，且每条边均可反向通过，构成正、逆闭环。':'The baseline model for a probabilistic potential already contains forward and return channels. Reality adds distinct intermediate paths: here f reaches g through h₁ or h₂, and every edge can be traversed in reverse, forming forward and reverse cycles.','双向闭环':'Bidirectional cycle','比较正逆权重之积':'Compare the products of forward and reverse weights','· 数据与方法可由论文、公开数据集及分析代码追溯；实验图来自真实记录，网页动画为基于真实状态的演示。':'· Data and methods are traceable to the paper, public dataset, and analysis code; figures use measured records, while animations are replays built from real states.'
+  '若干讨论，':'Discussions:','非平衡效应、方法论和意义。':'nonequilibrium effects, methodology, and meaning.',
+  '转移路径有环时的平衡态':'Equilibrium when transition paths form cycles','主导转移':'Dominant transition','弱返回':'Weak return','假设 A 允许同一祖先经不同路径抵达同一后继，只要求方向只由终点决定。这一条件可以直接检验：':'Assumption A allows the same ancestor to reach the same successor by different paths; it only requires direction to be set by the destination. This condition can be tested directly:','就是待检验的零假设，其中正向一周的概率乘积 P₊ ，逆向为 P₋。即：这些环上的正逆概率比，能否仍由同一个势能统一描述？':'is the null hypothesis to test. The forward cycle has probability product P₊ and the reverse cycle P₋. Can the forward–reverse ratio around these cycles still be unified by one potential?','正文闭环检验':'Main-text cycle test','在当前采样误差内，':'Within current sampling error,','尚不能拒绝正逆对称。':'forward–reverse symmetry cannot be rejected.','若检测到可靠的非零环流，单一势能才不足以描述全部方向性，需要进一步引入非平衡修正。':'Only a reliable nonzero circulation would show that one potential is insufficient for all directional structure and that a nonequilibrium correction is needed.',
+  '微扰论的应用':'Applying perturbation theory','识别主导结构':'Identify the dominant structure','从转移中看见结构':'Read structure from transitions','语言模型的生成有倾向性，生成通道稀疏。':'LLM generation is directional and its transition channels are sparse.','建立自洽描述':'Build a self-consistent description','由正逆概率比定义势':'Define a potential from forward–reverse ratios','基于概率模型的本质给出最小描述。':'The probability model itself supplies the minimal description.','检验现实情况':'Test the real system','在实际通道上检验势':'Test the potential on real channels','比较绕现实中多路径的正逆概率乘积，检验势能描述。':'Compare forward and reverse probability products around real multistep paths to test the potential description.',
+  '向微观追溯，向宏观预测':'Trace the microscopic, predict the macroscopic','微观生成':'Microscopic generation','许多 token 轨迹':'Many token trajectories','研究生成过程中 token 的微观动力学':'Study token-level microscopic dynamics during generation','桥梁':'Bridge','用全局势能表示组织局部状态转移':'Use a global potential to organize local state transitions','宏观行为':'Macroscopic behavior','少数可检验的量':'A few measurable quantities','稳态 π':'Stationary π','响应 χ':'Response χ','研究真实 agent 的宏观行为模式':'Study macroscopic patterns of real agents'
+  ,'02 / 通向同一个 g 的微观轨迹':'02 / Microscopic trajectories reaching the same g','03 / 汇总这些轨迹的概率':'03 / Aggregate the probabilities of these trajectories','——俄罗斯传说 贝加尔湖与安加拉河':'— Russian legend: Lake Baikal and the Angara River','从 f 经中介状态 h₁ 或 h₂ 到达 g：两条路径并存，都通向同一终点，方向由终点决定':'From f to g through intermediate h₁ or h₂: both paths coexist and reach the same destination, which sets the direction','多条路径可以并存':'Several paths may coexist','奖励只看终点 g':'Reward sees only the end g','奖励只看终点':'Reward sees only the end','不同的智能体框架，循环里的步骤各不相同，但都有同一个骨架：从状态 f 出发，经过一次 LLM 生成，到达新的状态 g。':'Agent frameworks differ in the steps inside their loops, but share one skeleton: from a state f, through one LLM generation, to a new state g.','任务一览':'Tasks at a glance','跨模型检验的任务池':'Task pool for the model comparison','——艾略特《四个四重奏 · 小吉丁》':'— T. S. Eliot, Four Quartets: Little Gidding','两个状态 f 与 g：蓝色粗箭头从 f 指向 g，金色细箭头从 g 返回 f':'Two states f and g: a thick blue arrow goes from f to g; a thin gold arrow returns from g to f','弱概率返回':'Weak return','条件自由能 F 和有效势 V':'Conditional free energy F and effective potential V','把序列 y 的概率写成下面的能量形式。E':'Write the probability of sequence y in the energy form below. E','描述这条序列的有效能量，Z':' is the effective energy of the sequence; Z',') 是所有可能输出的权重总和，用于归一化。':') is the total weight of all possible outputs and normalizes the distribution.','右侧是同一个状态函数 βV+log Z':'The right-hand side is one state function, βV + log Z','在 f、g 两点的差。这表明当条件自由能F满足 exact 1-form 时，存在一个全局有效势 V，可以用来描述系统的局部行为。这就是所假设条件的微观含义。':' evaluated at f and g. When the conditional free energy F is an exact 1-form, a global effective potential V exists to describe local behavior. This is the microscopic meaning of the assumption.','沿时间比较同一任务池中的模型版本。这里先对每个任务的合格双向状态对计算':'Compare model versions on the same task pool over time. First compute ','（比较 log[𝒯(g←f)/𝒯(f←g)] 与 ΔV），再按该任务的双向对数量':' (comparing log[𝒯(g←f)/𝒯(f←g)] with ΔV), then weight by the number ','加权平均各任务的皮尔逊相关系数：':' of bidirectional pairs to average the per-task Pearson coefficients: ','。横轴按版本先后排列，快照于 2026-08-14 09:38（北京时间）冻结。随着模型迭代，细致平衡的趋势逐渐增强。':'. Versions are ordered chronologically; the snapshot was frozen on 2026-08-14 09:38 Beijing time. The trend toward detailed balance strengthens across model iterations.','模型容易到达的地方，未必是任务需要的地方。若有效势描述满足稳态收敛条件，π(f)∝e':'Where a model easily goes is not necessarily where the task requires. When the effective-potential description admits a stationary limit, π(f)∝e','。通过加入目标偏置重塑稳态，可以让搜索更多地到达目标区域。':'. An external target bias reshapes the stationary distribution and can steer search toward the target region.','原有偏好':'existing preference','同一祖先经两条路径抵达同一后继':'the same ancestor reaches the same successor by two paths','f 经 h₁ 或 h₂ 到 g 的两条路径并存，且每条边均可反向通过，构成正、逆闭环。闭环上的正逆权重之积，检验方向是否只由终点决定。':'Two paths from f to g, through h₁ or h₂, coexist, and every edge can be traversed in reverse, forming forward and reverse cycles. The products of forward and reverse weights around the cycle test whether direction is set by the destination alone.','双向闭环':'Bidirectional cycle','比较正逆权重之积':'Compare the products of forward and reverse weights','· 数据与方法可由论文、公开数据集及分析代码追溯；实验图来自真实记录，网页动画为基于真实状态的演示。':'· Data and methods are traceable to the paper, public dataset, and analysis code; figures use measured records, while animations are replays built from real states.'
 };
 let locale='zh';
 const originalText=new WeakMap();
@@ -92,7 +152,7 @@ function applyLocale(next){
   const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
   let node;
   while(node=walker.nextNode()){
-    if(node.parentElement?.closest('script,style'))continue;
+    if(node.parentElement?.closest('script,style,.katex,.i-zh,.i-en'))continue;
     if(!originalText.has(node))originalText.set(node,node.nodeValue||'');
     const raw=originalText.get(node)||'', key=raw.trim();
     if(!key)continue;
@@ -123,8 +183,8 @@ document.addEventListener('click',event=>{
   }
 });
 const uiText={
-  zh:{sortStatus:'点击节点查看状态表达式、采样数和势能。',loadError:'动画暂未载入，请点击播放重试。',matrixAxis:'列：源 g',matrixRow:'行：目标 f',matrixLegend:'列：源 g · 行：目标 f',unmeasured:'自转移未测量',matrixHint:'12 个真实状态 · 色阶 0–0.30 · 点击格子查看转移概率',scatterHint:'点击点查看状态对、势差与实测正逆概率比。',potentialAxis:'势能 V',actionAxis:'作用量 𝒮',scatterAxis:'log[𝒯(g←f)/𝒯(f←g)]',crossAxisX:'势差 ΔV = V(f) − V(g)',crossAxisY:'log[𝒯(g←f) / 𝒯(f←g)]',crossMeasured:'实测双向状态对',crossPrediction:'细致平衡预测：y = x',actualIteration:'实际迭代',action:'全图作用量 𝒮',states:'显示状态 / 拟合总状态',downhill:'下降边 / 总边数',frob:'Frobenius 范数中上三角部分比例',play:'播放优化 ↗︎',prepare:'准备动画…',retry:'重试播放 ↻',pause:'暂停',line:'虚线 y = x · 实测双向转移',pairs:'个合格双向对 · 展示',point:'点',taskR:'按双向状态对数量加权的任务 Pearson r',biasPlay:'增加偏置 ↗︎',biasNone:'无偏置',biasZero:'零温极限',biasContinuous:'连续偏置'},
-  en:{sortStatus:'Click a node to inspect its state expression, sample count, and potential.',loadError:'Animation is not loaded. Click play to retry.',matrixAxis:'Columns: source g',matrixRow:'Rows: target f',matrixLegend:'Columns: source g · rows: target f',unmeasured:'self-transition not measured',matrixHint:'12 measured states · scale 0–0.30 · click a cell to inspect 𝒯',scatterHint:'Click a point to inspect the state pair, potential difference, and measured forward–reverse ratio.',potentialAxis:'Potential V',actionAxis:'Action 𝒮',scatterAxis:'log[𝒯(g←f)/𝒯(f←g)]',crossAxisX:'Potential difference ΔV = V(f) − V(g)',crossAxisY:'log[𝒯(g←f) / 𝒯(f←g)]',crossMeasured:'Measured reciprocal state pairs',crossPrediction:'Detailed-balance prediction: y = x',actualIteration:'Iteration',action:'Global action 𝒮',states:'Displayed states / fitted states',downhill:'Downhill edges / total edges',frob:'Upper-triangle share of the Frobenius norm',play:'Play optimization ↗︎',prepare:'Preparing animation…',retry:'Retry playback ↻',pause:'Pause',line:'dashed y = x · measured bidirectional transitions',pairs:'qualified bidirectional pairs · showing',point:'points',taskR:'Task Pearson r weighted by bidirectional-state-pair counts',biasPlay:'Increase bias ↗︎',biasNone:'No bias',biasZero:'Zero-temperature limit',biasContinuous:'Continuous bias'}
+  zh:{sortStatus:'点击节点查看状态表达式、采样数和势能。',loadError:'动画暂未载入，请点击播放重试。',matrixAxis:'列：源 f',matrixRow:'行：目标 g',matrixLegend:'列：源 f · 行：目标 g',unmeasured:'自转移未测量',matrixHint:'12 个真实状态 · 色阶 0–0.30 · 点击格子查看转移概率',scatterHint:'点击点查看状态对、势差与实测正逆概率比。',potentialAxis:'势能 V',actionAxis:'作用量 𝒮',scatterAxis:'log[𝒯(g←f)/𝒯(f←g)]',crossAxisX:'势差 ΔV = V(f) − V(g)',crossAxisY:'log[𝒯(g←f) / 𝒯(f←g)]',crossMeasured:'实测双向状态对',crossPrediction:'细致平衡预测：y = x',actualIteration:'实际迭代',action:'全图作用量 \\(\\mathcal{S}\\)',states:'显示状态 / 拟合总状态',downhill:'下降边 / 总边数',frob:'Frobenius 范数中上三角部分比例',play:'播放优化 ↗︎',prepare:'准备动画…',retry:'重试播放 ↻',pause:'暂停',line:'虚线 y = x · 实测双向转移',pairs:'个合格双向对 · 展示',point:'点',taskR:'按双向状态对数量加权的任务 Pearson r',biasPlay:'增加偏置 ↗︎',biasNone:'无偏置',biasZero:'零温极限',biasContinuous:'连续偏置'},
+  en:{sortStatus:'Click a node to inspect its state expression, sample count, and potential.',loadError:'Animation is not loaded. Click play to retry.',matrixAxis:'Columns: source f',matrixRow:'Rows: target g',matrixLegend:'Columns: source f · rows: target g',unmeasured:'self-transition not measured',matrixHint:'12 measured states · scale 0–0.30 · click a cell to inspect \\(\\mathcal{T}\\)',scatterHint:'Click a point to inspect the state pair, potential difference, and measured forward–reverse ratio.',potentialAxis:'Potential V',actionAxis:'Action 𝒮',scatterAxis:'log[𝒯(g←f)/𝒯(f←g)]',crossAxisX:'Potential difference ΔV = V(f) − V(g)',crossAxisY:'log[𝒯(g←f) / 𝒯(f←g)]',crossMeasured:'Measured reciprocal state pairs',crossPrediction:'Detailed-balance prediction: y = x',actualIteration:'Iteration',action:'Global action \\(\\mathcal{S}\\)',states:'Displayed states / fitted states',downhill:'Downhill edges / total edges',frob:'Upper-triangle share of the Frobenius norm',play:'Play optimization ↗︎',prepare:'Preparing animation…',retry:'Retry playback ↻',pause:'Pause',line:'dashed y = x · measured bidirectional transitions',pairs:'qualified bidirectional pairs · showing',point:'points',taskR:'Task Pearson r weighted by bidirectional-state-pair counts',biasPlay:'Increase bias ↗︎',biasNone:'No bias',biasZero:'Zero-temperature limit',biasContinuous:'Continuous bias'}
 };
 const taskProblemEnglish={
   idea:'Starting from an expression in a symbolic-fitting problem, generate new candidate expressions.',
@@ -138,8 +198,8 @@ const taskProblemEnglish={
 };
 function updateDynamicLabels(){
   const u=uiText[locale];
-  if($('#sortStatus'))$('#sortStatus').textContent=u.sortStatus;
-  if($('#matrixStatus'))$('#matrixStatus').textContent=u.matrixHint;
+  setMath($('#sortStatus'),u.sortStatus);
+  setMath($('#matrixStatus'),u.matrixHint);
   if($('#scatterStatus'))$('#scatterStatus').textContent=u.scatterHint;
   if($('#crossTaskCanvas'))$('#crossTaskCanvas').setAttribute('aria-label',`${u.crossAxisY}; x: ${u.crossAxisX}; ${u.crossMeasured}; ${u.crossPrediction}`);
   if($('#homeBrand')){
@@ -149,7 +209,7 @@ function updateDynamicLabels(){
   if($('#languageMenuTitle'))$('#languageMenuTitle').textContent=locale==='en'?'Choose a language':'选择语言';
   if(languageToggle)languageToggle.setAttribute('aria-label',locale==='en'?'Choose a language':'选择语言');
   $$('[data-locale]').forEach(item=>item.setAttribute('aria-current',item.dataset.locale===(locale==='en'?'en':'zh')?'true':'false'));
-  if($('#metricLabel1'))$('#metricLabel1').textContent=u.action;
+  setMath($('#metricLabel1'),u.action);
   if($('#metricLabel2'))$('#metricLabel2').textContent=u.downhill;
   if($('#metricLabel3'))$('#metricLabel3').textContent=u.states;
   if($('#sortButton')&&(typeof actionState==='undefined'||!actionState.running))$('#sortButton').textContent=u.play;
@@ -293,16 +353,16 @@ function drawTheoryMatrix(){
     // explicitly instead of letting empty cells look like zero probability.
     ctx.save();ctx.strokeStyle='#d95f59';ctx.lineWidth=2;ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(p.l,p.t);ctx.lineTo(p.l+size,p.t+size);ctx.stroke();ctx.restore();
 
-    // State labels make the row/column convention explicit. Rows are targets f,
-    // columns are sources g, both in the same fitted-potential order.
+    // State labels make the row/column convention explicit. Rows are targets g,
+    // columns are sources f, both in the same fitted-potential order.
     ctx.fillStyle='#173b62';ctx.font=`${Math.max(7,Math.min(12,cell*.24))}px DM Mono, monospace`;ctx.textBaseline='middle';
     ids.forEach((id,i)=>{
       ctx.textAlign='center';ctx.fillText(id,p.l+(i+.5)*cell,p.t-20);
       ctx.textAlign='right';ctx.fillText(id,p.l-10,p.t+(i+.5)*cell);
     });
-    ctx.textAlign='center';ctx.font='11px DM Mono, monospace';ctx.fillStyle='#68809a';ctx.fillText(uiText[locale].matrixAxis,p.l+size/2,Math.min(h-14,p.t+size+31));
-    ctx.save();ctx.translate(15,p.t+size/2);ctx.rotate(-Math.PI/2);ctx.fillText(uiText[locale].matrixRow,0,0);ctx.restore();
-    ctx.textAlign='left';ctx.font='10px DM Mono, monospace';ctx.fillStyle='#68809a';ctx.fillText('𝒯(f←g)',p.l,p.t-39);
+    ctx.textAlign='center';ctx.font='11px DM Mono, monospace';ctx.fillStyle='#68809a';mtext(ctx,uiText[locale].matrixAxis,p.l+size/2,Math.min(h-14,p.t+size+31));
+    ctx.save();ctx.translate(15,p.t+size/2);ctx.rotate(-Math.PI/2);mtext(ctx,uiText[locale].matrixRow,0,0);ctx.restore();
+    ctx.textAlign='left';ctx.font='12px DM Mono, monospace';ctx.fillStyle='#68809a';mtext(ctx,'𝒯(g←f)',p.l,p.t-39);
 
     canvas.dataset.order=ids.join(',');canvas.dataset.sorted='true';
   };canvas.__draw();
@@ -375,15 +435,15 @@ function drawMatrix(){
       ctx.fillRect(l+j*cell,t+i*cell,cell-1,cell-1);
       if(value&&cell>32){ctx.font='12px monospace';ctx.fillStyle=value>.16?'white':palette.deep;ctx.textAlign='center';ctx.fillText(value.toFixed(2),l+(j+.5)*cell,t+(i+.65)*cell);}
     }));
-    // The diagonal is f=g. Self-transitions were not measured, so mark this
+    // The diagonal is g=f. Self-transitions were not measured, so mark this
     // region explicitly rather than presenting blank cells as zero T.
     ctx.save();ctx.strokeStyle='#d95f59';ctx.lineWidth=2;ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(l,t);ctx.lineTo(l+size,t+size);ctx.stroke();ctx.restore();
     ctx.fillStyle=palette.deep;ctx.font='12px monospace';ctx.textAlign='center';
     order.forEach((id,i)=>{ctx.save();ctx.translate(l+(i+.5)*cell,t-9);ctx.rotate(-Math.PI/2);ctx.fillText(id,0,0);ctx.restore();ctx.textAlign='right';ctx.fillText(id,l-8,t+(i+.65)*cell);ctx.textAlign='center';});
-    ctx.textAlign='left';ctx.font='13px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(uiText[locale].matrixLegend,l,t+size+30);
+    ctx.textAlign='left';ctx.font='13px sans-serif';ctx.fillStyle='#58758e';mtext(ctx,uiText[locale].matrixLegend,l,t+size+30);
     canvas.dataset.order=order.join(',');canvas.dataset.iteration=actionState.iteration.toFixed(2);canvas.dataset.sorted='true';
-    canvas.onclick=event=>{const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;if(x<l||y<t||x>=l+size||y>=t+size)return;const target=order[Math.floor((y-t)/cell)],source=order[Math.floor((x-l)/cell)];if(target===source){$('#matrixStatus').textContent='f='+target+' · g='+source+' · '+uiText[locale].unmeasured;return;}const value=graphData.matrix[graphData.matrixIDs.indexOf(target)][graphData.matrixIDs.indexOf(source)]||0;$('#matrixStatus').textContent='f='+target+' · g='+source+' · 𝒯(f←g)='+value.toFixed(4);};
-    $('#matrixStatus').textContent=uiText[locale].matrixHint;
+    canvas.onclick=event=>{const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;if(x<l||y<t||x>=l+size||y>=t+size)return;const target=order[Math.floor((y-t)/cell)],source=order[Math.floor((x-l)/cell)];if(target===source){setMath($('#matrixStatus'),'\\(f\\) = '+source+' · \\(g\\) = '+target+' · '+uiText[locale].unmeasured);return;}const value=graphData.matrix[graphData.matrixIDs.indexOf(target)][graphData.matrixIDs.indexOf(source)]||0;setMath($('#matrixStatus'),'\\(f\\) = '+source+' · \\(g\\) = '+target+' · \\(\\mathcal{T}(g\\leftarrow f) = '+value.toFixed(4)+'\\)');};
+    setMath($('#matrixStatus'),uiText[locale].matrixHint);
   });
 }
 function drawSort(){
@@ -393,12 +453,12 @@ function drawSort(){
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#f8fbfe';ctx.fillRect(0,0,w,h);
     graphData.nodes.forEach((n,i)=>P[n.id]={x:p.l+norm(xs,n.logMSE)*(w-p.l-p.r),y:h-p.b-norm(values,values[i])*(h-p.t-p.b),v:values[i]});
     for(let i=0;i<5;i++)line(ctx,{x:p.l,y:p.t+i*(h-p.t-p.b)/4},{x:w-p.r,y:p.t+i*(h-p.t-p.b)/4},palette.grid);
-    graphData.edges.filter(e=>e.t>=.05).forEach(e=>{const a=P[e.source],b=P[e.target],color=a.v>b.v?'#47a66f':'#d95f59';line(ctx,a,b,color,Math.max(.8,e.t*8));drawArrow(ctx,a,b,color,1,5);});
+    graphData.edges.filter(e=>e.t>=.05).forEach(e=>{const a=P[e.source],b=P[e.target],color=a.v>b.v?'rgba(71,166,111,.78)':'rgba(217,95,89,.88)';line(ctx,a,b,color,Math.min(5,1.4+e.t*10));drawArrow(ctx,a,b,color,1,Math.min(13,7+e.t*14));});
     graphData.nodes.forEach(n=>{const a=P[n.id];ctx.beginPath();ctx.arc(a.x,a.y,4.5,0,Math.PI*2);ctx.fillStyle='white';ctx.fill();ctx.strokeStyle=palette.deep;ctx.lineWidth=1.3;ctx.stroke();});
     ctx.textAlign='left';ctx.fillStyle='#58758e';ctx.font='12px monospace';ctx.fillText('log₁₀(MSE) →',Math.max(44,w-150),h-12);
-    ctx.save();ctx.translate(17,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';ctx.fillText(uiText[locale].potentialAxis,0,0);ctx.restore();
+    ctx.save();ctx.translate(17,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';mtext(ctx,uiText[locale].potentialAxis,0,0);ctx.restore();
     canvas.__points=P;canvas.dataset.iteration=actionState.iteration.toFixed(2);
-    canvas.onclick=event=>{const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;const node=graphData.nodes.find(n=>Math.hypot(P[n.id].x-x,P[n.id].y-y)<10);if(node)$('#sortStatus').textContent=node.id+' · '+node.expression+' · samples '+node.samples+' · V='+P[node.id].v.toFixed(3);};
+    canvas.onclick=event=>{const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;const node=graphData.nodes.find(n=>Math.hypot(P[n.id].x-x,P[n.id].y-y)<10);if(node)$('#sortStatus').textContent=node.id+' · '+node.expression+' · samples '+node.samples+' · \\(V = '+P[node.id].v.toFixed(3)+'\\)';};
   });
 }
 function reciprocalPairs(){
@@ -422,8 +482,8 @@ function drawScatter(){
     line(ctx,{x:sx(-limit),y:sy(-limit)},{x:sx(limit),y:sy(limit)},palette.deep,1.8,[6,5]);
     [-limit,0,limit].forEach(t=>{ctx.fillStyle='#58758e';ctx.font='12px monospace';ctx.textAlign='center';ctx.fillText(t,sx(t),h-p.b+18);ctx.textAlign='right';ctx.fillText(t,p.l-8,sy(t)+4);});
     points.forEach(d=>{ctx.beginPath();ctx.arc(sx(d.x),sy(d.y),3.6,0,Math.PI*2);ctx.fillStyle='rgba(47,119,173,.65)';ctx.fill();});
-    ctx.textAlign='right';ctx.fillStyle='#58758e';ctx.font='12px sans-serif';ctx.fillText('ΔV = V(f) − V(g)',w-p.r,h-10);
-    ctx.save();ctx.translate(17,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='10px monospace';ctx.fillText(uiText[locale].scatterAxis,0,0);ctx.restore();
+    ctx.textAlign='right';ctx.fillStyle='#58758e';ctx.font='12px sans-serif';mtext(ctx,'ΔV = V(f) − V(g)',w-p.r,h-10);
+    ctx.save();ctx.translate(17,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='10px monospace';mtext(ctx,uiText[locale].scatterAxis,0,0);ctx.restore();
     canvas.dataset.iteration=String(Math.round(frame.raw));canvas.dataset.displayIteration=actionState.iteration.toFixed(2);canvas.dataset.pairs=pairs.length;canvas.dataset.x=JSON.stringify(points.map(d=>d.x));
     canvas.onclick=event=>{
       const rect=canvas.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top;
@@ -431,7 +491,8 @@ function drawScatter(){
       points.forEach((d,i)=>{const px=sx(d.x),py=sy(d.y),distance=Math.hypot(px-x,py-y);if(distance<best){best=distance;nearest={d,i};}});
       if(!nearest||best>14){$('#scatterStatus').textContent=uiText[locale].scatterHint;return;}
       const d=nearest.d;
-      $('#scatterStatus').textContent=`${d.source} → ${d.target} · ΔV=${d.x.toFixed(3)} · log[T(g←f)/T(f←g)]=${d.y.toFixed(3)}`;
+      const f=(d.flip||1)<0?d.target:d.source,g=(d.flip||1)<0?d.source:d.target;
+      setMath($('#scatterStatus'),`\\(f\\) = ${f} → \\(g\\) = ${g} · \\(\\Delta V = ${d.x.toFixed(3)}\\) · \\(\\log[\\mathcal{T}(g\\leftarrow f)/\\mathcal{T}(f\\leftarrow g)] = ${d.y.toFixed(3)}\\)`);
     };
   });
 }
@@ -460,7 +521,7 @@ function drawAction(){
       ctx.textAlign=index===0?'left':index===ticks.length-1?'right':'center';ctx.fillText(raw,x,h-p.b+23);
     });
     ctx.fillStyle='#58758e';ctx.font='12px sans-serif';ctx.textAlign='right';ctx.fillText(uiText[locale].actualIteration,w-p.r,h-8);
-    ctx.save();ctx.translate(13,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';ctx.fillText(uiText[locale].actionAxis,0,0);ctx.restore();
+    ctx.save();ctx.translate(13,h/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';mtext(ctx,uiText[locale].actionAxis,0,0);ctx.restore();
     canvas.dataset.iteration=String(Math.round(currentFrame().raw));canvas.dataset.displayIteration=actionState.iteration.toFixed(2);
   });
 }
@@ -472,7 +533,7 @@ function updateActionReadout(){
   $('#iterationRange').value=actionState.iteration;$('#actionValue').textContent=frame.action.toFixed(3);
   const fitStates=Number(graphData.meta?.fitStates||0);
   const fittedCount=fitStates.toLocaleString('en-US');
-  $('#metricLabel1').textContent=uiText[locale].action;
+  setMath($('#metricLabel1'),uiText[locale].action);
   $('#metricLabel3').textContent=uiText[locale].states;
   if(actionState.view==='sort'){
     const downhillShare=edges.length?down/edges.length:0;
@@ -633,20 +694,20 @@ function drawCrossTask(){
     // dots are measured reciprocal pairs, and the dashed diagonal is the
     // detailed-balance prediction y=x.
     ctx.textAlign='left';ctx.fillStyle=palette.deep;ctx.font='600 13px sans-serif';
-    ctx.fillText(u.crossAxisY,p.l,22);
+    mtext(ctx,u.crossAxisY,p.l,22);
     const legendY=43;
     ctx.save();ctx.strokeStyle=palette.deep;ctx.lineWidth=1.7;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(p.l,legendY);ctx.lineTo(p.l+23,legendY);ctx.stroke();ctx.restore();
-    ctx.font='11px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(u.crossPrediction,p.l+31,legendY+4);
+    ctx.font='11px sans-serif';ctx.fillStyle='#58758e';mtext(ctx,u.crossPrediction,p.l+31,legendY+4);
     // Use measured label widths, not a viewport breakpoint: English labels
     // are wider, and the canvas may only occupy half of a wide viewport.
-    const nextLegendX=p.l+31+ctx.measureText(u.crossPrediction).width+28;
+    const nextLegendX=p.l+31+mwidth(ctx,u.crossPrediction)+28;
     const legendsFit=nextLegendX+11+ctx.measureText(u.crossMeasured).width<=w-p.r;
     const dotX=legendsFit?nextLegendX:p.l;
     const dotY=legendsFit?legendY:66;
     ctx.beginPath();ctx.arc(dotX,dotY-1,3.5,0,Math.PI*2);ctx.fillStyle='rgba(47,119,173,.7)';ctx.fill();
     ctx.fillStyle='#58758e';ctx.fillText(u.crossMeasured,dotX+11,dotY+4);
-    ctx.save();ctx.translate(17,(p.t+h-p.b)/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';ctx.fillStyle='#58758e';ctx.fillText(u.crossAxisY,0,0);ctx.restore();
-    ctx.textAlign='right';ctx.fillStyle='#58758e';ctx.font='11px sans-serif';ctx.fillText(u.crossAxisX,w-p.r,h-10);
+    ctx.save();ctx.translate(17,(p.t+h-p.b)/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='11px sans-serif';ctx.fillStyle='#58758e';mtext(ctx,u.crossAxisY,0,0);ctx.restore();
+    ctx.textAlign='right';ctx.fillStyle='#58758e';ctx.font='11px sans-serif';mtext(ctx,u.crossAxisX,w-p.r,h-10);
     canvas.dataset.task=task.id;canvas.dataset.points=points.length;
     canvas.dataset.source=task.id==='idea'
       ?'IdeaSearchFitter published plot sample'
@@ -657,11 +718,61 @@ function drawCrossTask(){
   const heading=document.createElement('h4');heading.textContent=task.label;
   const problem=document.createElement('p');problem.textContent=locale==='en'?(taskProblemEnglish[task.id]||task.problem):task.problem;
   const model=document.createElement('p');model.className='task-model';model.textContent=task.model;
-  const statistic=document.createElement('strong');statistic.className='task-r';statistic.textContent='r = '+task.r.toFixed(2);
+  const statistic=document.createElement('strong');statistic.className='task-r';statistic.innerHTML=mathHTML('\\(r = '+task.r.toFixed(2)+'\\)');
   const count=document.createElement('p');count.textContent=task.pairs.toLocaleString('en-US')+' '+uiText[locale].pairs+' '+Math.min(PUBLIC_TASK_POINTS,task.points.length)+' '+uiText[locale].point;
   list.append(heading,problem,model,statistic,count);
+  const stepBox=$('#taskStep');if(stepBox){const dlg=taskDialog(task);stepBox.replaceChildren(...(dlg?[dlg]:[]));}
+  drawTaskOverview(datasets,task);
   drawTaskLandscape(task);
   drawModelTimeline();
+}
+
+// One step of each task's agent: the prompt built from the current state f, the model's reply, and the
+// state g it is parsed into. Real prompts and transitions where the public data have them; otherwise a
+// constructed example that satisfies the task's rule, marked as illustrative.
+const TASK_DIALOGS = {"idea": {"real": true, "f": "param1 + param2 * (1 - exp(-param3 * log_v_k_nu))", "g": "param1 + param2 * tanh(param3 * log_v_k_nu)", "prompt": "Fit the nikuradse_2 data (PMLB). Reference expression:\n  param1 + param2 * (1 - exp(-param3 * log_v_k_nu))   (log10 MSE = −1.25)\nPropose a new candidate expression.", "note_zh": "状态是表达式；示例是数据中出现 451 次的真实转移。提示词是对 IdeaSearchFitter 提示的转述，不是原文；回复只显示解析出的表达式，原回复的其余文字从略。", "note_en": "States are expressions; the example is a real transition observed 451 times. The prompt paraphrases the IdeaSearchFitter prompt; it is not the original text. The reply shows only the parsed expression; the rest of the original reply is omitted."}, "gpt5nano_sum100": {"real": true, "f": "BUZZY", "g": "SAVORY", "prompt": "If the 26 English letters A … Z correspond to the numbers 1 … 26 respectively, then … An example word is BUZZY, whose letters add up to 100%. Please give me a new word whose letters add up to 100%. Only provide the word without any additional explanation.", "note_zh": "真实提示词（开头一段铺垫略去）与数据集中的真实转移。", "note_en": "The real prompt (its opening preamble shortened) and a real transition from the dataset."}, "five_letter_s": {"real": false, "f": "STORM", "g": "SHINE", "prompt": "Example: STORM. Give another five-letter English word that starts with S. Reply with the word only."}, "digit_sum_15": {"real": false, "f": "348", "g": "591", "prompt": "Example: 348 (3 + 4 + 8 = 15). Give another three-digit number whose digits sum to 15. Reply with the number only."}, "sum_div10": {"real": false, "f": "LION", "g": "APPLE", "prompt": "With A = 1, …, Z = 26, LION sums to 50. Give another English word whose letter sum is divisible by 10. Reply with the word only."}, "seven_letter_words": {"real": false, "f": "EXAMPLE", "g": "PICTURE", "prompt": "Example: EXAMPLE. Give another common English word with exactly seven letters. Reply with the word only."}, "four_digit_div7": {"real": false, "f": "1001", "g": "2023", "prompt": "Example: 1001 (= 7 × 143). Give another four-digit number divisible by 7. Reply with the number only."}};
+const TASK_THOUGHTS = {"idea": "The curve saturates in log_v_k_nu; 1 − exp(−x) and tanh(x) both rise and level off, so try tanh …", "gpt5nano_sum100": "S 19 + A 1 + V 22 + O 15 + R 18 + Y 25 = 100 …", "five_letter_s": "Five letters, first letter S: S-H-I-N-E …", "digit_sum_15": "Try 5 and 9: 5 + 9 = 14, so the last digit is 1 …", "sum_div10": "A 1 + P 16 + P 16 + L 12 + E 5 = 50, a multiple of 10 …", "seven_letter_words": "A common word with seven letters: P-I-C-T-U-R-E …", "four_digit_div7": "7 × 289 = 2023, four digits …"};
+function taskDialog(task){
+  // One step of the agent, laid out left to right: input (the prompt, with the state f marked inside it),
+  // the model, output (the reply, with the state g marked). The state is what the parser reads.
+  const d=TASK_DIALOGS[task.id]; if(!d)return null;
+  const en=locale==='en', box=document.createElement('div'); box.className='step-row';
+  const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const mark=(text,state,sym)=>{const e=esc(text),st=esc(state),tag=`<mark class="st st-${sym}">${st}</mark><sup class="st-tag st-tag-${sym}">${mathHTML('\\('+sym+'\\)')}</sup>`;const i=e.indexOf(st);return i<0?e:e.slice(0,i)+tag+e.slice(i+st.length);};
+  const tag=d.real?(task.id==='idea'?(en?' (paraphrased)':'（转述）'):''):(en?' (illustrative)':'（示意）');
+  box.innerHTML=
+    `<div class="step-box step-in"><span class="step-head">${en?'Input':'输入'}${tag}</span><p>${mark(d.prompt,d.f,'f')}</p></div>`+
+    `<div class="step-mid"><span>${esc(task.model)}</span><i aria-hidden="true"></i></div>`+
+    `<div class="step-box step-out"><span class="step-head">${en?'Output':'输出'}</span><div class="step-cot"><span class="cot-chip">${en?'Chain of thought':'思维链 · CoT'}</span><p class="step-think">⋯ ${esc(TASK_THOUGHTS[task.id]||'')}</p></div><p>${mark(d.g,d.g,'g')}</p></div>`;
+  return box;
+}
+// Every task is listed with what the agent is asked to do, so the reader does not
+// have to open the selector to learn what each name means. A card selects its task.
+function taskCard(item,selected,stats){
+  const card=document.createElement(stats?'button':'div');card.className='task-card'+(selected?' is-selected':'');
+  if(stats){card.type='button';card.addEventListener('click',()=>{selectedRobustTask=item.id;const s=$('#robustTaskSelect');if(s)s.value=item.id;drawCrossTask();});}
+  const name=document.createElement('b');name.textContent=item.label;
+  const what=document.createElement('span');what.textContent=locale==='en'?(taskProblemEnglish[item.id]||item.problem):item.problem;
+  card.append(name,what);
+  if(stats){const meta=document.createElement('small');meta.textContent=`${item.model} · r = ${item.r.toFixed(2)} · ${item.pairs.toLocaleString('en-US')} ${locale==='en'?'pairs':'对'}`;card.append(meta);}
+  return card;
+}
+function drawTaskOverview(datasets,task){
+  const box=$('#taskOverview');
+  if(box){
+    const h=document.createElement('h4');h.textContent=locale==='en'?`Tasks at a glance (${datasets.length})`:`任务一览（${datasets.length} 个）`;
+    const grid=document.createElement('div');grid.className='task-card-grid';
+    datasets.forEach(item=>grid.append(taskCard(item,item.id===task.id,true)));
+    box.replaceChildren(h,grid);
+  }
+  const pool=$('#timelineTaskList');
+  if(pool&&crossTaskData?.timeline?.length){
+    const ids=crossTaskData.timeline[0].tasks.map(t=>t.task),byId=Object.fromEntries(crossTaskData.tasks.map(t=>[t.id,t]));
+    const h=document.createElement('h4');h.textContent=locale==='en'?`Task pool for the model comparison (${ids.length}; every version is measured on all of them)`:`跨模型检验的任务池（${ids.length} 个，每个版本都在全部任务上测量）`;
+    const grid=document.createElement('div');grid.className='task-card-grid';
+    ids.filter(id=>byId[id]).forEach(id=>grid.append(taskCard(byId[id],false,false)));
+    pool.replaceChildren(h,grid);
+  }
 }
 function drawTaskLandscape(task){
   const canvas=$('#taskLandscapeCanvas'),status=$('#taskLandscapeStatus');
@@ -697,7 +808,7 @@ function drawTaskLandscape(task){
     pts.forEach(d=>{ctx.beginPath();ctx.arc(sx(d.mds),sy(d.potential),2.5,0,Math.PI*2);ctx.fillStyle='rgba(47,119,173,.34)';ctx.fill();});
     // Draw the guide last so it is legible where it passes through the state cloud.
     ctx.beginPath();guide.forEach((d,i)=>{const x=sx(d.mds),y=sy(d.potential);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.strokeStyle=palette.deep;ctx.lineWidth=2.5;ctx.stroke();
-    ctx.fillStyle='#58758e';ctx.font='12px monospace';ctx.textAlign='center';ctx.fillText('y',w/2,h-10);ctx.save();ctx.translate(22,h/2);ctx.rotate(-Math.PI/2);ctx.fillText('V',0,0);ctx.restore();
+    ctx.fillStyle='#58758e';ctx.font='12px monospace';ctx.textAlign='center';mtext(ctx,'y',w/2,h-10);ctx.save();ctx.translate(22,h/2);ctx.rotate(-Math.PI/2);mtext(ctx,'V',0,0);ctx.restore();
   };
   canvas.__draw();
   if(status)status.textContent=LANDSCAPE_UNAVAILABLE_TASK_IDS.has(task.id)
@@ -855,9 +966,9 @@ function drawBias(){
   canvas.__draw();
 }
 function pathNodesForBias(data,path){return path.map(id=>data.nodes.find(n=>n.id===id)).filter(Boolean);}
-function textCanvas(ctx,s,x,y,align='left'){ctx.fillStyle='#173b62';ctx.font='12px DM Mono, monospace';ctx.textAlign=align;ctx.fillText(s,x,y);}
+function textCanvas(ctx,s,x,y,align='left'){ctx.fillStyle='#173b62';ctx.font='12px DM Mono, monospace';ctx.textAlign=align;mtext(ctx,s,x,y);}
 function arrowCanvas(ctx,a,b,color,width=1,head=7){const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy);if(len<2)return;const ux=dx/len,uy=dy/len,x=b.x-ux*5,y=b.y-uy*5;line(ctx,a,b,color,width);ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-ux*head+uy*head*.6,y-uy*head-ux*head*.6);ctx.lineTo(x-ux*head-uy*head*.6,y-uy*head+ux*head*.6);ctx.fill();}
-function updateBias(){const input=$('#biasRange');if(!input||!graphData)return;biasState.control=Number(input.value);biasState.value=betaFromControl(biasState.control);biasState.trajectory=sampleTrajectory(biasState.value);$('#biasValue').textContent=Number.isFinite(biasState.value)?biasState.value.toFixed(2):'∞';$('#biasTemperature').textContent=biasState.value===0?'T=∞':Number.isFinite(biasState.value)?`T≈${(1/biasState.value).toFixed(3)}`:'T=0';$('#biasDomain').textContent=biasState.value===0?uiText[locale].biasNone:biasState.value===Infinity?uiText[locale].biasZero:uiText[locale].biasContinuous;const pathNodes=pathNodesForBias(graphData,biasState.trajectory),minLogMSE=pathNodes.length?Math.min(...pathNodes.map(n=>n.logMSE)):null;$('#biasHit').textContent=minLogMSE===null?'—':(10**minLogMSE).toPrecision(3);$('#biasCanvas')?.__draw();}
+function updateBias(){const input=$('#biasRange');if(!input||!graphData)return;biasState.control=Number(input.value);biasState.value=betaFromControl(biasState.control);biasState.trajectory=sampleTrajectory(biasState.value);$('#biasValue').textContent=Number.isFinite(biasState.value)?biasState.value.toFixed(2):'∞';setMath($('#biasTemperature'),biasState.value===0?'\\(T=\\infty\\)':Number.isFinite(biasState.value)?`\\(T\\approx ${(1/biasState.value).toFixed(3)}\\)`:'\\(T=0\\)');$('#biasDomain').textContent=biasState.value===0?uiText[locale].biasNone:biasState.value===Infinity?uiText[locale].biasZero:uiText[locale].biasContinuous;const pathNodes=pathNodesForBias(graphData,biasState.trajectory),minLogMSE=pathNodes.length?Math.min(...pathNodes.map(n=>n.logMSE)):null;$('#biasHit').textContent=minLogMSE===null?'—':(10**minLogMSE).toPrecision(3);$('#biasCanvas')?.__draw();}
 $('#biasRange')?.addEventListener('input',()=>{stopBias();updateBias();});
 function stopBias(){biasState.running=false;clearInterval(biasState.timer);const button=$('#biasPlay');if(button)button.textContent=uiText[locale].biasPlay;}
 function playBias(){if(!graphData)return;if(biasState.running){stopBias();return;}if(biasState.control>=BIAS_CONTROL_MAX){$('#biasRange').value=0;updateBias();}biasState.running=true;$('#biasPlay').textContent=uiText[locale].pause;biasState.timer=setInterval(()=>{const next=Math.min(BIAS_CONTROL_MAX,biasState.control+1);$('#biasRange').value=next;updateBias();if(next>=BIAS_CONTROL_MAX)stopBias();},90);}
