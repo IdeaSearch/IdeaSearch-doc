@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phase Diagram of Language Models</title>
+<meta name="description" content="语言模型的每一层是相图上的一个点。两个集体坐标定义相图；一个差分方程描述推理流如何逐层运动；训练把推理流拉进工作相。">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600&family=Noto+Serif+SC:wght@600&display=swap">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-nav" id="site-nav">
+<div class="nav-inner">
+<a class="brand" href="#top" aria-label="Back to top">
+<span class="brand-mark" aria-hidden="true"><img src="favicon.svg" alt=""></span>
+<span><b>PHASE DIAGRAM</b><small>physics of AI</small></span>
+</a>
+<nav class="nav-links" id="navLinks" aria-label="Contents">
+<a href="#definition"><span class="zh">定义</span><span class="en">Definition</span></a>
+<a href="#diagram"><span class="zh">相图</span><span class="en">Phase diagram</span></a>
+<a href="#dynamics"><span class="zh">动力学</span><span class="en">Dynamics</span></a>
+<a href="#training"><span class="zh">训练</span><span class="en">Training</span></a>
+<a href="#discussion"><span class="zh">讨论</span><span class="en">Discussion</span></a>
+</nav>
+<button class="menu-toggle" id="menuToggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">☰</button>
+<div class="language-select">
+<button class="language-toggle" id="languageToggle" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="选择语言 / Language">
+<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+</button>
+<div class="language-menu" id="languageMenu" role="menu" hidden>
+<p><span class="zh">选择语言</span><span class="en">Language</span></p>
+<button type="button" role="menuitemradio" data-locale="en">English</button>
+<button type="button" role="menuitemradio" data-locale="zh">中文</button>
+</div>
+</div>
+</div>
+</header>
+
+<main id="top">
+<!-- ============ HERO ============ -->
+<section class="hero section-shell">
+<div class="hero-copy">
+<p class="eyebrow">A phase diagram for training and inference in language models</p>
+<h1 class="zh">语言模型的每一层，<br><em>都是相图上的一个点。</em></h1>
+<h1 class="en">Every layer of a language model<br><em>is a point on a phase diagram.</em></h1>
+<p class="hero-lede zh">训练后的模型停在中央的工作相；未训练的网络大多漂向坍缩或噪声。训练把推理流拉进工作相——我们把它解释为一次相变。</p>
+<p class="hero-lede en">Trained models stay in a central working phase; most untrained networks drift toward collapse or noise. Training pulls the inference flow into the working phase — which we interpret as a phase transition.</p>
+<div class="hero-actions">
+<a class="button button-primary" href="https://arxiv.org/abs/2611.19848" target="_blank" rel="noopener"><span class="zh">阅读论文 ↗︎</span><span class="en">Read the paper ↗︎</span></a>
+</div>
+</div>
+<figure class="hero-art">
+<svg class="hero-svg" id="heroSvg" viewBox="0 0 640 440" role="img" aria-labelledby="hTitle hDesc">
+<title id="hTitle">Phase diagram schematic</title>
+<desc id="hDesc">Schematic: a red inference flow settles at the star in the central working phase; two blue flows pass by and drift away, one to the collapse corner and one to the noise corner.</desc>
+<defs>
+<radialGradient id="hBasin" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#f3c9bd" stop-opacity=".95"/><stop offset=".62" stop-color="#f7ddd5" stop-opacity=".7"/><stop offset="1" stop-color="#f7ddd5" stop-opacity="0"/></radialGradient>
+<radialGradient id="hNoise" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#cfe3f6" stop-opacity=".9"/><stop offset="1" stop-color="#cfe3f6" stop-opacity="0"/></radialGradient>
+<marker id="hA" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L11 6 L1 11 Z" fill="#9fb6c9"/></marker>
+<marker id="hB" viewBox="0 0 12 12" refX="8" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1 L11 6 L1 11 Z" fill="#245d96"/></marker>
+</defs>
+<path d="M60 395 H604" stroke="#9fb6c9" stroke-width="1.5" marker-end="url(#hA)"/>
+<path d="M60 395 V30" stroke="#9fb6c9" stroke-width="1.5" marker-end="url(#hA)"/>
+<text class="hg-ax" x="600" y="418" text-anchor="end">u</text>
+<text class="hg-ax" x="36" y="36" text-anchor="end">d<tspan font-size="13" dy="5">C</tspan></text>
+<ellipse cx="95" cy="70" rx="80" ry="54" fill="url(#hNoise)"/>
+<ellipse cx="560" cy="350" rx="80" ry="54" fill="url(#hNoise)"/>
+<ellipse cx="350" cy="214" rx="122" ry="96" fill="url(#hBasin)"/>
+<path class="h-band" d="M262 214 C 262 150, 318 128, 356 130 C 410 132, 444 168, 442 214 C 440 266, 400 300, 350 300 C 298 300, 262 270, 262 214 Z"/>
+<path class="h-band" d="M300 214 C 300 178, 326 162, 352 163 C 382 164, 404 186, 403 214 C 402 245, 380 264, 351 264 C 322 264, 300 247, 300 214 Z"/>
+<g id="heroFlows">
+<path class="h-flow h-unt" data-to="noise" d="M110 300 C 190 268, 270 236, 312 206 C 346 180, 300 120, 230 96 C 180 80, 130 74, 104 72"/>
+<path class="h-flow h-unt" data-to="collapse" d="M112 352 C 200 330, 280 290, 334 252 C 372 226, 420 250, 470 292 C 505 322, 530 340, 552 350"/>
+<path class="h-flow h-trn" d="M104 238 C 170 236, 240 240, 290 232 C 330 226, 352 210, 360 202 C 366 196, 356 206, 352 212"/>
+</g>
+<path d="M352 212 l2.6 5.6 6.1.6-4.6 4 1.4 6-5.5-3.1-5.5 3.1 1.4-6-4.6-4 6.1-.6z" fill="#efb83e" stroke="#102944" stroke-width="1.2" transform="translate(-176 -122) scale(1.5)"/>
+<text class="h-lbl h-lbl-w" x="350" y="330" text-anchor="middle"><tspan class="zh">工作相</tspan><tspan class="en">working phase</tspan></text>
+<text class="h-lbl h-lbl-d" x="100" y="38" text-anchor="middle"><tspan class="zh">噪声区</tspan><tspan class="en">noise</tspan></text>
+<text class="h-lbl h-lbl-d" x="566" y="392" text-anchor="middle"><tspan class="zh">坍缩区</tspan><tspan class="en">collapse</tspan></text>
+
+</svg>
+
+</figure>
+</section>
+
+<!-- ============ DIRECTORY ============ -->
+<nav class="directory-grid section-shell" aria-label="Sections">
+<a href="#definition"><span>01</span><h3><span class="zh">定义</span><span class="en">Definition</span></h3><svg class="directory-pictogram" viewBox="0 0 44 44"><circle cx="14" cy="28" r="2"/><circle cx="18" cy="24" r="2"/><circle cx="12" cy="22" r="2"/><circle class="icon-accent" cx="31" cy="14" r="5"/><path d="M16 25 L28 16"/></svg></a>
+<a href="#diagram"><span>02</span><h3><span class="zh">相图</span><span class="en">Phase diagram</span></h3><svg class="directory-pictogram" viewBox="0 0 44 44"><path d="M6 38 H40 M6 38 V4"/><ellipse class="icon-accent" cx="24" cy="21" rx="9" ry="7"/><path d="M10 30 C 16 26, 20 24, 24 21"/></svg></a>
+<a href="#dynamics"><span>03</span><h3><span class="zh">动力学</span><span class="en">Dynamics</span></h3><svg class="directory-pictogram" viewBox="0 0 44 44"><path d="M8 22 H17 M36 22 H27 M22 8 V17 M22 36 V27"/><circle class="icon-accent" cx="22" cy="22" r="3.5"/></svg></a>
+<a href="#training"><span>04</span><h3><span class="zh">训练</span><span class="en">Training</span></h3><svg class="directory-pictogram" viewBox="0 0 44 44"><path d="M6 32 H18 C 22 32, 22 12, 26 12 H38"/><circle class="icon-accent" cx="22" cy="22" r="3"/></svg></a>
+<a href="#discussion"><span>05</span><h3><span class="zh">讨论</span><span class="en">Discussion</span></h3><svg class="directory-pictogram" viewBox="0 0 44 44"><circle cx="11" cy="12" r="4"/><circle cx="11" cy="32" r="4"/><circle cx="33" cy="22" r="4"/><circle class="icon-accent" cx="22" cy="22" r="3"/><path d="M14 14 L19 20 M14 30 L19 24 M25 22 H29"/></svg></a>
+</nav>
+
+<!-- ============ 01 DEFINITION ============ -->
+<section class="section section-shell" id="definition">
+<div class="section-heading">
+<p class="eyebrow">01 / <span class="zh">定义</span><span class="en">Definition</span></p>
+<h2 class="zh">一层的表示，<br><em>用两个平行的坐标描述。</em></h2>
+<h2 class="en">Describe one layer's representation<br><em>with two parallel coordinates.</em></h2>
+<p class="zh">沿着残差流，Transformer 是一个沿深度演化的离散动力系统。在某一层，一篇文档的全部 token 表示是高维空间里的一团点云。我们对它只问两个互相独立的问题：文档之间区别有多大，文档本身有多复杂。</p>
+<p class="en">Through its residual stream, a Transformer is a discrete dynamical system along depth. At one layer, all token representations of a document form a cloud in a high-dimensional space. We ask it two independent questions only: how different documents are from one another, and how complex each document is in itself.</p>
+</div>
+
+<div class="fork-strip">
+<article class="fork-src"><span>TOKEN CLOUD</span><strong><span class="zh">一篇文档 = 一团点云</span><span class="en">A document = a cloud</span></strong><svg id="coordSvg" viewBox="0 0 520 380" role="img" aria-label="The offset delta of a document's mean and the covariance C of its tokens."></svg><p><span class="zh">$\delta$：这篇文档的均值相对其他文档均值（十字）的偏移；$C$：这篇文档 token 的协方差（虚线椭圆），刻画点云的形状。</span><span class="en">$\delta$: the offset of this document's mean from the mean of the other documents (cross); $C$: the covariance of this document's tokens (dashed ellipse), the shape of the cloud.</span></p></article>
+<div class="fork-pair">
+<article class="fork-u"><span>$u$ · DISTINGUISHABILITY</span><strong><span class="zh">文档之间区别有多大</span><span class="en">How different documents are</span></strong><b>$u = \dfrac{|\delta|^2}{\sqrt{\operatorname{tr} C^2}}$</b><p><span class="zh">文档均值的偏移 $\delta$，相对于文档内的散布。$u$ 越大，越容易仅凭一个 token 认出它来自哪篇文档。</span><span class="en">The offset $\delta$ of the document mean, relative to the spread within. The larger $u$, the easier it is to tell a token's document from that token alone.</span></p></article>
+<article class="fork-d"><span>$d_C$ · DIMENSION</span><strong><span class="zh">文档本身有多复杂</span><span class="en">How complex a document is</span></strong><b>$d_C = \dfrac{(\operatorname{tr} C)^2}{\operatorname{tr} C^2}$</b><p><span class="zh">文档内的变化有效地铺在多少个方向上：均匀铺在 $k$ 个方向时 $d_C = k$，介于 1 与嵌入维数 $D$ 之间。</span><span class="en">Over how many directions the variation within the document spreads: evenly over $k$ directions gives $d_C = k$, between 1 and the embedding dimension $D$.</span></p></article>
+</div>
+</div>
+
+<div class="panel">
+<div class="figure-heading"><div><span class="panel-kicker"><span class="zh">8 个训练后模型 · 96 篇长文档</span><span class="en">8 trained models · 96 long documents</span></span><h3><span class="zh">两条深度曲线合起来，就是平面上的一条轨迹</span><span class="en">Two depth curves make one trajectory on the plane</span></h3></div></div>
+<div class="turn-player">
+<button class="play-btn" id="depthPlay" type="button" aria-label="Play">▶</button>
+<input type="range" id="depthRange" min="0" max="1000" value="1000" aria-label="Relative depth">
+<output id="depthOut">1.00</output>
+</div>
+<div class="depth-grid">
+<div class="depth-stack"><div class="canvas-wrap"><canvas id="depthU" class="chart chart-depth" role="img" aria-label="u versus relative depth"></canvas></div><div class="canvas-wrap"><canvas id="depthD" class="chart chart-depth" role="img" aria-label="d_C versus relative depth"></canvas></div></div>
+<div class="canvas-wrap"><canvas id="depthPlane" class="chart chart-plane" role="img" aria-label="The same 8 trajectories on the (u, d_C) plane"></canvas></div>
+</div>
+<figcaption><span class="zh">左：$u$ 随深度先快后慢地上升，$d_C$ 先略升、后缓降；细线是各个模型，红线是中位数。右：把同一深度的 ($u$, $d_C$) 画成一个点，两条曲线就合成平面上的一条轨迹。8 条轨迹在深层聚到一起——下一节会看到，这里就是工作相。一个模型在全部文档上的轨迹，就是它的<b>推理流</b>。</span><span class="en">Left: $u$ rises fast, then slowly, with depth; $d_C$ rises slightly, then declines; thin lines are the models, the red line their median. Right: plotting ($u$, $d_C$) at the same depth as one point turns the two curves into one trajectory on the plane. The 8 trajectories gather in deep layers — the next section shows this is the working phase. A model's trajectories over all documents make up its <b>inference flow</b>.</span></figcaption>
+</div>
+</section>
+
+<!-- ============ 02 PHASE DIAGRAM ============ -->
+<section class="section section-shell" id="diagram">
+<div class="section-heading">
+<p class="eyebrow">02 / <span class="zh">相图</span><span class="en">Phase diagram</span></p>
+<h2 class="zh">工作相在中央，<br><em>漂移相通向四个极限。</em></h2>
+<h2 class="en">The working phase sits in the middle;<br><em>the drifting phase leads to four limits.</em></h2>
+<p class="zh">把训练后模型与未训练网络深层的状态放在一起，($u$, $d_C$) 平面分成两个区域：训练后模型停留的<b>工作相</b>，和未训练网络漂向的<b>漂移相</b>。漂移相通向四个极限，最常见的是左上的噪声区和右下的坍缩区。</p>
+<p class="en">Pool the deep-layer states of trained models and untrained networks, and the ($u$, $d_C$) plane splits into two regions: the <b>working phase</b> where trained models stay, and the <b>drifting phase</b> toward which untrained networks drift. The drifting phase leads to four limits; the most common are the noise region at top left and the collapse region at bottom right.</p>
+</div>
+
+<div class="panel chat-panel">
+<h3><span class="zh">同样三个问题，只有工作相正常回答</span><span class="en">Three questions: only the working phase answers normally</span></h3>
+<div class="chat-grid" id="chatGrid"></div>
+<figcaption><span class="zh">示意。噪声区（$u$ 小、$d_C$ 大）里文档之间分不开，不同的问题得到同一种回答；坍缩区（$u$ 大、$d_C$ 小）里每篇文档只剩一两个方向，回答陷入重复；工作相两者兼顾，回答正常。</span><span class="en">Schematic. In the noise region (small $u$, large $d_C$) documents cannot be told apart, so different questions get the same answer; in the collapse region (large $u$, small $d_C$) each document keeps only one or two directions, so answers fall into repetition; the working phase keeps both and answers normally.</span></figcaption>
+</div>
+
+<div class="panel probe-panel">
+<div class="figure-heading"><h3><span class="zh">拖动圆点，看点云怎么变</span><span class="en">Drag the dot and watch the clouds change</span></h3></div>
+<div class="chips" id="limitChips">
+<button class="chip is-active" type="button" data-go="pstar">$P^*$</button>
+<button class="chip" type="button" data-go="u0">$u \to 0$</button>
+<button class="chip" type="button" data-go="uinf">$u \to \infty$</button>
+<button class="chip" type="button" data-go="d1">$d_C \to 1$</button>
+<button class="chip" type="button" data-go="dD">$d_C \to D$</button>
+</div>
+<div class="chart-grid">
+<div class="canvas-wrap"><canvas id="probeMap" class="chart chart-probe" role="img" aria-label="Measured phase map with a draggable probe"></canvas></div>
+<div class="side-note">
+<div class="canvas-wrap"><canvas id="cloudView" class="cloud-view" role="img" aria-label="Token clouds of four documents at the probe position"></canvas></div>
+<p class="readout" id="probeRead"></p>
+<p id="probeText"></p>
+</div>
+</div>
+<figcaption><span class="zh">左：实测相图，拖动圆点或点上方的按钮。右：同一位置上四篇文档的点云（示意，一种颜色一篇文档）——$u$ 越大，点云彼此离得越远；$d_C$ 越大，每团点云越圆。</span><span class="en">Left: the measured diagram — drag the dot or press a button above. Right: the token clouds of four documents at that position (schematic, one colour per document) — the larger $u$, the farther apart the clouds; the larger $d_C$, the rounder each cloud.</span></figcaption>
+</div>
+
+<div class="panel">
+<div class="figure-heading"><div><span class="panel-kicker"><span class="zh">实测 · 156 个未训练网络 · 8 个训练后模型</span><span class="en">Measured · 156 untrained runs · 8 trained models</span></span><h3><span class="zh">推理流停在哪里，决定它的相</span><span class="en">Where an inference flow ends decides its phase</span></h3></div></div>
+<div class="tabs" id="flowTabs" role="tablist">
+<button class="tab is-active" type="button" data-show="both"><span class="zh">全部</span><span class="en">All</span></button>
+<button class="tab" type="button" data-show="small"><span class="zh">小初始化</span><span class="en">Small init</span></button>
+<button class="tab" type="button" data-show="large"><span class="zh">大初始化</span><span class="en">Large init</span></button>
+</div>
+<div class="turn-player">
+<button class="play-btn" id="kinPlay" type="button" aria-label="Play">▶</button>
+<input type="range" id="kinRange" min="0" max="1000" value="1000" aria-label="Relative depth">
+<output id="kinOut"></output>
+</div>
+<div class="canvas-wrap"><canvas id="flowMap" class="chart chart-flow" role="img" aria-label="Measured trajectories on the phase diagram, playable layer by layer"></canvas><div class="tip" id="flowTip"></div></div>
+<div class="live-metrics live-metrics-2">
+<div><span><span class="zh">训练后 · 在工作相内</span><span class="en">trained · in the working phase</span></span><strong id="kinT">–</strong></div>
+<div><span><span class="zh">未训练 · 在工作相内</span><span class="en">untrained · in the working phase</span></span><strong id="kinU">–</strong></div>
+</div>
+<figcaption><span class="zh">每条线是一个网络的文档中位轨迹，由浅到深是从第一层到最后一层；悬停可查看单个网络。按下播放，所有网络按相对深度逐层推进，下方实时统计此刻有多少网络在工作相内。训练后模型在相对深度约 0.11 处进入工作相，此后每层都留在里面。未训练网络中，小初始化尺度的大多走向坍缩区，大尺度的走向噪声区，与随机 Transformer 中的秩坍缩和熵坍缩一致。</span><span class="en">Each line is one network's document-median trajectory, light to dark from the first to the last layer; hover to see a single network. Press play and all networks advance layer by layer in relative depth, with a live count of how many are in the working phase. Trained models enter the working phase at relative depth about 0.11 and stay at every later layer. Among untrained networks, small initialization scales mostly lead to the collapse region and large ones to the noise region — consistent with rank collapse and entropy collapse in random Transformers.</span></figcaption>
+</div>
+<p class="key-line"><span class="zh">8 个训练后模型来自 5 个家族、4 家机构，全部进入并停在工作相；它们深层位置的离散度只有 0.085 dex，未训练组为 0.3–1.4 dex。</span><span class="en">The 8 trained models — 5 families, 4 institutions — all enter and stay in the working phase; their deep-layer positions scatter by only 0.085 dex, against 0.3–1.4 dex for untrained runs.</span></p>
+</section>
+
+<!-- ============ 03 DYNAMICS ============ -->
+<section class="section section-shell" id="dynamics">
+<div class="section-heading">
+<p class="eyebrow">03 / <span class="zh">动力学</span><span class="en">Dynamics</span></p>
+<h2 class="zh">运动趋势随状态而变：<br><em>一个差分方程决定多层的行为。</em></h2>
+<h2 class="en">The tendency to move depends on the state:<br><em>one difference equation sets the multilayer behavior.</em></h2>
+<p class="zh">只看位置分不清两种情况：有些未训练的推理流也会穿过工作相，只是不停留。所以我们把逐层的位移写成状态的函数——下一层怎么走，由这一层在哪里、上一层怎么走决定。</p>
+<p class="en">Position alone cannot tell two cases apart: some untrained flows also pass through the working phase, without staying. So we write the layer-to-layer step as a function of the state — how the next layer moves is set by where this layer is and how the previous one moved.</p>
+</div>
+
+<div class="bound-display">
+<div class="bound-big">$v_{t+1} = \alpha\, v_t + F(x_t) + \eta_t$</div>
+<div class="eq-terms"><span><b>$\alpha$</b><span class="zh">惯性：上一层的位移有多少带到下一层</span><span class="en">inertia: how much of the last step carries over</span></span><span><b>$F$</b><span class="zh">有效力：只由当前位置决定的平均位移</span><span class="en">effective force: the mean step set by the current position</span></span><span><b>$\eta$</b><span class="zh">涨落：其余自由度留下的无偏扰动</span><span class="en">fluctuation: the unbiased remainder</span></span></div>
+<p><span class="zh">$x_t$：第 $t$ 层在相图上的位置；$v_t = x_t - x_{t-1}$</span><span class="en">$x_t$: the position of layer $t$ on the diagram; $v_t = x_t - x_{t-1}$</span></p>
+</div>
+
+
+<div class="panel">
+<div class="figure-heading"><h3 id="dynTitle"></h3></div>
+<div class="tabs" id="dynTabs" role="tablist">
+<button class="tab is-active" type="button" data-group="untrained"><span class="zh">未训练</span><span class="en">Untrained</span></button>
+<button class="tab" type="button" data-group="trained"><span class="zh">训练后</span><span class="en">Trained</span></button>
+</div>
+<div class="chart-grid">
+<div class="canvas-wrap"><canvas id="forceMap" class="chart chart-force" role="img" aria-label="Measured effective force near P*, with a ring of states iterated layer by layer"></canvas></div>
+<div class="side-note">
+<p id="dynText"></p>
+<div class="turn-player">
+<button class="play-btn" id="dynPlay" type="button" aria-label="Play">▶</button>
+<input type="range" id="dynRange" min="0" max="48" value="0" aria-label="Layer">
+<output id="dynOut">t = 0</output>
+</div>
+</div>
+</div>
+<figcaption><span class="zh">放大 $P^*$ 附近。灰色箭头是实测的有效力；黑色箭头是 $P^*$ 处的两个特征方向，指向内为恢复、向外为发散。按下播放，圆圈上的 16 个状态按 $P^*$ 附近线性化的方程逐层前进（略去涨落）。</span><span class="en">Zoom around $P^*$. Grey arrows are the measured effective force; black arrows are the two eigendirections at $P^*$, inward restoring and outward diverging. Press play and the 16 states on the ring advance layer by layer under the equation linearized near $P^*$ (fluctuation dropped).</span></figcaption>
+</div>
+</section>
+
+<!-- ============ 04 TRAINING ============ -->
+<section class="section section-shell" id="training">
+<div class="section-heading">
+<p class="eyebrow">04 / <span class="zh">训练</span><span class="en">Training</span></p>
+<h2 class="zh">训练改写差分方程，<br><em>把推理流拉进工作相。</em></h2>
+<h2 class="en">Training rewrites the difference equation<br><em>and pulls the inference flow into the working phase.</em></h2>
+<p class="zh">以训练步数为控制参数，在 Pythia-1.4B 的 19 个检查点上测量同一个网络。按下播放，看深层状态怎样随训练进入工作相、惯性怎样随之改变。</p>
+<p class="en">With the training step as the control parameter, we measure the same network at 19 checkpoints of Pythia-1.4B. Press play to watch the deep-layer states enter the working phase and the inertia change with them.</p>
+</div>
+
+<div class="panel">
+<div class="figure-heading"><h3><span class="zh">第 256 到 512 步之间，推理流进入工作相</span><span class="en">Between steps 256 and 512 the flow enters the working phase</span></h3><span class="badge" id="trainBadge"></span></div>
+<div class="turn-player">
+<button class="play-btn" id="trainPlay" type="button" aria-label="Play">▶</button>
+<input type="range" id="trainRange" min="0" max="1000" value="0" aria-label="Training step">
+<output id="trainOut">step 0</output>
+</div>
+<div class="chart-grid train-grid">
+<div class="canvas-wrap"><canvas id="trainMap" class="chart chart-train" role="img" aria-label="Pythia-1.4B deep-layer median point over training"></canvas></div>
+<div class="minis">
+<canvas id="miniShare" class="mini-c" role="img" aria-label="Working-phase fraction versus training step"></canvas>
+<canvas id="miniAlpha" class="mini-c" role="img" aria-label="Inertia coefficient versus training step with lever-rule fit"></canvas>
+<canvas id="miniRate" class="mini-c" role="img" aria-label="Contraction rate versus training step"></canvas>
+</div>
+</div>
+<figcaption><span class="zh">左：大圆点是深层（后半段各层）状态的中位点，黑线是它在各检查点走过的路径，灰点是 96 篇文档各自的位置。右：工作相占比 $\varphi$、惯性 $\alpha$ 和收缩率 $-\ln\rho$，竖虚线是两相的分界，左侧小框是第 0 步。第 256 到 512 步之间，$\varphi$ 从几乎为零跳到绝大多数，$\alpha$ 同时骤降到 0 附近；收缩率进入工作相后转为正，但没有跳变。第 0 步的深层状态也在工作相里，惯性却是漂移相的值：推理流只是路过。</span><span class="en">Left: the large dot is the median of the deep-layer (late-half) states, the black line its path over the checkpoints, and grey dots the 96 documents. Right: the working fraction $\varphi$, the inertia $\alpha$ and the contraction rate $-\ln\rho$; the dashed line is the phase boundary and the small box on the left is step 0. Between steps 256 and 512, $\varphi$ jumps from almost zero to the vast majority and $\alpha$ drops to near 0; the contraction rate turns positive in the working phase, without a jump. At step 0 the deep-layer states also sit in the working phase, yet the inertia has its drifting value: the flow only passes through.</span></figcaption>
+</div>
+<div class="callout"><b><span class="zh">解读</span><span class="en">READING</span></b><p><span class="zh">工作相占比跳变的同时，惯性骤降到 0 附近——按两相比例加权（杠杆定则）即可再现。我们把这次转变解释为一次相变，与训练中已报道的突变一致，例如 grokking 中泛化的出现、induction head 的形成。</span><span class="en">As the working fraction jumps, the inertia drops to near 0 — reproduced by weighting the two phases by their fractions (the lever rule). We interpret this as a phase transition, consistent with abrupt changes reported during training, such as the onset of generalization in grokking and the formation of induction heads.</span></p></div>
+</section>
+
+<!-- ============ 05 DISCUSSION ============ -->
+<section class="section section-shell" id="discussion">
+<div class="section-heading">
+<p class="eyebrow">05 / <span class="zh">讨论</span><span class="en">Discussion</span></p>
+<h2 class="zh">已有的观察，<br><em>成为同一张图上的位置与变化。</em></h2>
+<h2 class="en">Existing observations<br><em>become positions and changes on one map.</em></h2>
+<p class="zh">相图用到的量和视角来自许多已有工作，相图上观察到的现象又把许多已有结果连在一起。下表把它们与本文对照，可下载为 CSV 或 BibTeX。</p>
+<p class="en">The quantities and perspectives of the phase diagram come from many existing works, and the phenomena seen on it connect many existing results. The table sets them against this paper and can be downloaded as CSV or BibTeX.</p>
+</div>
+<div class="panel">
+<div class="figure-heading"><h3><span class="zh">相图字典</span><span class="en">Phase-diagram dictionary</span></h3>
+<div class="dl-buttons"><a class="button button-quiet" href="assets/downloads/phase_diagram_dictionary.csv" download>CSV ↓</a><a class="button button-quiet" href="assets/downloads/phase_diagram_dictionary.bib" download>BibTeX ↓</a></div></div>
+<div class="table-wrap"><table class="dict-table" id="dictTable"></table></div>
+</div>
+<div class="source-links">
+<a href="https://arxiv.org/abs/2611.19848" target="_blank" rel="noopener"><span class="zh">论文 · arXiv:2611.19848 ↗︎</span><span class="en">Paper · arXiv:2611.19848 ↗︎</span></a>
+<a href="https://huggingface.co/datasets/Nondegeneracy/llm-phase-diagram-data" target="_blank" rel="noopener"><span class="zh">公开数据 · CC BY 4.0 ↗︎</span><span class="en">Public data · CC BY 4.0 ↗︎</span></a>
+<a href="https://github.com/SonnyNondegeneracy/llm-phase-diagram" target="_blank" rel="noopener"><span class="zh">分析代码 · MIT Licence ↗︎</span><span class="en">Analysis code · MIT Licence ↗︎</span></a>
+</div>
+</section>
+</main>
+
+<footer class="data-provenance section-shell">
+<b>PHASE DIAGRAM</b> · Song et al. <a href="https://arxiv.org/abs/2611.19848">arXiv:2611.19848</a> · <span class="zh">数据与方法可由论文、公开数据集及分析代码追溯。</span><span class="en">Data and methods are traceable to the paper, the public dataset and the analysis code.</span>
+</footer>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/auto-render.min.js"></script>
+<script src="assets/data/data.js"></script>
+<script src="assets/data/dictionary.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

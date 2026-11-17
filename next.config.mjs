@@ -11,6 +11,15 @@ const config = {
   turbopack: {
     root: fileURLToPath(new URL(".", import.meta.url)),
   },
+  async redirects() {
+    return [
+      {
+        source: "/phase-diagram",
+        destination: "/phase-diagram/index.html",
+        permanent: false,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

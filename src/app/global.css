@@ -367,7 +367,7 @@
 
   .physics-card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 26rem));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
     justify-content: start;
     gap: 1rem;
   }

@@ -28,6 +28,10 @@ const copy = {
     susceptibilityAbstract:
       "We treat a fixed LLM as a linear-response channel: world knowledge gives a head start, while hallucination limits the marginal return as the budget grows.",
     susceptibilityImageAlt: "Linear-response curves for information susceptibility in LLM agents",
+    phaseDiagramTitle: "A phase diagram for training and inference in language models",
+    phaseDiagramAbstract:
+      "Trained models stay in a central working phase; most untrained networks drift toward collapse or noise. Training pulls the inference flow into the working phase — which we interpret as a phase transition.",
+    phaseDiagramImageAlt: "Trained and untrained inference flows on the language model phase diagram",
   },
   cn: {
     subtitle: "智能的物理原理。",
@@ -47,6 +51,10 @@ const copy = {
     susceptibilityAbstract:
       "把固定 LLM 看作线性响应通道：世界知识带来先发优势，而幻觉限制预算增加后的边际收益。",
     susceptibilityImageAlt: "LLM 智能体信息响应率的线性响应曲线",
+    phaseDiagramTitle: "语言模型训练与推理的相图",
+    phaseDiagramAbstract:
+      "训练后的模型停在中央的工作相；未训练的网络大多漂向坍缩或噪声。训练把推理流拉进工作相——我们把它解释为一次相变。",
+    phaseDiagramImageAlt: "语言模型相图上的训练后与未训练推理流",
   },
 } as const;
 
@@ -94,6 +102,7 @@ export function PhysicsDirectory({
   const detailHref =
     locale === "cn" ? "/detailed-balance?lang=zh" : "/detailed-balance";
   const susceptibilityHref = "/susceptibility";
+  const phaseDiagramHref = `/phase-diagram?lang=${locale === "cn" ? "zh" : "en"}`;
 
   useEffect(() => {
     setMounted(true);
@@ -146,7 +155,7 @@ export function PhysicsDirectory({
         </div>
       </header>
 
-      <div className="physics-directory-content relative z-10 w-full max-w-6xl">
+      <div className="physics-directory-content relative z-10 mx-auto w-full max-w-6xl">
         <h1 className="physics-wordmark mb-12">
           <span className="physics-wordmark-mark" aria-hidden="true">
             <img src="/favicon.svg" alt="" />
@@ -234,6 +243,47 @@ export function PhysicsDirectory({
                 </a>
                 <a
                   href={susceptibilityHref}
+                  className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-foreground/20 bg-white/35 px-3 py-3 text-[11px] font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20 sm:px-5 sm:text-xs"
+                >
+                  {text.enter}
+                  <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+          </article>
+          <article id="phase-diagram-card" className="physics-project-card w-full max-w-[26rem] justify-self-start overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/10">
+            <a
+              href={phaseDiagramHref}
+              className="group relative block aspect-square bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2 dark:bg-slate-900"
+              aria-label={text.enter}
+            >
+              <img
+                src="/phase-diagram-cover.svg"
+                alt={text.phaseDiagramImageAlt}
+                className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.015]"
+              />
+            </a>
+            <div className="physics-project-card-body flex flex-col p-6 sm:p-7">
+              <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">{text.phaseDiagramTitle}</h2>
+              <ProjectAbstract
+                id="phase-diagram-abstract"
+                expandLabel={text.expandAbstract}
+                collapseLabel={text.collapseAbstract}
+              >
+                {text.phaseDiagramAbstract}
+              </ProjectAbstract>
+              <div className="mt-auto flex flex-nowrap gap-2 pt-6">
+                <a
+                  href="https://arxiv.org/abs/2611.19848"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-foreground px-3 py-3 text-[11px] font-semibold text-background transition hover:-translate-y-0.5 sm:px-5 sm:text-xs"
+                >
+                  {text.article}
+                  <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
+                </a>
+                <a
+                  href={phaseDiagramHref}
                   className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-foreground/20 bg-white/35 px-3 py-3 text-[11px] font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20 sm:px-5 sm:text-xs"
                 >
                   {text.enter}
