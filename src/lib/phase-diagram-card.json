@@ -1,0 +1,20 @@
+{
+  "slug": "phase-diagram",
+  "href": "/phase-diagram",
+  "image": "/phase-diagram/assets/hero-square.png",
+  "article": "https://arxiv.org/abs/2611.19848",
+  "en": {
+    "title": "A phase diagram for training and inference in language models",
+    "abstract": "Two collective coordinates place every layer of a language model on one phase diagram. Trained models settle in a central working phase, while most untrained networks drift toward collapse or noise; training pulls the inference flow into the working phase, which we interpret as a phase transition.",
+    "alt": "Schematic phase diagram: a trained inference flow settles in the central working phase, while untrained flows drift toward noise and collapse",
+    "read": "Read the article",
+    "enter": "Enter the website"
+  },
+  "zh": {
+    "title": "语言模型训练与推理的相图",
+    "abstract": "两个集体坐标把语言模型的每一层画到同一张相图上。训练后的模型停在中央的工作相，未训练的网络大多漂向坍缩或噪声；训练把推理流拉进工作相，我们把它解释为一次相变。",
+    "alt": "相图示意：训练后的推理流停在中央的工作相，未训练的推理流漂向噪声区和坍缩区",
+    "read": "阅读论文",
+    "enter": "进入网站"
+  }
+}

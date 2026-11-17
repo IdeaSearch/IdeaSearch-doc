@@ -1,3 +1,5 @@
+import phaseDiagramCard from "@/lib/phase-diagram-card.json";
+
 // Searchable public navigation only; never index local research files or the
 // separate IdeaSearch documentation collection into the Physics directory.
 const entries = [
@@ -27,7 +29,7 @@ export function physicsSearchResults(query: string, locale: string) {
       url: entry.id === "susceptibility"
         ? "/susceptibility"
         : entry.id === "phase-diagram"
-          ? `/phase-diagram?lang=${lang === "cn" ? "zh" : "en"}`
+          ? phaseDiagramCard.href
           : `${base}${entry.anchor ? `#${entry.anchor}` : ""}`,
     }));
 }

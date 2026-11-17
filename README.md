@@ -39,16 +39,16 @@ Edit formulas and page content in each site's `index.src.html`. Run
 step automatically. The math renderers use the bundled KaTeX without a network
 request. The Detailed Balance renderer also refreshes `MANIFEST.sha256`.
 
-`public/phase-diagram/` contains the unmodified v11.9 static delivery for
+`public/phase-diagram/` contains the unmodified v12.0 static delivery for
 [A phase diagram for training and inference in language models](https://arxiv.org/abs/2611.19848).
 It is published at `https://physics.ideasearch.cn/phase-diagram`; the entry redirects
-to `index.html` so all relative asset and download URLs work. This package needs
+to `/phase-diagram/`, which serves `index.html` so relative asset and download URLs work. This package needs
 no build or dependencies. Replace the complete directory with a verified future
 delivery rather than editing its files or running its data generators.
 
 The Physics homepage includes all three projects in English and Chinese. The
-phase-diagram cover is a separate asset, `public/phase-diagram-cover.svg`, based
-on the delivered schematic; the card and search result link to the selected language.
+phase-diagram card reads the delivered `card.json` from `src/lib/phase-diagram-card.json`.
+Its cover is the unchanged `public/phase-diagram/assets/hero-square.png` from the package.
 
 ## Editing Documentation
 

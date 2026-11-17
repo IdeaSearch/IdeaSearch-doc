@@ -1,4 +1,4 @@
-# A phase diagram for training and inference in language models · 网页（v11.9）
+# A phase diagram for training and inference in language models · 网页（v12.0）
 
 静态网站，不需要构建。入口是 `index.html`。本地预览：`python3 -m http.server 8000`。
 
@@ -49,3 +49,4 @@ v11.6 按参考网站的做法补回说明：每节一段 2–3 句的导语，�
 - `assets/data/data.js`：由 `tools/build_data.py` 从 `side_experiments/v12` 生成，与 v10 相同。
 - `assets/data/dictionary.js`、`assets/downloads/phase_diagram_dictionary.{csv,bib}`：`cd tools && python3 build_dictionary.py <phase_diagram-2 目录> ..`。
 - `favicon.svg` / `favicon.ico`：沿用 physics of AI 系列的图标。
+- `assets/hero-square.png`：physics.ideasearch.cn 首页项目卡的封面图（1800×1800），由首屏 SVG（英文标签）加上差分方程框组成，版式与 Susceptibility 的封面相同。重新生成方法：`python3 tools/make_cover.py` 生成 `cover_render.html`，在 900×900、设备像素比 2 下对 `#card` 截图即可。
