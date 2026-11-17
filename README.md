@@ -39,7 +39,7 @@ Edit formulas and page content in each site's `index.src.html`. Run
 step automatically. The math renderers use the bundled KaTeX without a network
 request. The Detailed Balance renderer also refreshes `MANIFEST.sha256`.
 
-`public/phase-diagram/` contains the unmodified v12.1 static delivery for
+`public/phase-diagram/` contains the unmodified v12.2 static delivery for
 [A phase diagram for training and inference in language models](https://arxiv.org/abs/2611.19848).
 It is published at `https://physics.ideasearch.cn/phase-diagram`; the entry redirects
 to `/phase-diagram/`, which serves `index.html` so relative asset and download URLs work. This package needs
