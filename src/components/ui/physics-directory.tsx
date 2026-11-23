@@ -204,7 +204,7 @@ export function PhysicsDirectory({
             <article key={project.id} id={`${project.id}-card`} className="physics-project-card w-full max-w-[26rem] justify-self-start overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-transparent">
               <a
                 href={project.href}
-                className={`group relative block aspect-square focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2${project.id === "detailed-balance" ? " bg-slate-100 dark:bg-slate-900" : ""}`}
+                className={`group relative block aspect-square focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2${project.id === "detailed-balance" ? " bg-white dark:bg-transparent" : ""}`}
                 aria-label={text.enter}
               >
                 <img
