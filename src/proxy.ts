@@ -1,5 +1,5 @@
 import { createI18nMiddleware } from "fumadocs-core/i18n/middleware";
-import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+import { type NextFetchEvent, type NextRequest, NextResponse } from "next/server";
 import { i18n } from "@/lib/i18n";
 import { isPhysicsHost } from "@/lib/physics-host";
 
@@ -9,11 +9,11 @@ export default function proxy(request: NextRequest, event: NextFetchEvent) {
   const url = new URL(request.url);
   const hostname = request.headers.get("host")?.split(":")[0];
 
-  if (url.pathname === "/phase-diagram") {
-    url.pathname = "/phase-diagram/";
+  if (url.pathname === "/phase-diagram" || url.pathname === "/potential-emergence") {
+    url.pathname += "/";
     return NextResponse.redirect(url, 308);
   }
-  if (url.pathname === "/phase-diagram/") {
+  if (url.pathname === "/phase-diagram/" || url.pathname === "/potential-emergence/") {
     return NextResponse.next();
   }
 
@@ -38,7 +38,8 @@ export const config = {
   // (`llms.mdx` carries the locale further down its own path), so without
   // excluding them the locale redirect sends them to `/<lang>/...`, which 404s.
   matcher: [
-    "/((?!api|og|llms\\.txt|llms-full\\.txt|llms\\.mdx|detailed-balance(?:/|$)|susceptibility(?:/|$)|phase-diagram(?:/|$)|_next/static|_next/image|favicon.ico|favicon.svg|logo.png).*)",
+    "/((?!api|og|llms\\.txt|llms-full\\.txt|llms\\.mdx|detailed-balance(?:/|$)|susceptibility(?:/|$)|phase-diagram(?:/|$)|potential-emergence(?:/|$)|_next/static|_next/image|favicon.ico|favicon.svg|logo.png).*)",
     "/phase-diagram",
+    "/potential-emergence",
   ],
 };

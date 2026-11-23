@@ -1,0 +1,16 @@
+{
+  "slug": "potential-emergence",
+  "href": "/potential-emergence/",
+  "image": "/potential-emergence/assets/hero-square.png",
+  "article": "https://arxiv.org/abs/2611.27618",
+  "en": {
+    "title": "Potential emergence in LLM agents: a statistical physics perspective",
+    "abstract": "Post-training organises LLM agents' choices along a global potential. With agent states as intermediate variables, a partition function on the state space predicts this process, tested in two agent tasks.",
+    "alt": "Post-training organises agent state transitions along a global potential"
+  },
+  "zh": {
+    "title": "LLM 智能体中的势能涌现：统计物理视角",
+    "abstract": "后训练让 LLM 智能体的选择服从一个全局势能。把智能体状态作为中间变量，状态空间上的一个配分函数预言了这一过程，并在两个智能体任务中得到检验。",
+    "alt": "后训练将智能体状态转移组织成全局势能的示意图"
+  }
+}

@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Potential Emergence in LLM Agents</title>
+<meta name="description" content="当奖励只取决于转移的终点，后训练会把 LLM 智能体的状态转移组织成一个全局势能；状态空间上的配分函数定量地预言了这个过程。">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="alternate icon" href="favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/katex/katex.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-nav" id="site-nav">
+<div class="nav-inner">
+<a class="brand" href="#top" aria-label="Back to top">
+<span class="brand-mark" aria-hidden="true"><img src="favicon.svg" alt=""></span>
+<span><b>POTENTIAL EMERGENCE</b><small>physics of AI</small></span>
+</a>
+<nav class="nav-links" id="navLinks" aria-label="Contents">
+<a href="#motivation"><span class="zh">动机</span><span class="en">Motivation</span></a>
+<a href="#theory"><span class="zh">理论</span><span class="en">Theory</span></a>
+<a href="#experiment"><span class="zh">实验</span><span class="en">Experiment</span></a>
+<a href="#controls"><span class="zh">检验</span><span class="en">Tests</span></a>
+<a href="#discussion"><span class="zh">讨论</span><span class="en">Discussion</span></a>
+</nav>
+<button class="menu-toggle" id="menuToggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">☰</button>
+<div class="language-select">
+<button class="language-toggle" id="languageToggle" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="选择语言 / Language">
+<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+</button>
+<div class="language-menu" id="languageMenu" role="menu" hidden>
+<p><span class="zh">选择语言</span><span class="en">Language</span></p>
+<button type="button" role="menuitemradio" data-locale="en">English</button>
+<button type="button" role="menuitemradio" data-locale="zh">中文</button>
+</div>
+</div>
+</div>
+</header>
+
+<main id="top">
+<!-- ============ HERO ============ -->
+<section class="hero section-shell">
+<div class="hero-copy">
+<p class="eyebrow">Potential emergence in LLM agents: a statistical physics perspective</p>
+<h1 class="zh">后训练把 LLM 智能体的选择<br><em>组织成一个全局势能。</em></h1>
+<h1 class="en">Post-training organises<br><em>LLM agents' choices along a potential.</em></h1>
+<p class="hero-lede zh">把智能体状态作为中间变量，后训练就可以被测量和预言。状态空间上的一个配分函数，预言了状态转移怎样被组织成一个全局势能。</p>
+<p class="hero-lede en">Treat agent states as intermediate variables, and post-training becomes measurable and predictable. One partition function on the state space predicts how transitions are organised into a global potential.</p>
+<div class="hero-actions">
+<a class="button button-primary" href="https://arxiv.org/abs/2611.27618" target="_blank" rel="noopener"><span class="zh">阅读论文 ↗︎</span><span class="en">Read the paper ↗︎</span></a>
+</div>
+</div>
+<figure class="hero-art hero-card">
+<svg class="hero-svg" xmlns="http://www.w3.org/2000/svg" viewBox="26 258 706 698" role="img" aria-labelledby="hTitle">
+    <defs>
+    <linearGradient id="paperWash" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#f7fbff"/></linearGradient>
+    <linearGradient id="planeWash" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".88"/><stop offset="1" stop-color="#eaf4ff" stop-opacity=".64"/></linearGradient>
+    <linearGradient id="goldWash" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff8dd"/><stop offset="1" stop-color="#fff3c9"/></linearGradient>
+    <linearGradient id="rLegend" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b7c8d2"/><stop offset="1" stop-color="#e6ad35"/></linearGradient>
+    <linearGradient id="rGrayBlueLegend" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#aeb9bd"/><stop offset="1" stop-color="#5f9dca"/></linearGradient>
+    <linearGradient id="rGrayYellowLegend" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d6dfe2"/><stop offset="1" stop-color="#efb83e"/></linearGradient>
+    <linearGradient id="balanceLegend" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c46062"/><stop offset="1" stop-color="#e4ae35"/></linearGradient>
+    <linearGradient id="balanceRedBlueLegend" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c95f63"/><stop offset="1" stop-color="#2f77ad"/></linearGradient>
+    <linearGradient id="balanceGrayYellowLegend" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d9e0e1"/><stop offset="1" stop-color="#f0bd3c"/></linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#1b4e7d" flood-opacity=".11"/></filter>
+    <marker id="arrowBlue" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 12 6 0 12Z" fill="#2f77ad"/></marker>
+    <marker id="axisPhiArrow" viewBox="0 0 18 18" refX="15" refY="9" markerWidth="14" markerHeight="14" orient="auto"><path d="M0 0 18 9 0 18Z" fill="#2f77ad"/></marker>
+    <marker id="arrowGold" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 12 6 0 12Z" fill="#efb83e"/></marker>
+    <marker id="arrowCoral" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 12 6 0 12Z" fill="#c65b55"/></marker>
+  </defs>
+    <title id="hTitle">From the initial model to post-training: transitions organise along a potential</title>
+    <path d="M132.0 820.0 L257.0 778.0 L382.0 736.0 L507.0 694.0" fill="none" stroke="#cfe1ef" stroke-width="1.1" stroke-dasharray="3 8" opacity=".5"/><path d="M332.0 820.0 L457.0 778.0 L582.0 736.0 L707.0 694.0" fill="none" stroke="#cfe1ef" stroke-width="1.1" stroke-dasharray="3 8" opacity=".5"/><path d="M280.0 400.0 L405.0 358.0 L530.0 316.0 L655.0 274.0" fill="none" stroke="#cfe1ef" stroke-width="1.1" stroke-dasharray="3 8" opacity=".5"/><path d="M80.0 400.0 L205.0 358.0 L330.0 316.0 L455.0 274.0" fill="none" stroke="#cfe1ef" stroke-width="1.1" stroke-dasharray="3 8" opacity=".5"/><path d="M132 820L332 820L280 400L80 400Z" fill="#d7dfe0" fill-opacity="0.600" stroke="#d7dfe0" stroke-opacity="0.18" stroke-width="1.00"/><path d="M126.9 665.9L298.9 665.9" stroke="#d7dfe0" stroke-width=".8" stroke-dasharray="2 8" opacity=".25"/><path d="M146.5 645.0 Q180.8 633.2 224.1 653.1" fill="none" stroke="#ba5d69" stroke-width="2.67" stroke-linecap="round" opacity="1.00"/><polygon points="224.1,653.1 211.3,652.1 215.0,644.0" fill="#ba5d69" stroke="#ba5d69" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M146.5 645.0 Q188.3 650.6 270.9 688.1" fill="none" stroke="#826884" stroke-width="2.14" stroke-linecap="round" opacity="1.00"/><polygon points="270.9,688.1 258.1,687.3 261.8,679.1" fill="#826884" stroke="#826884" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M146.5 645.0 Q178.3 639.1 187.9 660.0" fill="none" stroke="#a46274" stroke-width="1.76" stroke-linecap="round" opacity="1.00"/><polygon points="187.9,660.0 178.8,651.0 187.0,647.3" fill="#a46274" stroke="#a46274" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M192.0 669.1 Q227.0 662.7 271.3 687.4" fill="none" stroke="#716b8d" stroke-width="3.10" stroke-linecap="round" opacity="1.00"/><polygon points="271.3,687.4 258.6,685.5 263.0,677.6" fill="#716b8d" stroke="#716b8d" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M192.0 669.1 Q195.6 645.2 223.6 654.2" fill="none" stroke="#4174a4" stroke-width="1.71" stroke-linecap="round" opacity="1.00"/><polygon points="223.6,654.2 210.8,654.8 213.6,646.3" fill="#4174a4" stroke="#4174a4" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M192.0 669.1 Q169.3 675.1 152.5 653.0" fill="none" stroke="#a46274" stroke-width="1.08" stroke-linecap="round" opacity="1.00"/><polygon points="152.5,653.0 163.4,659.8 156.2,665.3" fill="#a46274" stroke="#a46274" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M233.1 657.3 Q239.6 656.8 272.5 685.7" fill="none" stroke="#3a75a8" stroke-width="1.74" stroke-linecap="round" opacity="1.00"/><polygon points="272.5,685.7 260.5,681.1 266.5,674.4" fill="#3a75a8" stroke="#3a75a8" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M233.1 657.3 Q229.6 645.2 200.5 663.8" fill="none" stroke="#4174a4" stroke-width="1.68" stroke-linecap="round" opacity="1.00"/><polygon points="200.5,663.8 208.2,653.5 213.0,661.1" fill="#4174a4" stroke="#4174a4" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M233.1 657.3 Q214.8 633.2 156.3 643.3" fill="none" stroke="#ba5d69" stroke-width="1.08" stroke-linecap="round" opacity="1.00"/><polygon points="156.3,643.3 167.4,636.8 168.9,645.7" fill="#ba5d69" stroke="#ba5d69" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M280.0 692.2 Q261.0 662.7 202.0 668.2" fill="none" stroke="#716b8d" stroke-width="2.13" stroke-linecap="round" opacity="1.00"/><polygon points="202.0,668.2 213.5,662.6 214.4,671.6" fill="#716b8d" stroke="#716b8d" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M280.0 692.2 Q273.6 656.8 243.1 657.1" fill="none" stroke="#3a75a8" stroke-width="1.54" stroke-linecap="round" opacity="1.00"/><polygon points="243.1,657.1 255.1,652.5 255.2,661.5" fill="#3a75a8" stroke="#3a75a8" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M280.0 692.2 Q222.3 650.6 156.5 645.8" fill="none" stroke="#826884" stroke-width="1.38" stroke-linecap="round" opacity="1.00"/><polygon points="156.5,645.8 168.8,642.2 168.1,651.1" fill="#826884" stroke="#826884" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><g opacity="1"><circle cx="146.5" cy="645.0" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="192.0" cy="669.1" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="233.1" cy="657.3" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="280.0" cy="692.2" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><path d="M257 778L457 778L405 358L205 358Z" fill="#e1dcbf" fill-opacity="0.600" stroke="#e1dcbf" stroke-opacity="0.28" stroke-width="1.45"/><path d="M251.9 623.9L423.9 623.9" stroke="#e1dcbf" stroke-width=".8" stroke-dasharray="2 8" opacity=".25"/><path d="M266.8 565.0 Q314.3 595.1 398.2 655.3" fill="none" stroke="#796989" stroke-width="2.29" stroke-linecap="round" opacity="1.00"/><polygon points="398.2,655.3 385.9,652.0 391.1,644.7" fill="#796989" stroke="#796989" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M266.8 565.0 Q304.7 586.9 316.8 635.1" fill="none" stroke="#986479" stroke-width="1.79" stroke-linecap="round" opacity="1.00"/><polygon points="316.8,635.1 309.5,624.5 318.2,622.3" fill="#986479" stroke="#986479" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M319.2 644.8 Q351.1 635.0 397.3 656.9" fill="none" stroke="#5f6e96" stroke-width="3.10" stroke-linecap="round" opacity="1.00"/><polygon points="397.3,656.9 384.6,655.8 388.4,647.7" fill="#5f6e96" stroke="#5f6e96" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M319.2 644.8 Q322.3 616.7 349.5 622.6" fill="none" stroke="#5c6f97" stroke-width="1.82" stroke-linecap="round" opacity="1.00"/><polygon points="349.5,622.6 336.8,624.5 338.7,615.7" fill="#5c6f97" stroke="#5c6f97" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M319.2 644.8 Q270.7 586.9 268.5 574.9" fill="none" stroke="#986479" stroke-width="1.07" stroke-linecap="round" opacity="1.00"/><polygon points="268.5,574.9 275.1,585.9 266.2,587.5" fill="#986479" stroke="#986479" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M359.3 624.7 Q365.8 624.9 398.9 654.5" fill="none" stroke="#3276ab" stroke-width="2.01" stroke-linecap="round" opacity="1.00"/><polygon points="398.9,654.5 387.0,649.9 393.0,643.2" fill="#3276ab" stroke="#3276ab" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M359.3 624.7 Q356.3 616.7 327.2 638.7" fill="none" stroke="#5c6f97" stroke-width="1.69" stroke-linecap="round" opacity="1.00"/><polygon points="327.2,638.7 334.1,627.9 339.5,635.1" fill="#5c6f97" stroke="#5c6f97" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M406.4 661.2 Q385.1 635.0 329.1 643.3" fill="none" stroke="#5f6e96" stroke-width="2.41" stroke-linecap="round" opacity="1.00"/><polygon points="329.1,643.3 340.3,637.1 341.6,646.0" fill="#5f6e96" stroke="#5f6e96" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M406.4 661.2 Q399.8 624.9 369.3 624.8" fill="none" stroke="#3276ab" stroke-width="1.79" stroke-linecap="round" opacity="1.00"/><polygon points="369.3,624.8 381.3,620.3 381.3,629.3" fill="#3276ab" stroke="#3276ab" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M406.4 661.2 Q348.3 595.1 276.2 568.5" fill="none" stroke="#796989" stroke-width="1.33" stroke-linecap="round" opacity="1.00"/><polygon points="276.2,568.5 289.0,568.4 285.9,576.9" fill="#796989" stroke="#796989" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><g opacity="1"><circle cx="266.8" cy="565.0" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="319.2" cy="644.8" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="359.3" cy="624.7" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="406.4" cy="661.2" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><path d="M382 736L582 736L530 316L330 316Z" fill="#f5d77b" fill-opacity="0.600" stroke="#f5d77b" stroke-opacity="0.38" stroke-width="1.90"/><path d="M376.9 581.9L548.9 581.9" stroke="#f5d77b" stroke-width=".8" stroke-dasharray="2 8" opacity=".25"/><path d="M381.2 437.2 Q438.4 524.7 528.8 640.4" fill="none" stroke="#3177ac" stroke-width="2.12" stroke-linecap="round" opacity="1.00"/><polygon points="528.8,640.4 517.9,633.8 525.0,628.2" fill="#3177ac" stroke="#3177ac" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M381.2 437.2 Q428.9 517.0 446.3 622.9" fill="none" stroke="#736b8c" stroke-width="1.72" stroke-linecap="round" opacity="1.00"/><polygon points="446.3,622.9 439.9,611.8 448.8,610.4" fill="#736b8c" stroke="#736b8c" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M447.9 632.8 Q477.1 622.6 525.8 644.3" fill="none" stroke="#4473a3" stroke-width="3.10" stroke-linecap="round" opacity="1.00"/><polygon points="525.8,644.3 513.1,643.5 516.7,635.3" fill="#4473a3" stroke="#4473a3" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M447.9 632.8 Q450.8 603.1 477.7 607.7" fill="none" stroke="#656d93" stroke-width="1.87" stroke-linecap="round" opacity="1.00"/><polygon points="477.7,607.7 465.2,610.1 466.7,601.2" fill="#656d93" stroke="#656d93" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M487.6 609.4 Q494.3 610.8 527.6 641.5" fill="none" stroke="#3776a9" stroke-width="2.26" stroke-linecap="round" opacity="1.00"/><polygon points="527.6,641.5 515.8,636.7 521.9,630.1" fill="#3776a9" stroke="#3776a9" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M487.6 609.4 Q484.8 603.1 455.7 626.5" fill="none" stroke="#656d93" stroke-width="1.74" stroke-linecap="round" opacity="1.00"/><polygon points="455.7,626.5 462.2,615.5 467.9,622.5" fill="#656d93" stroke="#656d93" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M535.0 648.3 Q511.1 622.6 457.8 631.2" fill="none" stroke="#4473a3" stroke-width="2.73" stroke-linecap="round" opacity="1.00"/><polygon points="457.8,631.2 468.9,624.9 470.4,633.7" fill="#4473a3" stroke="#4473a3" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M535.0 648.3 Q528.3 610.8 497.6 609.7" fill="none" stroke="#3776a9" stroke-width="2.01" stroke-linecap="round" opacity="1.00"/><polygon points="497.6,609.7 509.8,605.7 509.4,614.7" fill="#3776a9" stroke="#3776a9" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M535.0 648.3 Q472.4 524.7 388.4 444.1" fill="none" stroke="#3177ac" stroke-width="1.21" stroke-linecap="round" opacity="1.00"/><polygon points="388.4,444.1 400.2,449.2 393.9,455.7" fill="#3177ac" stroke="#3177ac" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><g opacity="1"><circle cx="381.2" cy="437.2" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="447.9" cy="632.8" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="487.6" cy="609.4" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="535.0" cy="648.3" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><path d="M507 694L707 694L655 274L455 274Z" fill="#ffd45a" fill-opacity="0.600" stroke="#ffd45a" stroke-opacity="0.48" stroke-width="2.35"/><path d="M501.9 539.9L673.9 539.9" stroke="#ffd45a" stroke-width=".8" stroke-dasharray="2 8" opacity=".25"/><path d="M498.6 333.9 Q605.0 492.0 658.1 621.2" fill="none" stroke="#4b729f" stroke-width="4.95" stroke-linecap="round" opacity="1.00"/><polygon points="658.1,621.2 645.7,606.8 656.8,602.2" fill="#4b729f" stroke="#4b729f" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M498.6 333.9 Q512.6 461.1 569.0 591.4" fill="none" stroke="#4174a4" stroke-width="3.39" stroke-linecap="round" opacity="1.00"/><polygon points="569.0,591.4 556.4,577.3 567.4,572.5" fill="#4174a4" stroke="#4174a4" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M574.6 604.3 Q595.0 627.2 649.5 632.7" fill="none" stroke="#3376ab" stroke-width="6.90" stroke-linecap="round" opacity="1.00"/><polygon points="649.5,632.7 631.0,636.9 632.2,624.9" fill="#3376ab" stroke="#3376ab" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><path d="M615.1 587.4L653.4 624.4" fill="none" stroke="#4773a1" stroke-width="5.50" stroke-linecap="round" opacity="1.00"/><polygon points="653.4,624.4 636.2,616.2 644.6,607.6" fill="#4773a1" stroke="#4773a1" stroke-width=".7" stroke-linejoin="round" opacity="1.00"/><g opacity="1"><circle cx="498.6" cy="333.9" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="574.6" cy="604.3" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="615.1" cy="587.4" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><g opacity="1"><circle cx="663.4" cy="634.1" r="8" fill="#ffffff" fill-opacity="1" stroke="#17212b" stroke-width="1.8"/></g><path d="M47.8 366.4L108.2 853.6" fill="none" stroke="#2f77ad" stroke-width="2.8" stroke-linecap="round"/><polygon points="108.2,853.6 95.3,831.0 115.1,828.6" fill="#2f77ad"/><text x="39.8" y="350.4" fill="#2f77ad" font-family="DejaVu Sans" font-size="22" font-weight="700" letter-spacing="1.4">HIGH</text><path d="M5.041096-6.625156C5.070984-6.744707 5.070984-6.764633 5.070984-6.774595C5.070984-6.914072 4.931507-6.914072 4.841843-6.914072C4.64259-6.914072 4.632628-6.894147 4.582814-6.684932L4.084682-4.712329C4.044832-4.582814 4.044832-4.572852 4.034869-4.562889C4.014944-4.552927 4.004981-4.542964 3.835616-4.533001C1.783313-4.41345 .557908-2.998755 .557908-1.733499C.557908-.667497 1.414695 .059776 2.879203 .109589L2.450809 1.872976C2.450809 2.012453 2.590286 2.012453 2.67995 2.012453C2.839352 2.012453 2.889166 2.002491 2.929016 1.833126L3.277709 .438356C3.347447 .14944 3.35741 .139477 3.367372 .129514C3.387298 .119552 3.407223 .119552 3.566625 .109589C5.589041-.009963 6.844334-1.404732 6.844334-2.689913C6.844334-3.755915 5.987547-4.483188 4.523039-4.533001L5.041096-6.625156ZM2.968867-.249066C2.11208-.298879 1.58406-.667497 1.58406-1.474471C1.58406-1.753425 1.693649-2.669988 2.211706-3.327522C2.560399-3.765878 3.138232-4.104608 3.955168-4.174346L2.968867-.249066ZM4.433375-4.174346C5.290162-4.124533 5.818182-3.755915 5.818182-2.948941C5.818182-2.669988 5.708593-1.753425 5.190535-1.09589C4.841843-.657534 4.26401-.318804 3.447073-.249066L4.433375-4.174346Z" transform="translate(111.8 350.4) scale(2.25 2.25)" fill="#2f77ad"/><text x="98.2" y="883.6" fill="#2f77ad" font-family="DejaVu Sans" font-size="22" font-weight="700" letter-spacing="1.4">LOW</text><path d="M5.041096-6.625156C5.070984-6.744707 5.070984-6.764633 5.070984-6.774595C5.070984-6.914072 4.931507-6.914072 4.841843-6.914072C4.64259-6.914072 4.632628-6.894147 4.582814-6.684932L4.084682-4.712329C4.044832-4.582814 4.044832-4.572852 4.034869-4.562889C4.014944-4.552927 4.004981-4.542964 3.835616-4.533001C1.783313-4.41345 .557908-2.998755 .557908-1.733499C.557908-.667497 1.414695 .059776 2.879203 .109589L2.450809 1.872976C2.450809 2.012453 2.590286 2.012453 2.67995 2.012453C2.839352 2.012453 2.889166 2.002491 2.929016 1.833126L3.277709 .438356C3.347447 .14944 3.35741 .139477 3.367372 .129514C3.387298 .119552 3.407223 .119552 3.566625 .109589C5.589041-.009963 6.844334-1.404732 6.844334-2.689913C6.844334-3.755915 5.987547-4.483188 4.523039-4.533001L5.041096-6.625156ZM2.968867-.249066C2.11208-.298879 1.58406-.667497 1.58406-1.474471C1.58406-1.753425 1.693649-2.669988 2.211706-3.327522C2.560399-3.765878 3.138232-4.104608 3.955168-4.174346L2.968867-.249066ZM4.433375-4.174346C5.290162-4.124533 5.818182-3.755915 5.818182-2.948941C5.818182-2.669988 5.708593-1.753425 5.190535-1.09589C4.841843-.657534 4.26401-.318804 3.447073-.249066L4.433375-4.174346Z" transform="translate(163.2 883.6) scale(2.25 2.25)" fill="#2f77ad"/><path d="M150.0 910.0H376.0" fill="none" stroke="#2f77ad" stroke-width="2.8" stroke-linecap="round"/><polygon points="400.0,910.0 376.0,901.0 376.0,919.0" fill="#2f77ad"/><text x="150.0" y="940.0" fill="#2f77ad" font-family="DejaVu Sans" font-size="18" font-weight="700" letter-spacing=".7">LOW R</text><text x="400.0" y="940.0" text-anchor="end" fill="#2f77ad" font-family="DejaVu Sans" font-size="18" font-weight="700" letter-spacing=".7">HIGH R</text><text x="232.0" y="802.0" text-anchor="middle" fill="#173b62" font-family="DM Sans,Noto Sans SC,sans-serif" font-size="18" font-weight="700" letter-spacing="1.1"><tspan class="zh">初始模型</tspan><tspan class="en">INITIAL MODEL</tspan></text><text x="607.0" y="676.0" text-anchor="middle" fill="#173b62" font-family="DM Sans,Noto Sans SC,sans-serif" font-size="18" font-weight="700" letter-spacing="1.1"><tspan class="zh">后训练</tspan><tspan class="en">POST-TRAINING</tspan></text>
+  </svg>
+</figure>
+</section>
+
+<!-- ============ DIRECTORY ============ -->
+<nav class="directory-grid section-shell" aria-label="Sections">
+<a href="#motivation"><span>01</span><h3><span class="zh">动机</span><span class="en">Motivation</span></h3><svg class="directory-pictogram" viewBox="0 0 44 44"><circle cx="9" cy="22" r="5"/><circle class="icon-accent" cx="35" cy="22" r="5"/><path d="M15 18 H29 M29 26 H15"/><path d="m25 15 4 3-4 3 M19 23l-4 3 4 3"/></svg></a>
+<a href="#theory"><span>02</span><h3><span class="zh">理论</span><span class="en">Theory</span></h3><svg class="directory-pictogram" viewBox="0 0 44 44"><path d="M5 10 C 12 34, 18 38, 22 38 C 27 38, 33 30, 39 12"/><circle class="icon-accent" cx="22" cy="38" r="3"/><circle cx="9" cy="20" r="2.5"/><circle cx="35" cy="22" r="2.5"/></svg></a>
+<a href="#experiment"><span>03</span><h3><span class="zh">实验</span><span class="en">Experiment</span></h3><svg class="directory-pictogram" viewBox="0 0 44 44"><path d="M6 6 V38 H40"/><path d="M10 33 C 18 32, 24 26, 38 12"/><circle class="icon-accent" cx="30" cy="19" r="2.5"/><circle cx="18" cy="30" r="2.5"/></svg></a>
+<a href="#controls"><span>04</span><h3><span class="zh">检验</span><span class="en">Tests</span></h3><svg class="directory-pictogram" viewBox="0 0 44 44"><path d="M6 38 H40"/><path d="M10 34 V22 M18 34 V14 M26 34 V18 M34 34 V10"/><circle class="icon-accent" cx="34" cy="10" r="2.5"/></svg></a>
+<a href="#discussion"><span>05</span><h3><span class="zh">讨论</span><span class="en">Discussion</span></h3><svg class="directory-pictogram" viewBox="0 0 44 44"><circle cx="22" cy="22" r="11"/><path d="M22 6 V11 M22 33 V38 M6 22 H11 M33 22 H38"/><circle class="icon-accent" cx="22" cy="22" r="3"/></svg></a>
+</nav>
+
+<!-- ============ 01 MOTIVATION ============ -->
+<section class="section section-shell" id="motivation">
+<div class="section-heading">
+<p class="eyebrow">01 / <span class="zh">动机</span><span class="en">Motivation</span></p>
+<h2 class="zh">智能体在状态之间选择，<br><em>这些选择顺着一个势能。</em></h2>
+<h2 class="en">Agents choose between states,<br><em>and their choices follow a potential.</em></h2>
+<p class="zh">放进智能体框架后，语言模型的每一次输出都是一次状态转移：下一个要运行的测试，下一个推理步骤。前作在多种语言模型中测到，这些转移近似满足细致平衡，由一个全局势能主导。这个势能从哪里来？本文给出后训练这一机制，并定量检验。</p>
+<p class="en">Inside an agent framework, every output of a language model is a transition between states: the next test to run, the next reasoning step. Earlier work showed, across many language models, that these transitions nearly satisfy detailed balance and are governed by a global potential. Where does the potential come from? We give post-training as a mechanism and test it quantitatively.</p>
+</div>
+<div class="panel">
+<div class="figure-heading"><h3><span class="zh">按势能排列状态，转移几乎都指向低处</span><span class="en">Ordered by potential, transitions point almost always downhill</span></h3></div>
+<div class="prior-grid"><img class="prior-figure" src="assets/figs/detailed-balance-figure2.png" width="810" height="450" alt="Transition graph from the earlier work, states ordered by measured potential">
+<figcaption><span class="zh">前作中的一个任务：每个状态是一个字母序号之和为 100 的英文单词，模型读入一个词，再给出另一个。按测得的势能自上而下排列状态，箭头上的数字是转移概率，几乎所有转移都走向更低的势能。</span><span class="en">A task from the earlier work: each state is an English word whose letter values sum to 100; the model reads one word and produces another. With states ordered from top to bottom by measured potential, the numbers on the arrows are transition probabilities, and almost every transition goes to a lower potential.</span></figcaption>
+<a class="prior-card" href="https://doi.org/10.1103/kwx6-clqd" target="_blank" rel="noopener"><span class="disc-tag"><span class="zh">图源与前作 · PRX INTELLIGENCE 2026</span><span class="en">FIGURE SOURCE · PRX INTELLIGENCE 2026</span></span><strong>Detailed balance in large-language-model-driven agents ↗︎</strong><span class="prior-card-sub"><span class="zh">在 LLM 智能体中测到细致平衡与全局势能</span><span class="en">Detailed balance and a global potential measured in LLM agents</span></span></a></div>
+</div>
+</section>
+
+<!-- ============ 02 THEORY ============ -->
+<section class="section section-shell" id="theory">
+<div class="section-heading">
+<p class="eyebrow">02 / <span class="zh">理论</span><span class="en">Theory</span></p>
+<h2 class="zh">后训练如同退火：<br><em>温度越低，转移越受势能支配。</em></h2>
+<h2 class="en">Post-training works like annealing:<br><em>the lower the temperature, the more a potential governs transitions.</em></h2>
+<p class="zh">在固定的状态空间上，KL 正则化后训练的理想结果，是把初始模型的转移按奖励做指数重加权。这正是统计物理里的配分函数：KL 系数 $\beta$ 是温度，负奖励是能量；每训练一轮，温度降低一级。</p>
+<p class="en">On a fixed state space, the ideal outcome of KL-regularised post-training reweights the initial model's transitions exponentially by reward. This is a partition function from statistical physics: the KL coefficient $\beta$ is a temperature and negative reward is an energy; each round of training lowers the temperature by one step.</p>
+</div>
+
+<div class="bound-display">
+<div class="bound-big">$T_{ij}(\beta)=\dfrac{Q_{ij}\,e^{R_{ij}/\beta}}{Z_i(\beta)}$</div>
+<div class="eq-terms">
+<span><b>$Q_{ij}$</b><span class="zh">初始模型从状态 $i$ 转到 $j$ 的概率</span><span class="en">the initial model's probability of moving from $i$ to $j$</span></span>
+<span><b>$R_{ij}$</b><span class="zh">这次转移得到的奖励</span><span class="en">the reward of this transition</span></span>
+<span><b>$\beta$</b><span class="zh">温度：KL 正则的强度</span><span class="en">temperature: the strength of the KL penalty</span></span>
+<span><b>$Z_i$</b><span class="zh">配分函数，使每一行归一</span><span class="en">partition function, normalising each row</span></span>
+</div>
+</div>
+
+<div class="bound-display">
+<p class="bound-lead"><span class="zh">常见的奖励只看转移在哪里结束，与路径无关；这部分对所有来源相同，记为终点奖励 $u_j$。低温下，正反向转移之比由一个全局势能决定：</span><span class="en">Common rewards depend only on where a transition ends, not on the path; this part is the same for all sources and is written as the destination reward $u_j$. At low temperature the ratio of forward and reverse transitions is set by one global potential:</span></p>
+<div class="bound-pair"><div class="bound-big">$\beta\log\dfrac{T_{ij}}{T_{ji}}\;\xrightarrow{\beta\to0}\;\Phi_i-\Phi_j$</div><div class="bound-big">$\Phi_i=-u_i-\max_{k\in\mathcal L(i)}u_k$</div></div>
+<div class="eq-terms eq-terms-2">
+<span><b>$u_i$</b><span class="zh">停在状态 $i$ 的奖励</span><span class="en">the reward for ending at state $i$</span></span>
+<span><b>$\max_{k\in\mathcal L(i)} u_k$</b><span class="zh">从 $i$ 一步能到的最高奖励</span><span class="en">the highest reward reachable from $i$ in one step</span></span>
+</div>
+</div>
+<details class="technical-note">
+<summary><span class="zh">语义粗粒化的详细推导过程</span><span class="en">Detailed derivation of semantic coarse-graining</span></summary>
+<h4><span class="zh">链式分解</span><span class="en">Chain-rule decomposition</span></h4>
+<p><span class="zh">将轨迹拆成目标状态和状态内的条件分布，token级 KL 分解为：</span><span class="en">Split a trajectory into its target state and its within-state conditional distribution. The token-level KL decomposes as:</span></p>
+<div class="equation">$$D_{\mathrm{KL}}(p_i\Vert p_{\mathrm{ref},i})=D_{\mathrm{KL}}(T_i\Vert Q_i)+\sum_jT_{ij}D_{\mathrm{KL}}(p_i(\cdot\mid s_i(y)=j)\Vert p_{\mathrm{ref},i}(\cdot\mid s_i(y)=j))$$</div>
+<p><span class="zh">根据 Gibbs 不等式，每个条件 KL 非负：</span><span class="en">By Gibbs' inequality, every conditional KL is non-negative:</span></p>
+<div class="equation">$$D_{\mathrm{KL}}(p_i(\cdot\mid s_i(y)=j)\Vert p_{\mathrm{ref},i}(\cdot\mid s_i(y)=j))\ge0\quad\Longrightarrow\quad D_{\mathrm{KL}}(p_i\Vert p_{\mathrm{ref},i})\ge D_{\mathrm{KL}}(T_i\Vert Q_i)$$</div>
+<p><span class="zh">当且仅当每个有概率的语义类内部训练与参考条件分布相同时取等号。</span><span class="en">Equality holds if and only if the trained and reference conditional distributions agree within every semantic class with non-zero probability.</span></p>
+<h4><span class="zh">语义 KL 散度</span><span class="en">Semantic KL divergence</span></h4>
+<p><span class="zh">固定来源 $i$，记训练分布为 $p_i(y)=p_\theta(y\mid x_i)$，参考分布为 $p_{\mathrm{ref},i}(y)=p_{\mathrm{ref}}(y\mid x_i)$。按解析规则将输出归入目的状态 $j$，得到：</span><span class="en">For a fixed source $i$, let the trained distribution be $p_i(y)=p_\theta(y\mid x_i)$ and the reference distribution be $p_{\mathrm{ref},i}(y)=p_{\mathrm{ref}}(y\mid x_i)$. Apply the parser to assign each output to target $j$:</span></p>
+<div class="equation">$$D_{\mathrm{KL}}(T_i\Vert Q_i)\equiv\sum_jT_{ij}\log\frac{T_{ij}}{Q_{ij}}$$</div>
+<p><span class="zh">这个 KL 比较目的状态的概率；同一状态内部不同轨迹的差异由条件 KL 描述。</span><span class="en">This KL compares target-state probabilities. The conditional KL describes differences between trajectories within one state.</span></p>
+<h4><span class="zh">语义奖励</span><span class="en">Semantic reward</span></h4>
+<p><span class="zh">若同一语义类共享奖励 $r_i(y)=R_{ij}$：</span><span class="en">If all trajectories in one semantic class share reward $r_i(y)=R_{ij}$:</span></p>
+<div class="equation">$$\mathbb{E}_{p}[r_i]=\sum_jT_{ij}R_{ij}$$</div>
+<h4><span class="zh">粗粒化的训练过程</span><span class="en">Coarse-grained training</span></h4>
+<p><span class="zh">固定语义映射与可达状态，并假设类内条件分布保持参考策略。此时含 KL 的后训练可写成逐行的状态级优化：</span><span class="en">Fix the semantic map and the reachable states. Assume that the conditional distribution within each class remains that of the reference policy. Post-training with KL regularization can then be written as a state-level optimization for each row:</span></p>
+<div class="equation key">$$T_i^*=\operatorname*{arg\,max}_{T_i\ge0,\,\sum_j T_{ij}=1}\left\{\sum_jT_{ij}R_{ij}-\beta D_{\mathrm{KL}}(T_i\Vert Q_i)\right\}$$</div>
+<p><span class="zh">对行归一化约束求解并消去拉格朗日乘子，即得上方的指数重加权。真实训练还可能改变参考策略、状态内轨迹分布、可达状态和状态空间。</span><span class="en">Solve the row-normalization constraint and remove the Lagrange multiplier. This gives the exponential reweighting above. Real training can also change the reference policy, the within-state trajectory distribution, the reachable states, and the state space.</span></p>
+</details>
+<details class="technical-note">
+<summary><span class="zh">低温极限的推导</span><span class="en">Derivation of the low-temperature limits</span></summary>
+<h4><span class="zh">1. 用参考核展开转移核</span><span class="en">1. Expand the transition kernel with the reference kernel</span></h4>
+<div class="equation">$$\frac{T_{ij}(\beta)}{T_{ji}(\beta)}=\frac{Q_{ij}}{Q_{ji}}\exp\left(\frac{R_{ij}-R_{ji}}{\beta}\right)\frac{Z_j(\beta)}{Z_i(\beta)}$$</div>
+<div class="equation">$$y_{ij}(\beta)=\log\frac{Q_{ij}}{Q_{ji}}+\frac{R_{ij}-R_{ji}}{\beta}-\log Z_i(\beta)+\log Z_j(\beta)$$</div>
+<h4><span class="zh">2. 代入奖励分解，并将行项在归一化中抵消</span><span class="en">2. Insert the reward decomposition and cancel the row term in normalization</span></h4>
+<p><span class="zh">由 $R_{ij}=h_i+u_j+\epsilon_{ij}$，反向边的奖励差为：</span><span class="en">From $R_{ij}=h_i+u_j+\epsilon_{ij}$, the reverse-edge reward difference is:</span></p>
+<div class="equation">$$R_{ij}-R_{ji}=(h_i-h_j)+(u_j-u_i)+(\epsilon_{ij}-\epsilon_{ji})$$</div>
+<p><span class="zh">把每一行的共同因子提出配分函数，定义 $Z_i^{(0)}(\beta)\equiv e^{-h_i/\beta}Z_i(\beta)$：</span><span class="en">Factor the common factor in each row out of the partition function. Define $Z_i^{(0)}(\beta)\equiv e^{-h_i/\beta}Z_i(\beta)$:</span></p>
+<div class="equation">$$y_{ij}(\beta)=\log\frac{Q_{ij}}{Q_{ji}}+\frac{u_j-u_i+\epsilon_{ij}-\epsilon_{ji}}{\beta}-\log Z_i^{(0)}(\beta)+\log Z_j^{(0)}(\beta)$$</div>
+<p><span class="zh">$u_j-u_i$ 与配分函数的节点差属于可积方向；$\epsilon_{ij}-\epsilon_{ji}$ 是逐边残差方向。</span><span class="en">The node differences $u_j-u_i$ and the partition-function node difference are integrable. $\epsilon_{ij}-\epsilon_{ji}$ is the edge-residual direction.</span></p>
+<h4><span class="zh">3. 作用量的一阶条件定义 $\phi$</span><span class="en">3. The first-order condition of the action defines $\phi$</span></h4>
+<p><span class="zh">$\phi$ 不是从单个转移反推，而是让整张转移概率场的作用量最小。对约束 $\sum_i\phi_i=0$ 的拉格朗日问题求导，对每个节点 $k$ 得到：</span><span class="en">The potential $\phi$ is not inferred from one transition. It minimizes the action of the complete transition-probability field. Differentiate the constrained Lagrangian with $\sum_i\phi_i=0$ for each node $k$:</span></p>
+<div class="equation">$$\frac{\partial\mathcal{S}}{\partial\phi_k}=\frac{1}{2N}\left[\sum_iT_{ik}e^{(\phi_k-\phi_i)/2}-\sum_jT_{kj}e^{(\phi_j-\phi_k)/2}\right]=0$$</div>
+<p><span class="zh">这组节点方程寻找一个全局 $\phi$，使进入 $k$ 的加权通量与离开 $k$ 的加权通量平衡。</span><span class="en">These node equations find one global $\phi$. They balance weighted inflow and outflow at node $k$.</span></p>
+<h4><span class="zh">4. 从微观转移概率场给出可观测量</span><span class="en">4. Observables from the microscopic transition field</span></h4>
+<p><span class="zh">取每个同时存在正、逆转移的状态对各一次，组成互反边集 $E$。作用量从完整转移场给出节点势差 $\Delta\phi_{ij}$。把边方向场 $y_{ij}$ 作最小二乘投影到节点差空间，记可积部分为 $g_{ij}=\psi_i-\psi_j$，正交剩余为无法由任何全局节点函数解释的环流残差 $\eta_{ij}$。</span><span class="en">Take each state pair with both forward and reverse transitions once. This gives the reciprocal-edge set $E$. The action gives the node potential difference $\Delta\phi_{ij}$. Project the edge direction field $y_{ij}$ by least squares onto node differences. The integrable part is $g_{ij}=\psi_i-\psi_j$; the orthogonal remainder, which no global node function can explain, is the circulation residual $\eta_{ij}$.</span></p>
+<p><span class="zh">在最小二乘投影和渐近拟合所用的对齐近似下，实测相关可以因子化为：</span><span class="en">Under the least-squares projection and the alignment approximation used for the asymptotic fit, the measured correlation can be factorized as:</span></p>
+<div class="equation">$$\tilde{y}_{ij}=g_{ij}+\eta_{ij},\quad\langle g,\eta\rangle_E=0,\quad r(\beta)\approx\operatorname{corr}_E(\Delta\phi_{ij}(\beta),y_{ij}(\beta))=\operatorname{corr}_E(\Delta\phi,g)\,r_{\Pi}(\beta)=\operatorname{corr}_E(\Delta\phi,g) \operatorname{corr}_E(g,y)$$</div>
+<h4><span class="zh">5. 含逐边残差的奖励</span><span class="en">5. Rewards with an edge residual</span></h4>
+<p><span class="zh">先保留逐边残差 $\epsilon_{ij}$，它能沿闭合回路留下不能写成节点差的方向。把这部分相对方差记为 $\kappa$，得到：</span><span class="en">Keep the edge residual $\epsilon_{ij}$. It can leave a direction around a closed loop that cannot be written as a node difference. Let $\kappa$ be its relative variance:</span></p>
+<div class="equation key">$$r(\beta)\approx\frac{1}{\sqrt{1+\kappa+\theta\beta^2}}\to\frac{1}{\sqrt{1+\kappa}}\quad(\beta\to0)$$</div>
+<p><span class="zh">随机逐边结构不会保证在 $\beta$ 下降时形成全局可积势；它会留下边级背景或环流，因此在这个极限中 $r$ 仍受 $\kappa$ 压低。</span><span class="en">A random edge structure does not guarantee a globally integrable potential as $\beta$ decreases. It leaves an edge-level background or circulation, so $r$ remains reduced by $\kappa$ in this limit.</span></p>
+<h4><span class="zh">6. 共享终点奖励</span><span class="en">6. Shared destination rewards</span></h4>
+<p><span class="zh">令 $\epsilon_{ij}=0$。此时 $y$ 中唯一不能写成节点差的部分，是参考亲和度 $\log(Q_{ij}/Q_{ji})$ 的不可积分量；它在 $\beta y$ 中以 $\beta$ 倍出现，相对方差记为 $\theta\beta^2$，所以低温下 $r\to1$：</span><span class="en">Set $\epsilon_{ij}=0$. The only part of $y$ that is not a node difference is then the non-integrable part of the reference affinity $\log(Q_{ij}/Q_{ji})$; it enters $\beta y$ multiplied by $\beta$, with relative variance $\theta\beta^2$, so $r\to1$ at low temperature:</span></p>
+<div class="equation key">$$\frac{\operatorname{Var}_E(\eta)}{\operatorname{Var}_E(g)}\approx\theta\beta^2\quad\Longrightarrow\quad r(\beta)\approx\frac{1}{\sqrt{1+\theta\beta^2}}\to1\quad(\beta\to0)$$</div>
+<h4><span class="zh">7. 低温下的势能</span><span class="en">7. The potential at low temperature</span></h4>
+<p><span class="zh">在上面的可积核中，把邻域贡献写成：</span><span class="en">For the integrable kernel above, write the neighborhood contribution as:</span></p>
+<div class="equation">$$m_i(\beta)=\beta\log\sum_{k:Q_{ik}>0}Q_{ik}e^{u_k/\beta},\quad m_i(\beta)\to m_i=\max_{k:Q_{ik}>0}u_k$$</div>
+<p><span class="zh">低温下的势能写成：</span><span class="en">At low temperature the potential is:</span></p>
+<div class="equation">$$\tilde{\phi}_i(\beta)=-\frac{\tilde{u}_i+\tilde{m}_i(\beta)}{\beta}+O(1),\quad\beta\to0$$</div>
+<div class="equation key">$$\beta\tilde{\phi}_i\to-(\tilde{u}_i+\tilde{m}_i)$$</div>
+<p><span class="zh">即正文中的 $\Phi_i=-u_i-\max_{k\in\mathcal L(i)}u_k$（去掉均值）：低温下的势能只由状态自身的奖励和一步可达的最高奖励决定。</span><span class="en">This is $\Phi_i=-u_i-\max_{k\in\mathcal L(i)}u_k$ of the main text, centred: at low temperature the potential is set only by the state's own reward and the highest reward reachable in one step.</span></p>
+<h4><span class="zh">8. 奖励与熵的共同修正</span><span class="en">8. The shared correction of reward and entropy</span></h4>
+<p><span class="zh">对每个来源状态等权平均，理论读数直接从状态级转移分布 $T(\beta)$ 计算：</span><span class="en">Take the equal-weight average over source states. Compute both theoretical observables directly from the state-level transition distribution $T(\beta)$:</span></p>
+<div class="equation">$$H(\beta)=-\frac{1}{N}\sum_i\sum_jT_{ij}(\beta)\log T_{ij}(\beta),\quad\bar{R}(\beta)=\frac{1}{N}\sum_i\sum_jT_{ij}(\beta)u_j$$</div>
+<p><span class="zh">在充分后训练的近似下，两条曲线共享指数尾部；每个任务的 $H$ 与 $R$ 共用 $A,\Delta$：</span><span class="en">Under the full post-training approximation, both curves share one exponential tail. Each task uses the same $A,\Delta$ for $H$ and $R$:</span></p>
+<div class="equation key">$$\bar{R}(\beta)=R_{\max}-Ae^{-\Delta/\beta},\quad H(\beta)=H_*+\frac{A}{\beta}e^{-\Delta/\beta}+O(e^{-\Delta/\beta})$$</div>
+<p><span class="zh">$R_{\max}$ 是最高奖励，$\Delta$ 是最高与次高奖励之差，$A$ 是次优终点的总权重，$H_*$ 是参考核在最高奖励终点之间归一化后的熵。</span><span class="en">$R_{\max}$ is the highest reward, $\Delta$ the gap between the highest and second-highest rewards, $A$ the total weight of the next-best destinations, and $H_*$ the entropy of the reference kernel normalised among the highest-reward destinations.</span></p>
+</details>
+</section>
+
+<!-- ============ 03 EXPERIMENT ============ -->
+<section class="section section-shell" id="experiment">
+<div class="section-heading">
+<p class="eyebrow">03 / <span class="zh">实验</span><span class="en">Experiment</span></p>
+<h2 class="zh">在两个智能体任务中，<br><em>势能结构随后训练增强。</em></h2>
+<h2 class="en">In two agent tasks,<br><em>post-training strengthens the potential.</em></h2>
+<p class="zh">两个任务都从 Qwen3.5-9B 出发训练 8 轮，每轮把智能体反复放回各个状态，统计它的去向。第 $m$ 轮的名义温度是 $\beta_0/m$；每个任务用一个因子换算为有效温度 $\beta_{\rm eff}=c\,\beta_0/m$，T1 的 $c=3.04$，T2 的 $c=3.45$。</p>
+<p class="en">Both tasks start from Qwen3.5-9B and are trained for 8 rounds; in each round the agent is repeatedly reset to every state and its destinations are counted. Round $m$ has nominal temperature $\beta_0/m$; one factor per task gives the effective temperature $\beta_{\rm eff}=c\,\beta_0/m$, with $c=3.04$ for T1 and $3.45$ for T2.</p>
+</div>
+
+<div class="task-strip">
+<article class="task-card">
+<span>T1 · <span class="zh">安全测试</span><span class="en">SAFETY TESTS</span></span>
+<svg class="task-graph" id="graphT1" viewBox="0 0 220 200" role="img" aria-label="T1: 8 states, every pair connected"></svg>
+<p><span class="zh">安全测试智能体从 8 个测试用例中选下一个；任意两个用例之间都能转移。</span><span class="en">A safety-testing agent picks the next of 8 test cases; any two cases are connected.</span></p>
+</article>
+<article class="task-card task-t2">
+<span>T2 · <span class="zh">物理推理</span><span class="en">PHYSICS REASONING</span></span>
+<svg class="task-graph" id="graphT2" viewBox="0 0 220 200" role="img" aria-label="T2: 12 checkpoints on a ring, each connected to two neighbours on each side"></svg>
+<p><span class="zh">解题智能体在一道导热题的 12 个检查点中选下一步；每步只能走到两侧各两个邻居。</span><span class="en">A problem-solving agent picks the next of 12 checkpoints of a heat-conduction problem; each step reaches two neighbours on either side.</span></p>
+</article>
+</div>
+
+<div class="panel">
+<div class="figure-heading"><h3><span class="zh">随训练推进，转移愈加服从势能</span><span class="en">As training proceeds, transitions follow the potential more closely</span></h3></div>
+<div class="tabs tabs-sm" id="taskTabs" role="tablist">
+<button class="tab is-active" type="button" data-task="T1">T1</button>
+<button class="tab" type="button" data-task="T2">T2</button>
+</div>
+<div class="turn-player">
+<button class="play-btn" id="roundPlay" type="button" aria-label="Play">▶</button>
+<input type="range" id="roundRange" min="0" max="800" value="800" aria-label="Round">
+<output id="roundOut"></output>
+</div>
+<div class="chart-grid">
+<div class="canvas-wrap"><canvas id="netCanvas" class="chart chart-net" role="img" aria-label="Measured states placed by potential, with net flows"></canvas></div>
+<div class="canvas-wrap"><canvas id="rCanvas" class="chart chart-net" role="img" aria-label="Order parameter r versus effective temperature"></canvas></div>
+</div>
+<figcaption><span class="zh">网络图：实测转移，节点按第 8 轮的势能从高到低排列，高度是当轮的势能，箭头是净流，彩色表示顺着势能向下。曲线图：序参量 $r$，即由转移估计的势能之差与 $\log(T_{ij}/T_{ji})$ 的相关系数，实线是理论拟合。T1 的 $r$ 从初始模型的 0.38 升到第 8 轮的 0.78，T2 从 0.72 升到 0.79。</span><span class="en">Network: measured transitions; nodes are ordered by their round-8 potential from high to low, height is the potential in the current round, and arrows are net flows, coloured where they run downhill. Curve: the order parameter $r$, the correlation between differences of the potential estimated from transitions and $\log(T_{ij}/T_{ji})$, with the theoretical fit as a solid line. For T1, $r$ rises from 0.38 in the initial model to 0.78 in round 8; for T2, from 0.72 to 0.79.</span></figcaption>
+</div>
+
+<div class="pair-grid">
+<div class="panel">
+<div class="figure-heading"><h3><span class="zh">只看初始模型，就能预言每条转移怎么变</span><span class="en">The initial model alone predicts how every transition changes</span></h3></div>
+<div class="canvas-wrap"><canvas id="dtCanvas" class="chart chart-sq" role="img" aria-label="Predicted versus measured change of each transition probability"></canvas></div>
+<figcaption><span class="zh">每个点是一条转移在一轮中的概率变化 $T_{ij}-Q_{ij}$：横轴由初始模型的转移和奖励算出，纵轴是实测，包含全部 8 轮。Pearson 相关 T1 为 0.76，T2 为 0.89。</span><span class="en">Each point is the change $T_{ij}-Q_{ij}$ of one transition in one round: computed from the initial model's transitions and the reward (horizontal) versus measured (vertical), for all eight rounds. Pearson correlation: 0.76 for T1, 0.89 for T2.</span></figcaption>
+</div>
+<div class="panel">
+<div class="figure-heading"><h3><span class="zh">训练后的势能，与理论极限同向变化</span><span class="en">The trained potential varies with the theoretical limit across states</span></h3></div>
+<div class="canvas-wrap"><canvas id="phiCanvas" class="chart chart-sq" role="img" aria-label="Measured round-8 potential versus the theoretical limit"></canvas></div>
+<figcaption><span class="zh">每个点是一个状态：横轴是理论极限 $\Phi_i$，纵轴是第 8 轮实测的势能 $\beta_{\rm eff}\hat\phi_i$，两者都去掉均值，虚线表示相等。相关系数 T1 为 0.86，T2 为 0.61。</span><span class="en">Each point is a state: the theoretical limit $\Phi_i$ (horizontal) versus the measured round-8 potential $\beta_{\rm eff}\hat\phi_i$ (vertical), both centred; the dashed line marks equality. Correlation: 0.86 for T1, 0.61 for T2.</span></figcaption>
+</div>
+</div>
+
+<div class="panel">
+<div class="figure-heading"><h3><span class="zh">奖励与熵共用一个修正幅度，与配分函数一致</span><span class="en">Reward and entropy share one correction amplitude, consistent with the partition function</span></h3></div>
+<div class="pair-charts">
+<div class="canvas-wrap"><canvas id="rewCanvas" class="chart chart-rh" role="img" aria-label="Mean reward versus effective temperature"></canvas></div>
+<div class="canvas-wrap"><canvas id="entCanvas" class="chart chart-rh" role="img" aria-label="State entropy versus effective temperature"></canvas></div>
+</div>
+<figcaption><span class="zh">源状态平均的奖励与状态熵。实线是配分函数的低温展开，奖励与熵共用同一修正幅度 $A$（$\Delta$ 为拟合的有效奖励间隙）。奖励持续上升，熵在后期下降。</span><span class="en">Source-averaged reward and state entropy. Solid lines are the low-temperature expansion of the partition function, with one correction amplitude $A$ shared by reward and entropy ($\Delta$ is a fitted effective reward gap). Reward keeps rising, and entropy falls at later stages.</span></figcaption>
+</div>
+</section>
+
+<!-- ============ 04 TESTS ============ -->
+<section class="section section-shell" id="controls">
+<div class="section-heading">
+<p class="eyebrow">04 / <span class="zh">检验</span><span class="en">Tests</span></p>
+<h2 class="zh">势能依赖奖励的结构，<br><em>换模型和推理方式依然成立。</em></h2>
+<h2 class="en">The potential depends on the reward's structure<br><em>and holds across models and inference settings.</em></h2>
+<p class="zh">如果势能来自终点奖励的结构，破坏这个结构就应当削弱势能，而换模型、推理方式或提示不应改变结论。我们在 T1 上逐一检验，并改变训练的 KL 系数。</p>
+<p class="en">If the potential comes from the structure of the destination reward, breaking that structure should weaken it, while changing the model, the inference setting or the prompt should not change the conclusion. We test each on T1, and also vary the KL coefficient of training.</p>
+</div>
+
+<div class="panel">
+<div class="figure-heading"><h3><span class="zh">奖励仍在上升，势能结构却减弱</span><span class="en">Reward still rises, but the potential weakens</span></h3></div>
+<div class="pair-charts">
+<div class="canvas-wrap"><canvas id="alphaR" class="chart chart-rh" role="img" aria-label="Order parameter for different edge-reward weights"></canvas></div>
+<div class="canvas-wrap"><canvas id="alphaRew" class="chart chart-rh" role="img" aria-label="Mean reward for different edge-reward weights"></canvas></div>
+</div>
+<figcaption><span class="zh">在终点奖励上叠加只属于某条边的奖励：$R_{ij}=u_j+\alpha\,\epsilon_{ij}$。每个 $\alpha$ 下平均奖励都在上升；逐边项越重，序参量越低，$\alpha=4$ 时第 8 轮的 $r$ 只有 0.46。横轴为名义温度 $\beta_0/m$。</span><span class="en">An edge-specific reward is added to the destination reward: $R_{ij}=u_j+\alpha\,\epsilon_{ij}$. Mean reward rises at every $\alpha$; the heavier the edge term, the lower the order parameter: at $\alpha=4$ the round-8 $r$ is only 0.46. The horizontal axis is the nominal temperature $\beta_0/m$.</span></figcaption>
+</div>
+
+<div class="panel">
+<div class="figure-heading"><h3><span class="zh">换推理方式、模型和提示，势能结构依然增强</span><span class="en">Across inference settings, models and prompts, the potential still strengthens</span></h3></div>
+<div class="tabs tabs-sm" id="ablTabs" role="tablist">
+<button class="tab is-active" type="button" data-abl="infer"><span class="zh">推理方式</span><span class="en">Inference</span></button>
+<button class="tab" type="button" data-abl="model"><span class="zh">模型</span><span class="en">Model</span></button>
+<button class="tab" type="button" data-abl="prompt"><span class="zh">提示</span><span class="en">Prompts</span></button>
+</div>
+<div class="canvas-wrap"><canvas id="ablCanvas" class="chart chart-abl" role="img" aria-label="Order parameter under the selected change"></canvas></div>
+<p class="readout" id="ablText"></p>
+</div>
+
+<div class="panel">
+<div class="figure-heading"><h3><span class="zh">八个 KL 系数，落在主实验曲线附近</span><span class="en">Eight KL coefficients lie near the main-experiment curve</span></h3></div>
+<div class="chart-grid">
+<div class="canvas-wrap"><canvas id="klR" class="chart chart-net" role="img" aria-label="Order parameter of eight training branches at their own effective temperature"></canvas></div>
+<div class="canvas-wrap"><canvas id="klC" class="chart chart-net" role="img" aria-label="Calibration factor c versus KL coefficient"></canvas></div>
+</div>
+<figcaption><span class="zh">序参量图：其余 7 个 KL 系数 $\beta_0$ 的训练，各用自己的校准因子 $c$ 换算温度，不重新拟合就落在主实验的曲线（蓝线、方块）附近。$c$ 图：若每轮都达到理想最优，$c=1$；$\beta_0\ge1.5$ 时 $c$ 接近 1，$\beta_0$ 更小时训练还没有饱和。</span><span class="en">Order-parameter chart: the other seven trainings with KL coefficients $\beta_0$, each converted to temperature with its own calibration factor $c$, lie near the main-experiment curve (blue line and squares) without refitting. $c$ chart: if every round reached the ideal optimum, $c=1$; for $\beta_0\ge1.5$, $c$ is close to 1, and at smaller $\beta_0$ training has not saturated.</span></figcaption>
+</div>
+</section>
+
+<!-- ============ 05 DISCUSSION ============ -->
+<section class="section section-shell" id="discussion">
+<div class="section-heading">
+<p class="eyebrow">05 / <span class="zh">讨论</span><span class="en">Discussion</span></p>
+<h2 class="zh">下一步：<br><em>更真实的状态，更完整的动力学。</em></h2>
+<h2 class="en">Next:<br><em>more realistic states, fuller dynamics.</em></h2>
+<p class="zh">当语料统计与人类偏好不足以解释智能体的行为时，奖励结构、参考分布和推理条件可以作为机制线索，并可能用来指导训练。要走向更真实的智能体，还有三个问题。</p>
+<p class="en">Where corpus statistics and human preferences fall short of explaining agent behaviour, the reward structure, the reference distribution and the inference conditions serve as mechanistic clues and could inform training. Three questions remain on the way to more realistic agents.</p>
+</div>
+<div class="disc-cards">
+<article class="disc-card"><span class="disc-tag"><span class="zh">状态</span><span class="en">STATES</span></span><h3><span class="zh">状态从哪里来</span><span class="en">Where states come from</span></h3><p><span class="zh">这里的状态是预先定义的有限输出。真实场景中的状态可能是抽象的检查点、执行日志或连续的多模态观测，如何定义它们、如何把奖励写到状态之间，仍是难题。</span><span class="en">Here states are predefined, finite outputs. In real settings they may be abstract checkpoints, execution logs or continuous multimodal observations; how to define them and write rewards between them remains open.</span></p></article>
+<article class="disc-card"><span class="disc-tag"><span class="zh">覆盖</span><span class="en">COVERAGE</span></span><h3><span class="zh">能否走到新的区域</span><span class="en">Reaching new regions</span></h3><p><span class="zh">后训练重新分配已有转移的概率。它能否让模型走到原来几乎不去的状态，是改变已有行为与获得新行为之间的区别。</span><span class="en">Post-training redistributes probability among existing transitions. Whether it lets a model reach states it almost never visited marks the line between changing existing behaviour and acquiring new behaviour.</span></p></article>
+<article class="disc-card"><span class="disc-tag"><span class="zh">非平衡</span><span class="en">NON-EQUILIBRIUM</span></span><h3><span class="zh">训练不在平衡态</span><span class="en">Training is out of equilibrium</span></h3><p><span class="zh">配分函数给出平衡参照，校准因子 $c$ 刻画实际训练离理想最优有多远，但还不描述完整的非平衡动力学。</span><span class="en">The partition function gives an equilibrium reference, and the calibration factor $c$ measures how far real training is from the ideal optimum, but the full non-equilibrium dynamics remain to be described.</span></p></article>
+</div>
+<div class="source-links">
+<a href="https://arxiv.org/abs/2611.27618" target="_blank" rel="noopener"><span class="zh">论文 · arXiv:2611.27618 ↗︎</span><span class="en">Paper · arXiv:2611.27618 ↗︎</span></a>
+<a href="https://huggingface.co/datasets/Nondegeneracy/partition-function-llm" target="_blank" rel="noopener"><span class="zh">公开数据 · CC BY 4.0 ↗︎</span><span class="en">Public data · CC BY 4.0 ↗︎</span></a>
+<a href="https://github.com/SonnyNondegeneracy/partition-function-llm" target="_blank" rel="noopener"><span class="zh">分析代码 · MIT Licence ↗︎</span><span class="en">Analysis code · MIT Licence ↗︎</span></a>
+<a href="assets/downloads/potential_emergence.bib" download>BibTeX ↓</a>
+</div>
+</section>
+</main>
+
+<footer class="data-provenance section-shell">
+<b>POTENTIAL EMERGENCE</b> · Song &amp; Zhu, <a href="https://arxiv.org/abs/2611.27618">arXiv:2611.27618</a> · <span class="zh">数据与方法可由论文、公开数据集及分析代码追溯。</span><span class="en">Data and methods are traceable to the paper, the public dataset and the analysis code.</span>
+</footer>
+<script src="assets/katex/katex.min.js"></script>
+<script src="assets/katex/auto-render.min.js"></script>
+<script src="assets/data/data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,11 +1,13 @@
 import phaseDiagramCard from "@/lib/phase-diagram-card.json";
+import potentialEmergenceCard from "@/lib/potential-emergence-card.json";
 
 // Searchable public navigation only; never index local research files or the
 // separate IdeaSearch documentation collection into the Physics directory.
 const entries = [
   { id: "detailed-balance", en: "Detailed balance in large language model-driven agents", cn: "大语言模型驱动智能体中的细致平衡", keywords: "LLM agent potential 势能 智能体", anchor: "" },
-  { id: "susceptibility", en: "Information susceptibility in LLM agents", cn: "LLM 智能体的信息响应率", keywords: "linear response hallucination marginal return 线性响应 幻觉 边际收益", anchor: "" },
+  { id: "potential-emergence", en: potentialEmergenceCard.en.title, cn: potentialEmergenceCard.zh.title, keywords: "post-training partition function reward entropy 势能 后训练 配分函数 奖励 熵", anchor: "" },
   { id: "phase-diagram", en: "A phase diagram for training and inference in language models", cn: "语言模型训练与推理的相图", keywords: "training inference working phase collapse noise Pythia 训练 推理 工作相 坍缩 噪声", anchor: "" },
+  { id: "susceptibility", en: "Information susceptibility in LLM agents", cn: "LLM 智能体的信息响应率", keywords: "linear response hallucination marginal return 线性响应 幻觉 边际收益", anchor: "" },
   { id: "motivation", en: "Motivation · Semantic states and MCMC", cn: "动机 · 语义状态与 MCMC", keywords: "token microscopic trajectories 微观轨迹 转移通道", anchor: "motivation" },
   { id: "theory", en: "Theory · Assumptions and effective potential", cn: "理论 · 假设与有效势", keywords: "unique path return edges free energy F 唯一路径 回边 自由能 势能", anchor: "theory" },
   { id: "experiment", en: "Experiment · Potential ordering and detailed-balance tests", cn: "实验 · 势能排序与细致平衡检验", keywords: "action optimization matrix tasks models 作用量 优化 矩阵 任务 模型", anchor: "experiment" },
@@ -28,8 +30,10 @@ export function physicsSearchResults(query: string, locale: string) {
       content: entry[lang],
       url: entry.id === "susceptibility"
         ? "/susceptibility"
-        : entry.id === "phase-diagram"
-          ? phaseDiagramCard.href
-          : `${base}${entry.anchor ? `#${entry.anchor}` : ""}`,
+        : entry.id === "potential-emergence"
+          ? potentialEmergenceCard.href
+          : entry.id === "phase-diagram"
+            ? phaseDiagramCard.href
+            : `${base}${entry.anchor ? `#${entry.anchor}` : ""}`,
     }));
 }

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import phaseDiagramCard from "@/lib/phase-diagram-card.json";
+import potentialEmergenceCard from "@/lib/potential-emergence-card.json";
 
 const copy = {
   en: {
@@ -96,6 +97,45 @@ export function PhysicsDirectory({
     locale === "cn" ? "/detailed-balance?lang=zh" : "/detailed-balance";
   const susceptibilityHref = "/susceptibility";
   const phaseText = phaseDiagramCard[locale === "cn" ? "zh" : "en"];
+  const potentialText = potentialEmergenceCard[locale === "cn" ? "zh" : "en"];
+  const projects = [
+    {
+      id: "detailed-balance",
+      title: text.title,
+      abstract: text.abstract,
+      image: "/detailed-balance/assets/figs/ideasearchfitter-landscape-3d-square.png",
+      imageAlt: text.imageAlt,
+      article: "https://link.aps.org/doi/10.1103/kwx6-clqd",
+      href: detailHref,
+    },
+    {
+      id: potentialEmergenceCard.slug,
+      title: potentialText.title,
+      abstract: potentialText.abstract,
+      image: potentialEmergenceCard.image,
+      imageAlt: potentialText.alt,
+      article: potentialEmergenceCard.article,
+      href: `${potentialEmergenceCard.href}?lang=${locale === "cn" ? "zh" : "en"}`,
+    },
+    {
+      id: phaseDiagramCard.slug,
+      title: phaseText.title,
+      abstract: phaseText.abstract,
+      image: phaseDiagramCard.image,
+      imageAlt: phaseText.alt,
+      article: phaseDiagramCard.article,
+      href: phaseDiagramCard.href,
+    },
+    {
+      id: "susceptibility",
+      title: text.susceptibilityTitle,
+      abstract: text.susceptibilityAbstract,
+      image: "/susceptibility/assets/hero-square.png",
+      imageAlt: text.susceptibilityImageAlt,
+      article: "https://arxiv.org/abs/2603.23626",
+      href: susceptibilityHref,
+    },
+  ];
 
   useEffect(() => {
     setMounted(true);
@@ -129,7 +169,7 @@ export function PhysicsDirectory({
         <div className="absolute inset-0 bg-white/45 dark:bg-black/40" />
       </div>
 
-      <header className="physics-topbar" role="banner">
+      <header className="physics-topbar">
         <div className="physics-topbar-inner">
           <Link href={locale === "cn" ? "/cn" : "/en"} className="physics-topbar-brand">
             <span className="physics-topbar-mark" aria-hidden="true">
@@ -160,131 +200,51 @@ export function PhysicsDirectory({
         </h1>
 
         <div className="physics-card-grid">
-          <article className="physics-project-card w-full max-w-[26rem] justify-self-start overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-transparent">
-            <a
-              href={detailHref}
-              className="group relative block aspect-square bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2 dark:bg-slate-900"
-              aria-label={text.enter}
-            >
-              <img
-                src="/detailed-balance/assets/figs/ideasearchfitter-landscape-3d-square.png"
-                alt={text.imageAlt}
-                className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.015]"
-              />
-            </a>
-            <div className="physics-project-card-body flex flex-col p-6 sm:p-7">
-              <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
-                {text.title}
-              </h2>
-              <ProjectAbstract
-                id="detailed-balance-abstract"
-                expandLabel={text.expandAbstract}
-                collapseLabel={text.collapseAbstract}
+          {projects.map((project) => (
+            <article key={project.id} id={`${project.id}-card`} className="physics-project-card w-full max-w-[26rem] justify-self-start overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-transparent">
+              <a
+                href={project.href}
+                className={`group relative block aspect-square focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2${project.id === "detailed-balance" ? " bg-slate-100 dark:bg-slate-900" : ""}`}
+                aria-label={text.enter}
               >
-                {text.abstract}
-              </ProjectAbstract>
-              <div className="mt-auto flex flex-nowrap gap-2 pt-6">
-                <a
-                  href="https://link.aps.org/doi/10.1103/kwx6-clqd"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-foreground px-3 py-3 text-[11px] font-semibold text-background transition hover:-translate-y-0.5 sm:px-5 sm:text-xs"
+                <img
+                  src={project.image}
+                  alt={project.imageAlt}
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.015]"
+                />
+              </a>
+              <div className="physics-project-card-body flex flex-col p-6 sm:p-7">
+                <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
+                  {project.title}
+                </h2>
+                <ProjectAbstract
+                  id={`${project.id}-abstract`}
+                  expandLabel={text.expandAbstract}
+                  collapseLabel={text.collapseAbstract}
                 >
-                  {text.article}
-                  <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
-                </a>
-                <a
-                  href={detailHref}
-                  className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-foreground/20 bg-white/35 px-3 py-3 text-[11px] font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20 sm:px-5 sm:text-xs"
-                >
-                  {text.enter}
-                  <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
-                </a>
+                  {project.abstract}
+                </ProjectAbstract>
+                <div className="mt-auto flex flex-nowrap gap-2 pt-6">
+                  <a
+                    href={project.article}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-foreground px-3 py-3 text-[11px] font-semibold text-background transition hover:-translate-y-0.5 sm:px-5 sm:text-xs"
+                  >
+                    {text.article}
+                    <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
+                  </a>
+                  <a
+                    href={project.href}
+                    className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-foreground/20 bg-white/35 px-3 py-3 text-[11px] font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20 sm:px-5 sm:text-xs"
+                  >
+                    {text.enter}
+                    <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
+                  </a>
+                </div>
               </div>
-            </div>
-          </article>
-          <article className="physics-project-card w-full max-w-[26rem] justify-self-start overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-transparent">
-            <a
-              href={susceptibilityHref}
-              className="group relative block aspect-square focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2"
-              aria-label={text.enter}
-            >
-              <img
-                src="/susceptibility/assets/hero-square.png"
-                alt={text.susceptibilityImageAlt}
-                className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.015]"
-              />
-            </a>
-            <div className="physics-project-card-body flex flex-col p-6 sm:p-7">
-              <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">{text.susceptibilityTitle}</h2>
-              <ProjectAbstract
-                id="susceptibility-abstract"
-                expandLabel={text.expandAbstract}
-                collapseLabel={text.collapseAbstract}
-              >
-                {text.susceptibilityAbstract}
-              </ProjectAbstract>
-              <div className="mt-auto flex flex-nowrap gap-2 pt-6">
-                <a
-                  href="https://arxiv.org/abs/2603.23626"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-foreground px-3 py-3 text-[11px] font-semibold text-background transition hover:-translate-y-0.5 sm:px-5 sm:text-xs"
-                >
-                  {text.article}
-                  <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
-                </a>
-                <a
-                  href={susceptibilityHref}
-                  className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-foreground/20 bg-white/35 px-3 py-3 text-[11px] font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20 sm:px-5 sm:text-xs"
-                >
-                  {text.enter}
-                  <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
-                </a>
-              </div>
-            </div>
-          </article>
-          <article id="phase-diagram-card" className="physics-project-card w-full max-w-[26rem] justify-self-start overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/65 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-transparent">
-            <a
-              href={phaseDiagramCard.href}
-              className="group relative block aspect-square focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/60 focus-visible:ring-offset-2"
-              aria-label={phaseText.enter}
-            >
-              <img
-                src={phaseDiagramCard.image}
-                alt={phaseText.alt}
-                className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.015]"
-              />
-            </a>
-            <div className="physics-project-card-body flex flex-col p-6 sm:p-7">
-              <h2 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">{phaseText.title}</h2>
-              <ProjectAbstract
-                id={`${phaseDiagramCard.slug}-abstract`}
-                expandLabel={text.expandAbstract}
-                collapseLabel={text.collapseAbstract}
-              >
-                {phaseText.abstract}
-              </ProjectAbstract>
-              <div className="mt-auto flex flex-nowrap gap-2 pt-6">
-                <a
-                  href={phaseDiagramCard.article}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-foreground px-3 py-3 text-[11px] font-semibold text-background transition hover:-translate-y-0.5 sm:px-5 sm:text-xs"
-                >
-                  {phaseText.read}
-                  <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
-                </a>
-                <a
-                  href={phaseDiagramCard.href}
-                  className="inline-flex min-h-11 min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-full border border-foreground/20 bg-white/35 px-3 py-3 text-[11px] font-semibold transition hover:-translate-y-0.5 hover:bg-white/70 dark:bg-white/10 dark:hover:bg-white/20 sm:px-5 sm:text-xs"
-                >
-                  {phaseText.enter}
-                  <ArrowUpRight className="ml-1 size-3.5 shrink-0" aria-hidden="true" />
-                </a>
-              </div>
-            </div>
-          </article>
+            </article>
+          ))}
         </div>
       </div>
     </main>

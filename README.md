@@ -46,7 +46,25 @@ to `/phase-diagram/`, which serves `index.html` so relative asset and download U
 no build or dependencies. Replace the complete directory with a verified future
 delivery rather than editing its files or running its data generators.
 
-The Physics homepage includes all three projects in English and Chinese. The
+`public/potential-emergence/` contains the verified static delivery for
+[Potential emergence in LLM agents: a statistical physics perspective](https://arxiv.org/abs/2611.27618),
+from `Nondegeneracy/tally-handoff` commit `43c10cea1f32c7953ea11003ec99ab391457b70c`.
+The source ZIP SHA256 is `d3ffb81817cada1d4e8502801c1431eef87cc6d038fc55c7e89b70f6a9653ef5`.
+It is published at `https://physics.ideasearch.cn/potential-emergence/`, with the
+same trailing-slash routing as the phase-diagram delivery. The only change to
+the delivered files is removing the preview-only `noindex, nofollow` meta tag
+for the authorized public deployment. All data, fonts, KaTeX and licenses are
+bundled; do not run data generators or rewrite the scientific content.
+The bilingual homepage card follows `ABSTRACT.md` in the delivery and uses its
+unchanged `assets/hero-square.png`; its metadata is in
+`src/lib/potential-emergence-card.json`. Keep its public search entry in
+`src/lib/physics-search.ts` in sync.
+
+The Physics homepage includes all four projects in English and Chinese, with
+the order Detailed Balance, Potential Emergence (post-training), Phase Diagram,
+and Information Susceptibility. All cards share one
+pair of action labels: “阅读文章 / 进入网页” in Chinese and
+“Read the article / Enter the website” in English. The
 phase-diagram card reads the delivered `card.json` from `src/lib/phase-diagram-card.json`.
 Its cover is the unchanged `public/phase-diagram/assets/hero-square.png` from the package.
 

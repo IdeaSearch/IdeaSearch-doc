@@ -6,7 +6,7 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  // The static phase-diagram delivery requires a trailing slash for its
+  // The static project deliveries require a trailing slash for their
   // relative URLs. Keep the other routes' existing slash normalization below.
   skipTrailingSlashRedirect: true,
   // pin the workspace root, otherwise Turbopack walks up and picks a lockfile
@@ -17,7 +17,7 @@ const config = {
   async redirects() {
     return [
       {
-        source: "/:path((?!phase-diagram(?:/|$)).+)/",
+        source: "/:path((?!(?:phase-diagram|potential-emergence)(?:/|$)).+)/",
         destination: "/:path",
         permanent: true,
       },
@@ -28,6 +28,10 @@ const config = {
       {
         source: "/phase-diagram/",
         destination: "/phase-diagram/index.html",
+      },
+      {
+        source: "/potential-emergence/",
+        destination: "/potential-emergence/index.html",
       },
       {
         source: "/detailed-balance",
