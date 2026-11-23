@@ -31,7 +31,7 @@ export function physicsSearchResults(query: string, locale: string) {
       url: entry.id === "susceptibility"
         ? "/susceptibility"
         : entry.id === "potential-emergence"
-          ? potentialEmergenceCard.href
+          ? `${potentialEmergenceCard.href}?lang=${lang === "cn" ? "zh" : "en"}`
           : entry.id === "phase-diagram"
             ? phaseDiagramCard.href
             : `${base}${entry.anchor ? `#${entry.anchor}` : ""}`,
